@@ -1,103 +1,183 @@
-import Image from "next/image";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Activity, Calendar, Dumbbell, Plus, TrendingUp, Target } from "lucide-react"
+import Link from "next/link"
 
-export default function Home() {
+export default function Dashboard() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">Resumen de tu progreso y entrenamientos de hoy</p>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* Quick Actions */}
+        <Card className="md:col-span-2 lg:col-span-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Acciones Rápidas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Button asChild className="h-auto p-4 flex-col gap-2">
+                <Link href="/log/strength">
+                  <Dumbbell className="h-6 w-6" />
+                  <span>Registrar Set</span>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2 bg-transparent">
+                <Link href="/log/run">
+                  <Activity className="h-6 w-6" />
+                  <span>Registrar Carrera</span>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2 bg-transparent">
+                <Link href="/workouts/new">
+                  <Plus className="h-6 w-6" />
+                  <span>Nueva Rutina</span>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2 bg-transparent">
+                <Link href="/calendar">
+                  <Calendar className="h-6 w-6" />
+                  <span>Ver Calendario</span>
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Today's Workout */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Entrenamiento de Hoy
+            </CardTitle>
+            <CardDescription>
+              {new Date().toLocaleDateString("es-ES", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Push - Pecho y Hombros</p>
+                  <p className="text-sm text-muted-foreground">5 ejercicios • 45-60 min</p>
+                </div>
+                <Badge variant="outline">Planificado</Badge>
+              </div>
+              <Button asChild className="w-full">
+                <Link href="/log/strength">Empezar Entrenamiento</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent PRs */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Récords Recientes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Press Banca</p>
+                  <p className="text-sm text-muted-foreground">85kg × 5 reps</p>
+                </div>
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">+2.5kg</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Sentadilla</p>
+                  <p className="text-sm text-muted-foreground">100kg × 3 reps</p>
+                </div>
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">+5kg</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">5K Running</p>
+                  <p className="text-sm text-muted-foreground">22:45 min</p>
+                </div>
+                <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">-0:30</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Weekly Stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Esta Semana
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Entrenamientos</span>
+                  <span>4/5</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-2 mt-1">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: "80%" }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Volumen</span>
+                  <span>12.5 ton</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-2 mt-1">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: "75%" }}></div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Running Stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Running
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="text-center">
+                <p className="text-2xl font-bold">15.2 km</p>
+                <p className="text-sm text-muted-foreground">Esta semana</p>
+              </div>
+              <div className="flex justify-between text-sm">
+                <div className="text-center">
+                  <p className="font-medium">4:45</p>
+                  <p className="text-muted-foreground">Ritmo avg</p>
+                </div>
+                <div className="text-center">
+                  <p className="font-medium">3</p>
+                  <p className="text-muted-foreground">Carreras</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  );
+  )
 }
