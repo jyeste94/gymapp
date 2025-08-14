@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Navbar } from "@/components/layout/navbar"
+import { BottomNav } from "@/components/bottom-nav"
 import { Toaster } from "sonner"
 import "./globals.css"
 
@@ -36,9 +36,9 @@ html {
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="relative flex min-h-screen flex-col">
-            <Navbar />
-            <main className="flex-1">{children}</main>
+          <div className="relative flex min-h-screen flex-col pb-16">
+            <main className="flex-1 pb-4">{children}</main>
+            <BottomNav />
           </div>
           <Toaster />
         </ThemeProvider>
