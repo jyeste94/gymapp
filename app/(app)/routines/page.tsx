@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { add } from '@/lib/firestore/crud';
+import { useAuth } from '@/lib/firebase/auth-hooks';
 
 interface Exercise {
   name: string;
@@ -71,12 +73,33 @@ interface Entry {
 
 export default function RoutinesPage() {
   const [entries, setEntries] = useState<Record<string, Entry>>({});
+  const { user } = useAuth();
 
   const handleChange = (key: string, field: keyof Entry, value: string) => {
     setEntries((prev) => ({
       ...prev,
       [key]: { ...prev[key], [field]: value },
     }));
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+    const data = Object.entries(entries).map(([key, entry]) => {
+      const [dayIdx, exIdx] = key.split('-');
+      const day = routine[Number(dayIdx)];
+      const ex = day.exercises[Number(exIdx)];
+      return {
+        day: day.title,
+        exercise: ex.name,
+        ...entry,
+      };
+    });
+    await add(`users/${user.uid}/routines`, {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      entries: data,
+    });
+    setEntries({});
   };
 
   return (
@@ -138,6 +161,9 @@ export default function RoutinesPage() {
           </div>
         </div>
       ))}
+      <button onClick={handleSave} className="rounded-lg border px-3 py-2">
+        Guardar
+      </button>
     </div>
   );
 }
