@@ -1,0 +1,37 @@
+﻿import { add } from "@/lib/firestore/crud";
+import { useCol } from "@/lib/firestore/hooks";
+
+export type ExerciseLogSet = {
+  weight?: string;
+  reps?: string;
+  rir?: string;
+  completed?: boolean;
+};
+
+export type ExerciseLog = {
+  id: string;
+  exerciseId: string;
+  exerciseName: string;
+  routineId?: string;
+  routineName?: string;
+  dayId?: string;
+  dayName?: string;
+  date: string;
+  perceivedEffort?: string;
+  notes?: string;
+  mediaImage?: string;
+  mediaVideo?: string;
+  sets: ExerciseLogSet[];
+};
+
+export type ExerciseLogInput = Omit<ExerciseLog, "id">;
+
+export const useExerciseLogs = (userId?: string | null) =>
+  useCol<ExerciseLog>(userId ? `users/${userId}/exerciseLogs` : null, { by: "date", dir: "desc" });
+
+export async function saveExerciseLog(userId: string, data: ExerciseLogInput) {
+  return add(`users/${userId}/exerciseLogs`, {
+    id: crypto.randomUUID(),
+    ...data,
+  });
+}

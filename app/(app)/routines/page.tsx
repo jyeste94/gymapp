@@ -7,19 +7,11 @@ import {
   defaultRoutines,
   mergeRoutines,
   templateToRoutineDefinition,
+  createRoutineAliasIndex,
   type RoutineDefinition,
   type RoutineTemplateDoc,
 } from "@/lib/data/routine-library";
-
-type RoutineLog = {
-  id: string;
-  date: string;
-  routineId?: string;
-  routineName?: string;
-  dayId?: string;
-  dayName?: string;
-  day?: string;
-};
+import { useRoutineLogs, type RoutineLog } from "@/lib/firestore/routine-logs";
 
 const dateFormatter =
   typeof Intl !== "undefined"
@@ -37,20 +29,17 @@ const formatDate = (iso?: string) => {
 };
 
 const summarizeRoutine = (routine: RoutineDefinition) => {
-  const totalExercises = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
-  return {
-    dayCount: routine.days.length,
-    exerciseCount: totalExercises,
-  };
+  const dayCount = routine.days.length;
+  const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
+  return { dayCount, exerciseCount };
 };
 
 export default function RoutinesPage() {
   const { user } = useAuth();
-  const logsPath = user?.uid ? `users/${user.uid}/routines` : null;
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
-  const { data: routineLogs } = useCol<RoutineLog>(logsPath, { by: "date", dir: "desc" });
   const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
+  const { data: routineLogs } = useRoutineLogs(user?.uid);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(templateToRoutineDefinition),
@@ -62,24 +51,22 @@ export default function RoutinesPage() {
     [customRoutines],
   );
 
+  const aliasIndex = useMemo(() => createRoutineAliasIndex(routines), [routines]);
+
   const lastCompleted = useMemo(() => {
     const map = new Map<string, string>();
-    routineLogs?.forEach((log) => {
+    (routineLogs ?? []).forEach((log: RoutineLog) => {
       const key = log.routineId || log.routineName || log.dayId || log.dayName || log.day;
       if (!key) return;
-      const normalized = key.trim().toLowerCase();
-      if (!normalized) return;
-      const matchedRoutine = routines.find((routine) => {
-        const aliases = [routine.id, routine.title, ...routine.days.map((day) => day.id), ...routine.days.map((day) => day.title)];
-        return aliases.some((alias) => alias.trim().toLowerCase() === normalized);
-      });
-      if (!matchedRoutine) return;
-      if (!map.has(matchedRoutine.id)) {
-        map.set(matchedRoutine.id, log.date);
+      const alias = aliasIndex.get(key.trim().toLowerCase());
+      if (!alias) return;
+      const routineId = alias.routine.id;
+      if (!map.has(routineId)) {
+        map.set(routineId, log.date);
       }
     });
     return map;
-  }, [routineLogs, routines]);
+  }, [routineLogs, aliasIndex]);
 
   return (
     <div className="space-y-6">

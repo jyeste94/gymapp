@@ -12,36 +12,8 @@ import {
   type RoutineTemplateDoc,
   type RoutineDayDefinition,
 } from "@/lib/data/routine-library";
+import { useRoutineLogs, type RoutineLogSet } from "@/lib/firestore/routine-logs";
 import type { RoutineExercise } from "@/lib/data/routine-plan";
-
-type RoutineLogSet = {
-  weight?: string;
-  reps?: string;
-  rir?: string;
-  comment?: string;
-  notes?: string;
-  completed?: boolean;
-};
-
-type StoredRoutineLog = {
-  id: string;
-  date: string;
-  routineId?: string;
-  routineName?: string;
-  dayId?: string;
-  dayName?: string;
-  day?: string;
-  entries: Array<{
-    exerciseId?: string;
-    exerciseName?: string;
-    sets?: RoutineLogSet[];
-    weight?: string;
-    reps?: string;
-    rir?: string;
-    comment?: string;
-    notes?: string;
-  }>;
-};
 
 const dateFormatter =
   typeof Intl !== "undefined"
@@ -58,16 +30,16 @@ const formatDate = (iso?: string) => {
   }
 };
 
-const summarizeExercise = (exercise: RoutineExercise) => `${exercise.sets} series · ${exercise.repRange} reps · descanso ${exercise.rest}`;
+const summarizeExercise = (exercise: RoutineExercise) =>
+  `${exercise.sets} series - ${exercise.repRange} reps - descanso ${exercise.rest}`;
 
 export default function RoutineDayPage() {
   const params = useParams<{ routineId: string; dayId: string }>();
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
-  const routinesPath = user?.uid ? `users/${user.uid}/routines` : null;
 
   const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
-  const { data: routineLogs } = useCol<StoredRoutineLog>(routinesPath, { by: "date", dir: "desc" });
+  const { data: routineLogs } = useRoutineLogs(user?.uid);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(templateToRoutineDefinition),
@@ -84,7 +56,10 @@ export default function RoutineDayPage() {
     [routines, params.routineId],
   );
 
-  const day = useMemo(() => routine?.days.find((entry) => entry.id === params.dayId) ?? null, [routine, params.dayId]);
+  const day = useMemo(
+    () => routine?.days.find((entry) => entry.id === params.dayId) ?? null,
+    [routine, params.dayId],
+  );
 
   const aliasIndex = useMemo(() => createRoutineAliasIndex(routines), [routines]);
 
@@ -168,7 +143,6 @@ export default function RoutineDayPage() {
           return (
             <ExerciseCard
               key={exercise.id}
-              routineId={routine.id}
               day={day}
               exercise={exercise}
               lastRecord={lastRecord}

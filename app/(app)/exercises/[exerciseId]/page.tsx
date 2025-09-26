@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import clsx from "clsx";
-import { add } from "@/lib/firestore/crud";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import {
@@ -13,6 +12,11 @@ import {
   buildExerciseIndex,
   type RoutineTemplateDoc,
 } from "@/lib/data/routine-library";
+import {
+  useExerciseLogs,
+  saveExerciseLog,
+  type ExerciseLog,
+} from "@/lib/firestore/exercise-logs";
 
 type SessionSet = {
   weight: string;
@@ -28,27 +32,6 @@ type SessionState = {
   mediaImage: string;
   mediaVideo: string;
   sets: SessionSet[];
-};
-
-type ExerciseLogDoc = {
-  id: string;
-  exerciseId: string;
-  exerciseName: string;
-  routineId?: string;
-  routineName?: string;
-  dayId?: string;
-  dayName?: string;
-  date: string;
-  perceivedEffort?: string;
-  notes?: string;
-  mediaImage?: string;
-  mediaVideo?: string;
-  sets: Array<{
-    weight?: string;
-    reps?: string;
-    rir?: string;
-    completed?: boolean;
-  }>;
 };
 
 const dateFormatter =
@@ -73,10 +56,9 @@ export default function ExerciseDetailPage() {
   const params = useParams<{ exerciseId: string }>();
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
-  const logsPath = user?.uid ? `users/${user.uid}/exerciseLogs` : null;
 
   const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
-  const { data: exerciseLogs } = useCol<ExerciseLogDoc>(logsPath, { by: "date", dir: "desc" });
+  const { data: exerciseLogs } = useExerciseLogs(user?.uid);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(templateToRoutineDefinition),
@@ -88,7 +70,10 @@ export default function ExerciseDetailPage() {
     [customRoutines],
   );
 
-  const exerciseEntry = useMemo(() => buildExerciseIndex(routines).get(params.exerciseId), [routines, params.exerciseId]);
+  const exerciseEntry = useMemo(
+    () => buildExerciseIndex(routines).get(params.exerciseId),
+    [routines, params.exerciseId],
+  );
 
   const defaultSets = exerciseEntry ? createSets(exerciseEntry.exercise.sets) : [];
   const [session, setSession] = useState<SessionState>({
@@ -101,7 +86,7 @@ export default function ExerciseDetailPage() {
   });
 
   const history = useMemo(() => {
-    if (!exerciseEntry) return [] as ExerciseLogDoc[];
+    if (!exerciseEntry) return [] as ExerciseLog[];
     return (exerciseLogs ?? []).filter((log) => log.exerciseId === exerciseEntry.exercise.id);
   }, [exerciseLogs, exerciseEntry]);
 
@@ -153,8 +138,7 @@ export default function ExerciseDetailPage() {
 
     if (!cleanedSets.length && !session.notes.trim()) return;
 
-    await add(`users/${user.uid}/exerciseLogs`, {
-      id: crypto.randomUUID(),
+    await saveExerciseLog(user.uid, {
       exerciseId: exercise.id,
       exerciseName: exercise.name,
       routineId: routine.id,
@@ -182,7 +166,7 @@ export default function ExerciseDetailPage() {
   return (
     <div className="space-y-6">
       <Link href={`/routines/${routine.id}/${day.id}`} className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-600">
-        &lt;- Volver a {day.title}
+        {"<- Volver a "}{day.title}
       </Link>
 
       <header className="rounded-2xl border bg-white/70 p-6 shadow-sm">
