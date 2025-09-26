@@ -1,14 +1,18 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { createPortal } from "react-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { navItems } from "@/app/(app)/_components/nav-items";
+import { logout } from "@/lib/firebase/auth-hooks";
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -30,6 +34,20 @@ export default function AppHeader() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleLogout = async () => {
+    if (logoutLoading) return;
+    try {
+      setLogoutLoading(true);
+      await logout();
+      handleClose();
+      router.replace("/login");
+    } catch (error) {
+      console.error("logout failed", error);
+    } finally {
+      setLogoutLoading(false);
+    }
+  };
 
   const portalTarget = mounted ? document.body : null;
 
@@ -70,6 +88,15 @@ export default function AppHeader() {
             </Link>
           ))}
         </nav>
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={logoutLoading}
+          className="mt-auto flex items-center justify-center gap-2 rounded-2xl border border-[rgba(255,25,16,0.28)] bg-white px-4 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60"
+        >
+          <LogOut className="h-4 w-4" />
+          {logoutLoading ? "Saliendo..." : "Cerrar sesion"}
+        </button>
       </div>
     </div>
   );

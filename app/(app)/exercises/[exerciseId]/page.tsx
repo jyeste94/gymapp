@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -237,7 +237,7 @@ export default function ExerciseDetailPage() {
                     className={clsx(
                       "rounded-full px-2 py-0.5",
                       set.completed
-                        ? "bg-gradient-to-r from-[#2263ff] to-[#ff1910] text-white"
+                        ? "bg-[#2263ff] text-white"
                         : "border border-[rgba(34,99,255,0.26)] bg-white/80 text-zinc-500"
                     )}
                   >
@@ -431,3 +431,7 @@ function MediaField({ label, value, placeholder, onChange }: MediaFieldProps) {
     </div>
   );
 }
+
+
+
+

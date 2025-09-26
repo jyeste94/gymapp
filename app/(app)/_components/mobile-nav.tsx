@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -19,7 +19,7 @@ export default function MobileNav() {
               className={clsx(
                 "flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition",
                 isActive
-                  ? "border-transparent bg-gradient-to-r from-[rgba(34,99,255,0.16)] via-[rgba(255,174,0,0.16)] to-[rgba(255,25,16,0.16)] text-zinc-900 shadow"
+                  ? "border-[#2263ff]/30 bg-[#e6edff] text-[#1c2d5a] shadow"
                   : "border-[rgba(34,99,255,0.16)] bg-white/80 text-zinc-500"
               )}
             >

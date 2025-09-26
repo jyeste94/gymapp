@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/firebase/auth-hooks";
@@ -9,6 +9,7 @@ import {
   templateToRoutineDefinition,
   type RoutineTemplateDoc,
 } from "@/lib/data/routine-library";
+import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 
 export default function ExercisesPage() {
   const { user } = useAuth();
@@ -25,32 +26,7 @@ export default function ExercisesPage() {
     [customRoutines],
   );
 
-  const exercises = useMemo(() => {
-    const map = new Map<string, {
-      id: string;
-      name: string;
-      focus?: string;
-      routineTitle: string;
-      tags: string[];
-      description: string;
-    }>();
-    routines.forEach((routine) => {
-      routine.days.forEach((day) => {
-        day.exercises.forEach((exercise) => {
-          if (map.has(exercise.id)) return;
-          map.set(exercise.id, {
-            id: exercise.id,
-            name: exercise.name,
-            focus: day.focus ?? routine.focus,
-            routineTitle: routine.title,
-            tags: exercise.tags,
-            description: exercise.description,
-          });
-        });
-      });
-    });
-    return Array.from(map.values());
-  }, [routines]);
+  const exercises = useMemo(() => buildExerciseCatalog(routines), [routines]);
 
   return (
     <div className="space-y-6">
@@ -67,14 +43,12 @@ export default function ExercisesPage() {
             key={exercise.id}
             href={`/exercises/${exercise.id}`}
             className="group relative overflow-hidden rounded-3xl border border-[rgba(34,99,255,0.18)] bg-white/75 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/40 opacity-0 transition group-hover:opacity-100" aria-hidden />
-            <div className="relative flex flex-wrap items-center justify-between gap-3">
+          >            <div className="relative flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">{exercise.routineTitle}</p>
                 <h2 className="mt-1 text-lg font-semibold text-zinc-900">{exercise.name}</h2>
               </div>
-              {exercise.focus && <span className="tag-pill">{exercise.focus}</span>}
+              {exercise.routineFocus && <span className="tag-pill">{exercise.routineFocus}</span>}
             </div>
             <p className="relative mt-3 text-sm leading-relaxed text-zinc-600">{exercise.description}</p>
             <div className="relative mt-4 flex flex-wrap gap-2 text-xs text-zinc-500">
@@ -93,3 +67,4 @@ export default function ExercisesPage() {
     </div>
   );
 }
+

@@ -1,6 +1,5 @@
-﻿"use client";
+"use client";
 import { useMemo } from "react";
-import clsx from "clsx";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import type { Measurement, WorkoutSession } from "@/lib/types";
@@ -93,7 +92,6 @@ export default function Dashboard() {
       helperText: lastMeasurement
         ? `Tomada el ${formatDate(lastMeasurement.date) ?? "-"}`
         : "Registra tu primera medicion",
-      accent: "from-[rgba(34,99,255,0.18)] via-white to-[rgba(34,99,255,0.06)]",
     },
     {
       title: "Indice de grasa",
@@ -103,7 +101,6 @@ export default function Dashboard() {
         ? `${lastMeasurement.bodyFatPct.toFixed(1)} %`
         : "Sin registro",
       helperText: "Basado en tu medicion mas reciente",
-      accent: "from-[rgba(255,174,0,0.24)] via-white to-[rgba(34,99,255,0.08)]",
     },
     {
       title: "Rutinas guardadas",
@@ -115,7 +112,6 @@ export default function Dashboard() {
       helperText: latestRoutineLog
         ? `Ultima rutina: ${formatDate(latestRoutineLog.date) ?? "-"}`
         : "Captura tus rutinas para hacer seguimiento",
-      accent: "from-[rgba(34,99,255,0.14)] via-[rgba(255,25,16,0.14)] to-white",
     },
     {
       title: "Sesiones completas",
@@ -127,7 +123,6 @@ export default function Dashboard() {
       helperText: lastWorkout
         ? `Ultimo entreno: ${formatDate(lastWorkout.date) ?? "-"}`
         : "Inicia una sesion para ver el historial",
-      accent: "from-[rgba(255,174,0,0.22)] via-white to-[rgba(255,25,16,0.12)]",
     },
   ];
 
@@ -147,7 +142,7 @@ export default function Dashboard() {
               <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Rutina pendiente</p>
               <h2 className="text-xl font-semibold text-zinc-900">Tu siguiente dia de entrenamiento</h2>
               <p className="mt-2 text-sm text-zinc-600">
-                Revisa los ejercicios destacados y prepárate antes de entrar al gimnasio.
+                Revisa los ejercicios destacados y preparate antes de entrar al gimnasio.
               </p>
             </div>
             {latestRoutineLog && (
@@ -187,12 +182,12 @@ export default function Dashboard() {
                   ))}
                 </ul>
               </div>
-              <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-gradient-to-br from-[rgba(34,99,255,0.12)] via-[rgba(255,174,0,0.12)] to-[rgba(255,25,16,0.12)] p-5 text-sm text-zinc-700">
+              <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-[#f4f7ff] p-5 text-sm text-zinc-700">
                 <h3 className="text-base font-semibold text-zinc-900">Checklist pre-entreno</h3>
                 <ul className="mt-3 space-y-2">
-                  <li>• Revisa tempos y RIR objetivo</li>
-                  <li>• Calentamiento articular 5 minutos</li>
-                  <li>• Define cargas progresivas para cada set</li>
+                  <li>- Revisa tempos y RIR objetivo</li>
+                  <li>- Calentamiento articular 5 minutos</li>
+                  <li>- Define cargas progresivas para cada set</li>
                 </ul>
                 <button className="primary-button mt-4">Ir a rutinas</button>
               </div>
@@ -203,7 +198,7 @@ export default function Dashboard() {
         <aside className="glass-card border-[rgba(34,99,255,0.16)] bg-white/75 p-6">
           <h2 className="text-lg font-semibold text-zinc-900">Acciones rapidas</h2>
           <p className="mt-2 text-sm text-zinc-600">
-            Mantén el impulso con accesos directos a tus tareas frecuentes.
+            Manten el impulso con accesos directos a tus tareas frecuentes.
           </p>
           <div className="mt-5 space-y-3">
             {quickActions.map((action) => (
@@ -215,7 +210,7 @@ export default function Dashboard() {
                   {action.label}
                   <span className="block text-xs font-normal text-zinc-400">{action.hint}</span>
                 </span>
-                <span className="text-xs text-zinc-400">→</span>
+                <span className="text-xs text-zinc-400">{'>'}</span>
               </button>
             ))}
           </div>
@@ -245,7 +240,6 @@ export default function Dashboard() {
                 ? `Registrada el ${formatDate(lastMeasurement.date) ?? "-"}`
                 : "Aun no has guardado mediciones"
             }
-            accent="from-[rgba(34,99,255,0.2)] via-white to-[rgba(34,99,255,0.08)]"
           />
           <TimelineCard
             title="Rutina documentada"
@@ -261,7 +255,6 @@ export default function Dashboard() {
                 ? `Fecha: ${formatDate(latestRoutineLog.date) ?? "-"}`
                 : "Guarda una rutina para ver el resumen"
             }
-            accent="from-[rgba(255,174,0,0.22)] via-white to-[rgba(34,99,255,0.06)]"
           />
           <TimelineCard
             title="Ultimo entreno"
@@ -277,7 +270,6 @@ export default function Dashboard() {
                 ? `Realizado el ${formatDate(lastWorkout.date) ?? "-"}`
                 : "Todavia no hay sesiones registradas"
             }
-            accent="from-[rgba(255,25,16,0.2)] via-white to-[rgba(255,174,0,0.08)]"
           />
         </div>
       </section>
@@ -289,13 +281,12 @@ type StatCardProps = {
   title: string;
   value: string;
   helperText: string;
-  accent: string;
 };
 
-function DashboardStatCard({ title, value, helperText, accent }: StatCardProps) {
+function DashboardStatCard({ title, value, helperText }: StatCardProps) {
   return (
-    <div className={clsx("relative overflow-hidden rounded-3xl border p-6 text-sm text-zinc-600 shadow-sm", "bg-gradient-to-br", accent)}>
-      <div className="absolute inset-0 bg-white/35 mix-blend-screen" aria-hidden />
+    <div className="rounded-3xl border border-[rgba(34,99,255,0.16)] bg-white p-6 text-sm text-zinc-600 shadow-sm">
+
       <div className="relative space-y-3">
         <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">{title}</p>
         <p className="text-3xl font-semibold text-zinc-900">{value}</p>
@@ -309,18 +300,24 @@ type TimelineCardProps = {
   title: string;
   value: string;
   subtitle: string;
-  accent: string;
 };
 
-function TimelineCard({ title, value, subtitle, accent }: TimelineCardProps) {
+function TimelineCard({ title, value, subtitle }: TimelineCardProps) {
   return (
-    <div className={clsx("rounded-2xl border p-5 text-sm shadow-sm", "bg-gradient-to-br", accent)}>
+    <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-white p-5 text-sm text-zinc-600 shadow-sm">
       <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">{title}</p>
       <p className="mt-3 text-2xl font-semibold text-zinc-900">{value}</p>
       <p className="mt-4 text-xs text-zinc-600">{subtitle}</p>
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 

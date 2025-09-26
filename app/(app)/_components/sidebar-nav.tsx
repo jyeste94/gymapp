@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -18,7 +18,7 @@ export default function SidebarNav() {
             className={clsx(
               "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
               isActive
-                ? "bg-gradient-to-r from-[rgba(34,99,255,0.16)] via-[rgba(255,174,0,0.16)] to-[rgba(255,25,16,0.16)] text-zinc-900 shadow-sm"
+                ? "bg-[#e6edff] text-[#1c2d5a] shadow-sm"
                 : "text-zinc-500 hover:text-zinc-800 hover:bg-white/70"
             )}
           >
@@ -26,7 +26,7 @@ export default function SidebarNav() {
               className={clsx(
                 "flex h-9 w-9 items-center justify-center rounded-full border text-[0.85rem] transition",
                 isActive
-                  ? "border-white/0 bg-white/90 text-zinc-800 shadow"
+                  ? "border-[#2263ff]/40 bg-white text-[#1c2d5a] shadow"
                   : "border-[rgba(34,99,255,0.16)] bg-white/70 text-zinc-500 group-hover:border-[rgba(34,99,255,0.28)] group-hover:text-zinc-700"
               )}
             >
