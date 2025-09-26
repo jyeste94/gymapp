@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import type { Measurement } from "@/lib/types";
@@ -7,31 +7,66 @@ import MeasurementChart from "@/components/measurement-chart";
 
 export default function MeasurementsPage() {
   const { user } = useAuth();
-  const uid = user?.uid ?? "_";
-  const { data: rows } = useCol<Measurement>(`users/${uid}/measurements`, { by: "date", dir: "desc" });
+  const path = user?.uid ? `users/${user.uid}/measurements` : null;
+  const { data: rows, loading } = useCol<Measurement>(path, { by: "date", dir: "desc" });
+  const hasRows = rows.length > 0;
 
   return (
     <div className="space-y-6">
       <MeasurementForm />
-      <div className="rounded-2xl border p-4">
-        <h3 className="font-semibold mb-2">Histórico</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr><th className="text-left">Fecha</th><th>Peso</th><th>% Grasa</th><th>Notas</th></tr></thead>
-            <tbody>
-              {rows?.map(r=>(
-                <tr key={r.id} className="border-t">
-                  <td>{new Date(r.date).toLocaleDateString()}</td>
-                  <td>{r.weightKg.toFixed(1)} kg</td>
-                  <td>{r.bodyFatPct ?? "-"}</td>
-                  <td>{r.notes ?? ""}</td>
+
+      <div className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Historico</p>
+            <h3 className="text-lg font-semibold text-zinc-900">Registro de mediciones</h3>
+          </div>
+        </div>
+        {!user && <p className="mt-4 text-sm text-zinc-500">Inicia sesion para ver y sincronizar tus registros.</p>}
+        {user && (
+          <div className="mt-5 overflow-x-auto">
+            <table className="min-w-full text-sm text-zinc-600">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-[0.3em] text-zinc-400">
+                  <th className="pb-3">Fecha</th>
+                  <th className="pb-3">Peso</th>
+                  <th className="pb-3">Grasa</th>
+                  <th className="pb-3">Notas</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[rgba(34,99,255,0.18)]">
+                {loading && (
+                  <tr>
+                    <td colSpan={4} className="py-4 text-center text-zinc-500">Cargando mediciones...</td>
+                  </tr>
+                )}
+                {!loading &&
+                  rows.map((row) => (
+                    <tr key={row.id} className="hover:bg-white/60">
+                      <td className="py-3 text-zinc-700">{new Date(row.date).toLocaleDateString()}</td>
+                      <td className="py-3 font-medium text-zinc-800">{row.weightKg.toFixed(1)} kg</td>
+                      <td className="py-3 text-zinc-700">{row.bodyFatPct ?? "-"}</td>
+                      <td className="py-3 text-zinc-500">{row.notes ?? ""}</td>
+                    </tr>
+                  ))}
+                {!loading && !hasRows && (
+                  <tr>
+                    <td colSpan={4} className="py-4 text-center text-zinc-500">Sin registros todavia.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-6">
+        <h3 className="text-lg font-semibold text-zinc-900">Tendencia de peso</h3>
+        <p className="text-sm text-zinc-500">Visualiza la evolucion de tus mediciones.</p>
+        <div className="mt-4">
+          <MeasurementChart data={user ? rows : []} />
         </div>
       </div>
-      <MeasurementChart data={rows ?? []} />
     </div>
   );
 }

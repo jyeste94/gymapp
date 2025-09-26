@@ -1,31 +1,28 @@
-"use client";
+﻿"use client";
 import { Measurement } from "@/lib/types";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function MeasurementChart({ data }: { data: Measurement[] }) {
-  const chart = [...data].reverse().map(d => ({
-    date: new Date(d.date).toLocaleDateString(),
-    weight: d.weightKg,
-    fat: d.bodyFatPct ?? null
+  const chart = [...data].reverse().map((item) => ({
+    date: new Date(item.date).toLocaleDateString(),
+    weight: item.weightKg,
+    fat: item.bodyFatPct ?? null,
   }));
 
   return (
-    <div className="rounded-2xl border p-4">
-      <h3 className="font-semibold mb-2">Peso / % Grasa</h3>
-      <div className="h-72">
-        <ResponsiveContainer>
-          <LineChart data={chart}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
-            <Tooltip />
-            <Legend />
-            <Line yAxisId="left" type="monotone" dataKey="weight" />
-            <Line yAxisId="right" type="monotone" dataKey="fat" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="h-80 w-full">
+      <ResponsiveContainer>
+        <LineChart data={chart}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(34, 99, 255, 0.12)" />
+          <XAxis dataKey="date" stroke="#94a3b8" tick={{ fontSize: 12 }} interval={chart.length > 10 ? Math.floor(chart.length / 6) : 0} />
+          <YAxis yAxisId="left" stroke="#2263ff" tick={{ fontSize: 12 }} />
+          <YAxis yAxisId="right" orientation="right" stroke="#ffae00" tick={{ fontSize: 12 }} />
+          <Tooltip contentStyle={{ borderRadius: 16, border: "1px solid rgba(34,99,255,0.18)", boxShadow: "0 12px 30px -18px rgba(34,99,255,0.32)" }} />
+          <Legend iconType="circle" wrapperStyle={{ fontSize: 12, marginTop: 8 }} />
+          <Line yAxisId="left" type="monotone" dataKey="weight" stroke="#2263ff" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 6 }} />
+          <Line yAxisId="right" type="monotone" dataKey="fat" stroke="#ffae00" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 5 }} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }

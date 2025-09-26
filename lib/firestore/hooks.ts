@@ -1,19 +1,37 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { db } from "@/lib/firebase/client";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 
-export function useCol<T>(path: string, order?: { by: string; dir?: "asc"|"desc" }) {
+export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc" | "desc" }) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const orderField = order?.by;
+  const orderDirection = order?.dir ?? "asc";
+  const orderConstraint = useMemo(
+    () => (orderField ? orderBy(orderField, orderDirection) : null),
+    [orderField, orderDirection],
+  );
+
   useEffect(() => {
-    const c = collection(db, path);
-    const q = order ? query(c, orderBy(order.by, order.dir ?? "asc")) : c;
+    if (!path) {
+      setData([]);
+      setLoading(false);
+      return undefined;
+    }
+
+    setLoading(true);
+    const base = collection(db, path);
+    const q = orderConstraint ? query(base, orderConstraint) : base;
+
     const unsub = onSnapshot(q, (snap) => {
-      setData(snap.docs.map(d => ({ id: d.id, ...d.data() })) as T[]);
+      setData(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as T[]);
       setLoading(false);
     });
+
     return () => unsub();
-  }, [path, order?.by, order?.dir]);
+  }, [path, orderConstraint]);
+
   return { data, loading };
 }

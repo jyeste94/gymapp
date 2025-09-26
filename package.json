@@ -4,9 +4,10 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next lint -f stylish || true",
+    "build": "next build && npm run lint:ci",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:ci": "next lint --max-warnings=0 --format stylish"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",

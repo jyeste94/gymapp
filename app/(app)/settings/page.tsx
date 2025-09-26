@@ -1,11 +1,12 @@
-export default function SettingsPage() {
+﻿export default function SettingsPage() {
   return (
-    <div className="rounded-2xl border p-4 space-y-2">
-      <h3 className="font-semibold">Ajustes</h3>
-      <ul className="list-disc pl-6 text-sm text-zinc-700">
-        <li>Perfil y unidades</li>
-        <li>Tema oscuro/claro</li>
-        <li>Objetivo calórico/macro</li>
+    <div className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-6">
+      <h2 className="text-lg font-semibold text-zinc-900">Ajustes</h2>
+      <p className="mt-2 text-sm text-zinc-600">Personaliza unidades, objetivos y preferencias de la app.</p>
+      <ul className="mt-4 space-y-2 text-sm text-zinc-600">
+        <li>• Perfil y unidades</li>
+        <li>• Tema claro/oscuro</li>
+        <li>• Objetivos caloricos y macros</li>
       </ul>
     </div>
   );
