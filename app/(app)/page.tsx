@@ -1,27 +1,16 @@
 "use client";
 import { useMemo } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import type { Measurement, WorkoutSession } from "@/lib/types";
-
-type RoutineLog = {
-  id: string;
-  date: string;
-  entries: {
-    day: string;
-    exercise: string;
-    weight?: string;
-    reps?: string;
-    comment?: string;
-  }[];
-};
-
-const quickActions = [
-  { label: "Registrar medicion", hint: "Peso y % grasa" },
-  { label: "Empezar entrenamiento", hint: "Cronometro y sets" },
-  { label: "Planificar dieta", hint: "Macros del dia" },
-  { label: "Guardar rutina", hint: "Peso y repeticiones" },
-];
+import type { Measurement } from "@/lib/types";
+import {
+  defaultRoutines,
+  mergeRoutines,
+  templateToRoutineDefinition,
+  type RoutineDefinition,
+  type RoutineTemplateDoc,
+} from "@/lib/data/routine-library";
 
 const formatter =
   typeof Intl !== "undefined"
@@ -39,288 +28,175 @@ const formatDate = (iso?: string) => {
 };
 
 export default function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const measurementPath = user?.uid ? `users/${user.uid}/measurements` : null;
-  const routinesPath = user?.uid ? `users/${user.uid}/routines` : null;
-  const workoutsPath = user?.uid ? `users/${user.uid}/workouts` : null;
+  const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
-  const {
-    data: measurements,
-    loading: measurementsLoading,
-  } = useCol<Measurement>(measurementPath, { by: "date", dir: "desc" });
+  const { data: measurements, loading: measurementsLoading } = useCol<Measurement>(measurementPath, {
+    by: "date",
+    dir: "desc",
+  });
 
-  const {
-    data: routineLogs,
-    loading: routinesLoading,
-  } = useCol<RoutineLog>(routinesPath, { by: "date", dir: "desc" });
+  const { data: routineTemplates, loading: templatesLoading } = useCol<RoutineTemplateDoc>(templatesPath, {
+    by: "title",
+    dir: "desc",
+  });
 
-  const {
-    data: workouts,
-    loading: workoutsLoading,
-  } = useCol<WorkoutSession>(workoutsPath, { by: "date", dir: "desc" });
+  const customRoutines = useMemo(
+    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    [routineTemplates],
+  );
 
+  const routines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
+  const featuredRoutines = routines.slice(0, 4);
+
+  const latestMeasurements = measurements.slice(0, 4);
   const lastMeasurement = measurements[0];
-  const lastWorkout = workouts[0];
-  const latestRoutineLog = routineLogs[0];
-
-  const routinePreview = useMemo(() => {
-    if (!latestRoutineLog) return null;
-    const map = new Map<string, { name: string; exercises: string[] }>();
-    latestRoutineLog.entries.forEach((entry) => {
-      const existing = map.get(entry.day);
-      if (existing) {
-        if (existing.exercises.length < 4) existing.exercises.push(entry.exercise);
-        return;
-      }
-      map.set(entry.day, { name: entry.day, exercises: [entry.exercise] });
-    });
-    const groups = Array.from(map.values());
-    return groups[0] ?? null;
-  }, [latestRoutineLog]);
-
-  const greeting = loading ? "Cargando perfil..." : user?.email ?? "atleta";
-  const hasData = Boolean(user);
-
-  const statCards = [
-    {
-      title: "Ultima medicion",
-      value: measurementsLoading
-        ? "Cargando..."
-        : lastMeasurement
-        ? `${lastMeasurement.weightKg.toFixed(1)} kg`
-        : "Sin datos",
-      helperText: lastMeasurement
-        ? `Tomada el ${formatDate(lastMeasurement.date) ?? "-"}`
-        : "Registra tu primera medicion",
-    },
-    {
-      title: "Indice de grasa",
-      value: measurementsLoading
-        ? "Cargando..."
-        : lastMeasurement?.bodyFatPct
-        ? `${lastMeasurement.bodyFatPct.toFixed(1)} %`
-        : "Sin registro",
-      helperText: "Basado en tu medicion mas reciente",
-    },
-    {
-      title: "Rutinas guardadas",
-      value: routinesLoading
-        ? "Cargando..."
-        : routineLogs.length
-        ? `${routineLogs.length} entradas`
-        : "Sin registros",
-      helperText: latestRoutineLog
-        ? `Ultima rutina: ${formatDate(latestRoutineLog.date) ?? "-"}`
-        : "Captura tus rutinas para hacer seguimiento",
-    },
-    {
-      title: "Sesiones completas",
-      value: workoutsLoading
-        ? "Cargando..."
-        : workouts.length
-        ? `${workouts.length} sesiones`
-        : "Sin registros",
-      helperText: lastWorkout
-        ? `Ultimo entreno: ${formatDate(lastWorkout.date) ?? "-"}`
-        : "Inicia una sesion para ver el historial",
-    },
-  ];
 
   return (
     <div className="space-y-6">
-      <div className="glass-card border-[rgba(34,99,255,0.16)] bg-white/75 p-5 text-sm text-zinc-600">Hola {greeting}, este es tu resumen personal de la semana.</div>
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {statCards.map((card) => (
-          <DashboardStatCard key={card.title} {...card} />
-        ))}
+      <section className="grid gap-4 md:grid-cols-3">
+        <MetricCard
+          title="Calorias ingeridas"
+          value="Proximamente"
+          helper="Sincroniza tu dieta para ver este dato"
+        />
+        <MetricCard
+          title="Ultimo peso"
+          value={
+            measurementsLoading
+              ? "Cargando..."
+              : lastMeasurement
+              ? `${lastMeasurement.weightKg.toFixed(1)} kg`
+              : "Sin datos"
+          }
+          helper={lastMeasurement ? `Registrado el ${formatDate(lastMeasurement.date) ?? "-"}` : "A?ade tu primera medicion"}
+        />
+        <MetricCard
+          title="Indice de grasa"
+          value={
+            measurementsLoading
+              ? "Cargando..."
+              : lastMeasurement?.bodyFatPct
+              ? `${lastMeasurement.bodyFatPct.toFixed(1)} %`
+              : "Sin registro"
+          }
+          helper="Basado en tu medicion mas reciente"
+        />
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[2fr_1fr]">
-        <div className="glass-card border-[rgba(34,99,255,0.16)] bg-white/75 p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Rutina pendiente</p>
-              <h2 className="text-xl font-semibold text-zinc-900">Tu siguiente dia de entrenamiento</h2>
-              <p className="mt-2 text-sm text-zinc-600">
-                Revisa los ejercicios destacados y preparate antes de entrar al gimnasio.
-              </p>
-            </div>
-            {latestRoutineLog && (
-              <span className="tag-pill text-[0.7rem]">Guardada el {formatDate(latestRoutineLog.date) ?? "-"}</span>
-            )}
-          </div>
-
-          {!hasData && (
-            <p className="mt-6 text-sm text-zinc-500">
-              Inicia sesion para sincronizar tus rutinas guardadas y registrar avances.
-            </p>
-          )}
-
-          {hasData && routinesLoading && (
-            <div className="mt-6 animate-pulse rounded-2xl border border-dashed border-[rgba(34,99,255,0.24)] bg-white/50 p-6 text-sm text-zinc-500">
-              Cargando rutinas guardadas...
-            </div>
-          )}
-
-          {hasData && !routinesLoading && !routinePreview && (
-            <div className="mt-6 rounded-2xl border border-dashed border-[rgba(34,99,255,0.24)] bg-white/50 p-6 text-sm text-zinc-500">
-              Todavia no has guardado rutinas. Crea tu plan desde la seccion Rutinas para visualizarlo aqui.
-            </div>
-          )}
-
-          {hasData && routinePreview && (
-            <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-white/80 p-5">
-                <h3 className="text-base font-semibold text-zinc-900">{routinePreview.name}</h3>
-                <p className="mt-1 text-xs uppercase tracking-[0.35em] text-zinc-400">Ejercicios destacados</p>
-                <ul className="mt-4 space-y-3 text-sm text-zinc-700">
-                  {routinePreview.exercises.map((exercise) => (
-                    <li key={exercise} className="flex items-center justify-between rounded-xl border border-[rgba(34,99,255,0.2)] bg-white/80 px-3 py-2">
-                      <span>{exercise}</span>
-                      <span className="text-xs text-zinc-400">Preparar</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-[#f4f7ff] p-5 text-sm text-zinc-700">
-                <h3 className="text-base font-semibold text-zinc-900">Checklist pre-entreno</h3>
-                <ul className="mt-3 space-y-2">
-                  <li>- Revisa tempos y RIR objetivo</li>
-                  <li>- Calentamiento articular 5 minutos</li>
-                  <li>- Define cargas progresivas para cada set</li>
-                </ul>
-                <button className="primary-button mt-4">Ir a rutinas</button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <aside className="glass-card border-[rgba(34,99,255,0.16)] bg-white/75 p-6">
-          <h2 className="text-lg font-semibold text-zinc-900">Acciones rapidas</h2>
-          <p className="mt-2 text-sm text-zinc-600">
-            Manten el impulso con accesos directos a tus tareas frecuentes.
-          </p>
-          <div className="mt-5 space-y-3">
-            {quickActions.map((action) => (
-              <button
-                key={action.label}
-                className="group flex w-full items-center justify-between rounded-2xl border border-[rgba(34,99,255,0.24)] bg-white/70 px-4 py-3 text-left text-sm font-medium text-zinc-700 transition hover:-translate-y-0.5 hover:shadow-md"
-              >
-                <span>
-                  {action.label}
-                  <span className="block text-xs font-normal text-zinc-400">{action.hint}</span>
-                </span>
-                <span className="text-xs text-zinc-400">{'>'}</span>
-              </button>
-            ))}
-          </div>
-        </aside>
-      </section>
-
-      <section className="glass-card border-[rgba(34,99,255,0.16)] bg-white/75 p-6">
+      <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Historial rapido</p>
-            <h2 className="text-lg font-semibold text-zinc-900">Tus ultimos hitos</h2>
+            <p className="text-xs uppercase tracking-[0.35em] text-[#51607c]">Rutinas</p>
+            <h2 className="text-lg font-semibold text-[#0a2e5c]">Tus planes recientes</h2>
           </div>
+          <Link href="/routines" className="text-xs font-semibold text-[#0a2e5c] underline">
+            Ver todas
+          </Link>
         </div>
 
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
-          <TimelineCard
-            title="Medicion mas reciente"
-            value={
-              lastMeasurement
-                ? `${lastMeasurement.weightKg.toFixed(1)} kg`
-                : measurementsLoading
-                ? "Cargando..."
-                : "Sin datos"
-            }
-            subtitle={
-              lastMeasurement
-                ? `Registrada el ${formatDate(lastMeasurement.date) ?? "-"}`
-                : "Aun no has guardado mediciones"
-            }
-          />
-          <TimelineCard
-            title="Rutina documentada"
-            value={
-              latestRoutineLog
-                ? `${latestRoutineLog.entries.length} ejercicios`
-                : routinesLoading
-                ? "Cargando..."
-                : "Sin datos"
-            }
-            subtitle={
-              latestRoutineLog
-                ? `Fecha: ${formatDate(latestRoutineLog.date) ?? "-"}`
-                : "Guarda una rutina para ver el resumen"
-            }
-          />
-          <TimelineCard
-            title="Ultimo entreno"
-            value={
-              lastWorkout
-                ? `${lastWorkout.sets.length} sets`
-                : workoutsLoading
-                ? "Cargando..."
-                : "Sin datos"
-            }
-            subtitle={
-              lastWorkout
-                ? `Realizado el ${formatDate(lastWorkout.date) ?? "-"}`
-                : "Todavia no hay sesiones registradas"
-            }
-          />
+        {templatesLoading && routines.length === 0 ? (
+          <div className="mt-6 rounded-2xl border border-dashed border-[rgba(10,46,92,0.2)] bg-white/60 p-6 text-sm text-[#51607c]">
+            Cargando rutinas...
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {featuredRoutines.map((routine) => (
+              <RoutineCard key={routine.id} routine={routine} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-[#51607c]">Mediciones</p>
+            <h2 className="text-lg font-semibold text-[#0a2e5c]">Historial reciente</h2>
+          </div>
+          <Link href="/measurements" className="text-xs font-semibold text-[#0a2e5c] underline">
+            Ver todas
+          </Link>
         </div>
+
+        {measurementsLoading && latestMeasurements.length === 0 ? (
+          <div className="mt-6 rounded-2xl border border-dashed border-[rgba(10,46,92,0.2)] bg-white/60 p-6 text-sm text-[#51607c]">
+            Cargando mediciones...
+          </div>
+        ) : latestMeasurements.length === 0 ? (
+          <div className="mt-6 rounded-2xl border border-dashed border-[rgba(10,46,92,0.2)] bg-white/60 p-6 text-sm text-[#51607c]">
+            Todavia no registras mediciones. A?ade tu primera lectura para verla aqui.
+          </div>
+        ) : (
+          <ul className="mt-6 space-y-3">
+            {latestMeasurements.map((entry) => (
+              <li
+                key={entry.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/90 px-4 py-3 text-sm text-[#4b5a72]"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-[#0a2e5c]">{formatDate(entry.date) ?? "Fecha desconocida"}</p>
+                  <p className="text-xs text-[#51607c]">Peso: {entry.weightKg.toFixed(1)} kg</p>
+                </div>
+                <div className="text-right text-xs text-[#51607c]">
+                  {entry.bodyFatPct ? `Grasa: ${entry.bodyFatPct.toFixed(1)} %` : "Grasa sin registrar"}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
 }
 
-type StatCardProps = {
+type MetricCardProps = {
   title: string;
   value: string;
-  helperText: string;
+  helper: string;
 };
 
-function DashboardStatCard({ title, value, helperText }: StatCardProps) {
+function MetricCard({ title, value, helper }: MetricCardProps) {
   return (
-    <div className="rounded-3xl border border-[rgba(34,99,255,0.16)] bg-white p-6 text-sm text-zinc-600 shadow-sm">
+    <div className="rounded-3xl border border-[rgba(10,46,92,0.16)] bg-white p-6 text-sm text-[#4b5a72] shadow-sm">
+      <p className="text-xs uppercase tracking-[0.3em] text-[#51607c]">{title}</p>
+      <p className="mt-3 text-2xl font-semibold text-[#0a2e5c]">{value}</p>
+      <p className="mt-4 text-xs text-[#51607c]">{helper}</p>
+    </div>
+  );
+}
 
-      <div className="relative space-y-3">
-        <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">{title}</p>
-        <p className="text-3xl font-semibold text-zinc-900">{value}</p>
-        <p className="text-xs text-zinc-600">{helperText}</p>
+type RoutineCardProps = {
+  routine: RoutineDefinition;
+};
+
+function RoutineCard({ routine }: RoutineCardProps) {
+  const dayCount = routine.days.length;
+  const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
+  return (
+    <Link
+      href={`/routines/${routine.id}`}
+      className="group relative flex flex-col gap-4 rounded-3xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-5 text-sm text-[#4b5a72] shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.35em] text-[#51607c]">{routine.focus ?? "Rutina"}</p>
+          <h3 className="mt-1 text-lg font-semibold text-[#0a2e5c]">{routine.title}</h3>
+        </div>
+        {routine.level && <span className="tag-pill">{routine.level}</span>}
       </div>
-    </div>
+      {routine.description && <p className="text-xs text-[#51607c]">{routine.description}</p>}
+      <div className="flex flex-wrap gap-2 text-xs text-[#51607c]">
+        <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">{dayCount} dias</span>
+        <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">{exerciseCount} ejercicios</span>
+        {routine.frequency && (
+          <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">{routine.frequency}</span>
+        )}
+      </div>
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0a2e5c]">
+        Abrir rutina <span>{">"}</span>
+      </span>
+    </Link>
   );
 }
-
-type TimelineCardProps = {
-  title: string;
-  value: string;
-  subtitle: string;
-};
-
-function TimelineCard({ title, value, subtitle }: TimelineCardProps) {
-  return (
-    <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-white p-5 text-sm text-zinc-600 shadow-sm">
-      <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">{title}</p>
-      <p className="mt-3 text-2xl font-semibold text-zinc-900">{value}</p>
-      <p className="mt-4 text-xs text-zinc-600">{subtitle}</p>
-    </div>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-

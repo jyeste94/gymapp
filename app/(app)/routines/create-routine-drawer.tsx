@@ -261,14 +261,14 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-5">
             <div>
               <h2 className="text-lg font-semibold text-zinc-900">Crea tu rutina</h2>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-[#51607c]">
                 Define los dias, asigna ejercicios y guarda tu plan personalizado.
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-700"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-[#51607c] transition hover:border-zinc-300 hover:text-[#0a2e5c]"
               aria-label="Cerrar creador"
             >
               <X className="h-5 w-5" />
@@ -278,10 +278,10 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           <div className="flex-1 overflow-y-auto px-6 py-6">
             <section className="space-y-4">
               <div>
-                <h3 className="text-sm font-semibold text-zinc-700">Datos de la rutina</h3>
-                <p className="text-xs text-zinc-500">Estos datos apareceran en la tarjeta de la rutina.</p>
+                <h3 className="text-sm font-semibold text-[#0a2e5c]">Datos de la rutina</h3>
+                <p className="text-xs text-[#51607c]">Estos datos apareceran en la tarjeta de la rutina.</p>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 text-xs text-zinc-500">
+                  <label className="space-y-2 text-xs text-[#51607c]">
                     Nombre de la rutina
                     <input
                       className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -290,7 +290,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                       placeholder="Empuje/Tiron + Pierna"
                     />
                   </label>
-                  <label className="space-y-2 text-xs text-zinc-500">
+                  <label className="space-y-2 text-xs text-[#51607c]">
                     Objetivo / foco
                     <input
                       className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -299,7 +299,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                       placeholder="Hipertrofia intermedia"
                     />
                   </label>
-                  <label className="space-y-2 text-xs text-zinc-500">
+                  <label className="space-y-2 text-xs text-[#51607c]">
                     Nivel
                     <select
                       className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -311,7 +311,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                       <option value="Avanzado">Avanzado</option>
                     </select>
                   </label>
-                  <label className="space-y-2 text-xs text-zinc-500">
+                  <label className="space-y-2 text-xs text-[#51607c]">
                     Frecuencia
                     <input
                       className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -321,7 +321,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                     />
                   </label>
                 </div>
-                <label className="mt-4 block space-y-2 text-xs text-zinc-500">
+                <label className="mt-4 block space-y-2 text-xs text-[#51607c]">
                   Descripcion
                   <textarea
                     className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -331,7 +331,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                     placeholder="Describe el objetivo general y recomendaciones."
                   />
                 </label>
-                <label className="mt-4 block space-y-2 text-xs text-zinc-500">
+                <label className="mt-4 block space-y-2 text-xs text-[#51607c]">
                   Material necesario (separado por comas)
                   <input
                     className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -341,9 +341,9 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                   />
                 </label>
                 {equipmentList.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-zinc-500">
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-[#51607c]">
                     {equipmentList.map((item) => (
-                      <span key={item} className="rounded-full border border-[rgba(34,99,255,0.16)] px-2 py-0.5">
+                      <span key={item} className="rounded-full border border-[rgba(10,46,92,0.16)] px-2 py-0.5">
                         {item}
                       </span>
                     ))}
@@ -354,15 +354,15 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
               <div className="border-t border-zinc-200 pt-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-semibold text-zinc-700">Dias de entrenamiento</h3>
-                    <p className="text-xs text-zinc-500">
+                    <h3 className="text-sm font-semibold text-[#0a2e5c]">Dias de entrenamiento</h3>
+                    <p className="text-xs text-[#51607c]">
                       Selecciona un dia para asignar ejercicios desde el buscador.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleAddDay}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(34,99,255,0.24)] px-3 py-2 text-xs font-semibold text-[#2263ff] transition hover:-translate-y-0.5 hover:shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-[rgba(10,46,92,0.24)] px-3 py-2 text-xs font-semibold text-[#0a2e5c] transition hover:-translate-y-0.5 hover:shadow-sm"
                   >
                     <Plus className="h-3.5 w-3.5" /> A?adir dia
                   </button>
@@ -377,14 +377,14 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                         className={clsx(
                           "rounded-3xl border px-4 py-4 transition",
                           isActive
-                            ? "border-[rgba(34,99,255,0.28)] bg-white shadow-sm"
+                            ? "border-[rgba(10,46,92,0.28)] bg-white shadow-sm"
                             : "border-zinc-200 bg-zinc-50/60",
                         )}
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="flex-1 space-y-3">
                             <div className="flex flex-col gap-3 md:flex-row">
-                              <label className="flex-1 space-y-2 text-xs text-zinc-500">
+                              <label className="flex-1 space-y-2 text-xs text-[#51607c]">
                                 Nombre del dia
                                 <input
                                   className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -394,7 +394,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                                   }
                                 />
                               </label>
-                              <label className="flex-1 space-y-2 text-xs text-zinc-500">
+                              <label className="flex-1 space-y-2 text-xs text-[#51607c]">
                                 Foco del dia
                                 <input
                                   className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -406,7 +406,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                               </label>
                             </div>
                             <div className="flex flex-col gap-3 md:flex-row">
-                              <label className="flex-1 space-y-2 text-xs text-zinc-500">
+                              <label className="flex-1 space-y-2 text-xs text-[#51607c]">
                                 Intensidad
                                 <input
                                   className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -416,7 +416,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                                   }
                                 />
                               </label>
-                              <label className="flex-1 space-y-2 text-xs text-zinc-500">
+                              <label className="flex-1 space-y-2 text-xs text-[#51607c]">
                                 Duracion estimada
                                 <input
                                   className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -427,7 +427,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                                 />
                               </label>
                             </div>
-                            <label className="block space-y-2 text-xs text-zinc-500">
+                            <label className="block space-y-2 text-xs text-[#51607c]">
                               Notas del dia
                               <textarea
                                 className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
@@ -446,8 +446,8 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                               className={clsx(
                                 "rounded-full border px-3 py-1 text-xs font-semibold",
                                 isActive
-                                  ? "border-[#2263ff] bg-[#2263ff]/10 text-[#2263ff]"
-                                  : "border-zinc-200 text-zinc-500",
+                                  ? "border-[#0a2e5c] bg-[#0a2e5c]/10 text-[#0a2e5c]"
+                                  : "border-zinc-200 text-[#51607c]",
                               )}
                             >
                               {isActive ? "Destino activo" : "Asignar ejercicios"}
@@ -465,7 +465,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                         </div>
 
                         <div className="mt-4 space-y-2">
-                          <p className="text-xs font-semibold text-zinc-600">Ejercicios asignados</p>
+                          <p className="text-xs font-semibold text-[#4b5a72]">Ejercicios asignados</p>
                           {day.exercises.length === 0 ? (
                             <p className="rounded-2xl border border-dashed border-zinc-200 bg-white px-4 py-3 text-xs text-zinc-400">
                               Aun no has a?adido ejercicios. Selecciona este dia y usa el buscador.
@@ -475,11 +475,11 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                               {day.exercises.map((exercise) => (
                                 <li
                                   key={exercise.id}
-                                  className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-600"
+                                  className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-[#4b5a72]"
                                 >
                                   <div>
                                     <p className="font-semibold text-zinc-800">{exercise.name}</p>
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-[#51607c]">
                                       {exercise.sets}x {exercise.repRange} ? {exercise.rest} descanso
                                     </p>
                                   </div>
@@ -504,14 +504,14 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
               <div className="border-t border-zinc-200 pt-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-semibold text-zinc-700">Buscador de ejercicios</h3>
-                    <p className="text-xs text-zinc-500">
+                    <h3 className="text-sm font-semibold text-[#0a2e5c]">Buscador de ejercicios</h3>
+                    <p className="text-xs text-[#51607c]">
                       Filtra por nombre, musculo o material y a?ade al dia seleccionado.
                     </p>
                   </div>
                   {activeDay && (
-                    <span className="rounded-full border border-[rgba(34,99,255,0.18)] bg-white px-3 py-1 text-xs text-zinc-600">
-                      A?adiendo a: <strong className="ml-1 text-[#2263ff]">{activeDay.title}</strong>
+                    <span className="rounded-full border border-[rgba(10,46,92,0.18)] bg-white px-3 py-1 text-xs text-[#4b5a72]">
+                      Anadiendo a: <strong className="ml-1 text-[#0a2e5c]">{activeDay.title}</strong>
                     </span>
                   )}
                 </div>
@@ -554,19 +554,19 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
 
                 <div className="mt-4 grid max-h-80 gap-3 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-4">
                   {filteredExercises.length === 0 ? (
-                    <p className="text-xs text-zinc-500">No se encontraron ejercicios con los filtros actuales.</p>
+                    <p className="text-xs text-[#51607c]">No se encontraron ejercicios con los filtros actuales.</p>
                   ) : (
                     filteredExercises.map((exercise) => {
                       const alreadyAdded = activeDay?.exercises.some((item) => item.id === exercise.id);
                       return (
                         <div
                           key={exercise.id}
-                          className="flex flex-col gap-2 rounded-2xl border border-zinc-100 bg-white/80 px-4 py-3 text-sm text-zinc-600 shadow-sm"
+                          className="flex flex-col gap-2 rounded-2xl border border-zinc-100 bg-white/80 px-4 py-3 text-sm text-[#4b5a72] shadow-sm"
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <div>
                               <p className="font-semibold text-zinc-800">{exercise.name}</p>
-                              <p className="text-xs text-zinc-500">
+                              <p className="text-xs text-[#51607c]">
                                 {exercise.sets}x {exercise.repRange} ? {exercise.rest} descanso
                               </p>
                             </div>
@@ -578,14 +578,14 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                                 "rounded-full px-3 py-1 text-xs font-semibold transition",
                                 alreadyAdded
                                   ? "border border-zinc-200 text-zinc-400"
-                                  : "border border-[rgba(34,99,255,0.28)] text-[#2263ff] hover:-translate-y-0.5 hover:shadow",
+                                  : "border border-[rgba(10,46,92,0.28)] text-[#0a2e5c] hover:-translate-y-0.5 hover:shadow",
                               )}
                             >
                               {alreadyAdded ? "A?adido" : "A?adir"}
                             </button>
                           </div>
-                          <p className="text-xs text-zinc-500">{exercise.description}</p>
-                          <div className="flex flex-wrap gap-2 text-[0.65rem] text-zinc-500">
+                          <p className="text-xs text-[#51607c]">{exercise.description}</p>
+                          <div className="flex flex-wrap gap-2 text-[0.65rem] text-[#51607c]">
                             {exercise.tags.map((tag) => (
                               <span key={tag} className="rounded-full border border-zinc-200 px-2 py-0.5">
                                 {tag}
@@ -603,13 +603,13 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
 
           <footer className="border-t border-zinc-200 px-6 py-5">
             {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-500">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#51607c]">
               <p>{footerMessage}</p>
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-2xl border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-50"
+                  className="rounded-2xl border border-zinc-200 px-4 py-2 text-sm font-semibold text-[#4b5a72] transition hover:bg-zinc-50"
                 >
                   Cancelar
                 </button>
@@ -617,7 +617,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                   type="button"
                   onClick={handleSave}
                   disabled={!canSave}
-                  className="rounded-2xl bg-[#2263ff] px-5 py-2 text-sm font-semibold text-white shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:opacity-60"
+                  className="rounded-2xl bg-[#0a2e5c] px-5 py-2 text-sm font-semibold text-white shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:opacity-60"
                 >
                   {saving ? "Guardando..." : "Guardar rutina"}
                 </button>
@@ -629,3 +629,6 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     </div>
   );
 }
+
+
+

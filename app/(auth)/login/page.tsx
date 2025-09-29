@@ -29,7 +29,7 @@ const PROVIDERS: ProviderButtonConfig[] = [
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-dvh grid place-items-center text-sm text-zinc-500">Cargando...</div>}>
+    <Suspense fallback={<div className="min-h-dvh grid place-items-center text-sm text-[#51607c]">Cargando...</div>}>
       <LoginForm />
     </Suspense>
   );
@@ -114,13 +114,13 @@ function LoginForm() {
 
   return (
     <main className="min-h-dvh grid place-items-center px-6 py-10">
-      <div className="glass-card w-full max-w-lg border-[rgba(34,99,255,0.16)] bg-white/80 p-8">
+      <div className="glass-card w-full max-w-lg border-[rgba(10,46,92,0.16)] bg-white/80 p-8">
         <div className="space-y-1 text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-zinc-400">Gym Flow</p>
-          <h1 className="text-3xl font-semibold text-zinc-900">
+          <p className="text-xs uppercase tracking-[0.4em] text-[#0a2e5c]/55">Athlos Fit</p>
+          <h1 className="text-3xl font-semibold text-[#0a2e5c]">
             {isSignup ? "Crea tu cuenta" : "Inicia sesion"}
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-[#51607c]">
             {isSignup
               ? "Registrate con tu correo o con tu proveedor favorito."
               : "Gestiona tus rutinas, mediciones y progreso desde un solo lugar."}
@@ -129,9 +129,9 @@ function LoginForm() {
 
         <div className="mt-8 space-y-4">
           <div className="space-y-2">
-            <label className="text-xs text-zinc-500">Correo</label>
+            <label className="text-xs text-[#51607c]">Correo</label>
             <input
-              className="w-full rounded-2xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-3 py-2 text-sm"
+              className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
               placeholder="tu@email.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -140,9 +140,9 @@ function LoginForm() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-xs text-zinc-500">Contrasena</label>
+            <label className="text-xs text-[#51607c]">Contrasena</label>
             <input
-              className="w-full rounded-2xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-3 py-2 text-sm"
+              className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
               type="password"
               placeholder={isSignup ? "Minimo 6 caracteres" : "Introduce tu contrasena"}
               value={password}
@@ -161,7 +161,7 @@ function LoginForm() {
           </button>
         </div>
 
-        <div className="mt-6 flex items-center gap-4 text-xs text-zinc-400">
+        <div className="mt-6 flex items-center gap-4 text-xs text-[#0a2e5c]/55">
           <span className="h-px flex-1 bg-zinc-200" aria-hidden />
           <span>{isSignup ? "o registrate con" : "o continua con"}</span>
           <span className="h-px flex-1 bg-zinc-200" aria-hidden />
@@ -183,7 +183,7 @@ function LoginForm() {
 
         {errorMessage && <p className="mt-4 text-sm text-red-500">{errorMessage}</p>}
 
-        <div className="mt-6 text-center text-xs text-zinc-500">
+        <div className="mt-6 text-center text-xs text-[#51607c]">
           {isSignup ? "Ya tienes cuenta?" : "Aun no tienes cuenta?"}{" "}
           <button
             type="button"
@@ -191,7 +191,7 @@ function LoginForm() {
               setMode(isSignup ? "login" : "signup");
               setErrorMessage(null);
             }}
-            className="font-semibold text-[#2263ff] transition hover:text-[#1a4de0]"
+            className="font-semibold text-[#0a2e5c] transition hover:text-[#08254a]"
             disabled={isBusy}
           >
             {isSignup ? "Inicia sesion" : "Registrate"}
@@ -215,7 +215,7 @@ function ProviderButton({ provider, onClick, disabled, loading, children }: Prov
     switch (provider) {
       case "google":
         return {
-          classes: "border border-[rgba(34,99,255,0.2)] bg-white text-zinc-700 hover:border-[rgba(34,99,255,0.3)]",
+          classes: "border border-[rgba(10,46,92,0.2)] bg-white text-[#0a2e5c] hover:border-[rgba(10,46,92,0.3)]",
           icon: GoogleIcon,
         };
       case "facebook":
@@ -278,3 +278,5 @@ const AppleIcon = (
 <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none"><g transform="scale(5.12,5.12)"><path d="M44.52734,34.75c-1.07812,2.39453 -1.59766,3.46484 -2.98437,5.57813c-1.94141,2.95313 -4.67969,6.64063 -8.0625,6.66406c-3.01172,0.02734 -3.78906,-1.96484 -7.87891,-1.92969c-4.08594,0.01953 -4.9375,1.96875 -7.95312,1.9375c-3.38672,-0.03125 -5.97656,-3.35156 -7.91797,-6.30078c-5.42969,-8.26953 -6.00391,-17.96484 -2.64844,-23.12109c2.375,-3.65625 6.12891,-5.80469 9.65625,-5.80469c3.59375,0 5.85156,1.97266 8.82031,1.97266c2.88281,0 4.63672,-1.97656 8.79297,-1.97656c3.14063,0 6.46094,1.71094 8.83594,4.66406c-7.76562,4.25781 -6.50391,15.34766 1.33984,18.31641zM31.19531,8.46875c1.51172,-1.94141 2.66016,-4.67969 2.24219,-7.46875c-2.46484,0.16797 -5.34766,1.74219 -7.03125,3.78125c-1.52734,1.85938 -2.79297,4.61719 -2.30078,7.28516c2.69141,0.08594 5.47656,-1.51953 7.08984,-3.59766z"></path></g></g>
 </svg>  
 );
+
+

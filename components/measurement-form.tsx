@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,14 +53,14 @@ export default function MeasurementForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="glass-card grid gap-4 border-[rgba(34,99,255,0.16)] bg-white/80 p-6 md:grid-cols-5"
+      className="glass-card grid gap-4 border-[rgba(10,46,92,0.16)] bg-white/80 p-6 md:grid-cols-5"
     >
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Fecha</label>
         <input
           type="date"
           {...register("date")}
-          className="w-full rounded-2xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
         />
       </div>
       <div className="space-y-2 md:col-span-1">
@@ -69,7 +69,7 @@ export default function MeasurementForm() {
           type="number"
           step="0.1"
           {...register("weightKg")}
-          className="w-full rounded-2xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
         />
       </div>
       <div className="space-y-2 md:col-span-1">
@@ -78,15 +78,15 @@ export default function MeasurementForm() {
           type="number"
           step="0.1"
           {...register("bodyFatPct")}
-          className="w-full rounded-2xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
         />
       </div>
       <div className="space-y-2 md:col-span-2">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Notas</label>
         <input
           {...register("notes")}
-          className="w-full rounded-2xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-3 py-2 text-sm"
-          placeholder="Sueño, alimentacion, biorritmo..."
+          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
+          placeholder="Sue?o, alimentacion, biorritmo..."
         />
       </div>
       <div className="md:col-span-5 flex flex-wrap items-center gap-3">
@@ -98,3 +98,4 @@ export default function MeasurementForm() {
     </form>
   );
 }
+

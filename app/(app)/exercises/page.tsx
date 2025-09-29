@@ -30,9 +30,9 @@ export default function ExercisesPage() {
 
   return (
     <div className="space-y-6">
-      <header className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-6">
+      <header className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
         <h1 className="text-2xl font-semibold text-zinc-900">Biblioteca de ejercicios</h1>
-        <p className="mt-2 text-sm text-zinc-600">
+        <p className="mt-2 text-sm text-[#4b5a72]">
           Selecciona un ejercicio para ver recomendaciones, tecnica y registrar tus sesiones.
         </p>
       </header>
@@ -42,7 +42,7 @@ export default function ExercisesPage() {
           <Link
             key={exercise.id}
             href={`/exercises/${exercise.id}`}
-            className="group relative overflow-hidden rounded-3xl border border-[rgba(34,99,255,0.18)] bg-white/75 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            className="group relative overflow-hidden rounded-3xl border border-[rgba(10,46,92,0.18)] bg-white/75 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >            <div className="relative flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">{exercise.routineTitle}</p>
@@ -50,15 +50,15 @@ export default function ExercisesPage() {
               </div>
               {exercise.routineFocus && <span className="tag-pill">{exercise.routineFocus}</span>}
             </div>
-            <p className="relative mt-3 text-sm leading-relaxed text-zinc-600">{exercise.description}</p>
-            <div className="relative mt-4 flex flex-wrap gap-2 text-xs text-zinc-500">
+            <p className="relative mt-3 text-sm leading-relaxed text-[#4b5a72]">{exercise.description}</p>
+            <div className="relative mt-4 flex flex-wrap gap-2 text-xs text-[#51607c]">
               {exercise.tags.map((tag) => (
-                <span key={tag} className="rounded-full border border-[rgba(34,99,255,0.2)] px-2 py-0.5">
+                <span key={tag} className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">
                   {tag}
                 </span>
               ))}
             </div>
-            <span className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-zinc-700">
+            <span className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#0a2e5c]">
               Ver detalle <span className="text-xs">&gt;</span>
             </span>
           </Link>
@@ -67,4 +67,6 @@ export default function ExercisesPage() {
     </div>
   );
 }
+
+
 

@@ -6,5 +6,6 @@ export const navItems = [
   { href: "/diet", label: "Dieta", icon: Salad },
   { href: "/measurements", label: "Mediciones", icon: Ruler },
   { href: "/progress", label: "Progreso", icon: LineChart },
-  { href: "/settings", label: "Ajustes", icon: Settings },
 ] as const;
+
+export const settingsNavItem = { href: "/settings", label: "Ajustes", icon: Settings } as const;

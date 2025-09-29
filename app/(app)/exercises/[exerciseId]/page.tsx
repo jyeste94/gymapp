@@ -92,12 +92,12 @@ export default function ExerciseDetailPage() {
 
   if (!exerciseEntry) {
     return (
-      <div className="space-y-4 rounded-2xl border border-[rgba(34,99,255,0.18)] bg-white/80 p-6">
+      <div className="space-y-4 rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-6">
         <h1 className="text-xl font-semibold text-zinc-900">Ejercicio no encontrado</h1>
-        <p className="text-sm text-zinc-600">
+        <p className="text-sm text-[#4b5a72]">
           Revisa tus rutinas desde la seccion principal para seleccionar un ejercicio valido.
         </p>
-        <Link href="/routines" className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-600">
+        <Link href="/routines" className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
           Volver a rutinas
         </Link>
       </div>
@@ -165,18 +165,18 @@ export default function ExerciseDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link href={`/routines/${routine.id}/${day.id}`} className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-600">
+      <Link href={`/routines/${routine.id}/${day.id}`} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
         {"<- Volver a "}{day.title}
       </Link>
 
       <header className="rounded-2xl border bg-white/70 p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-zinc-500">{routine.title}</p>
+            <p className="text-xs uppercase tracking-wide text-[#51607c]">{routine.title}</p>
             <h1 className="text-2xl font-semibold text-zinc-900">{exercise.name}</h1>
-            <p className="mt-2 text-sm text-zinc-600">{exercise.description}</p>
+            <p className="mt-2 text-sm text-[#4b5a72]">{exercise.description}</p>
           </div>
-          <div className="flex flex-wrap justify-end gap-2 text-xs text-zinc-500">
+          <div className="flex flex-wrap justify-end gap-2 text-xs text-[#51607c]">
             <Chip label={`${exercise.sets} series`} />
             <Chip label={`${exercise.repRange} reps`} />
             <Chip label={`Descanso ${exercise.rest}`} />
@@ -191,7 +191,7 @@ export default function ExerciseDetailPage() {
 
       <section className="rounded-2xl border bg-white/70 p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-zinc-900">Tecnica recomendada</h2>
-        <ul className="mt-4 space-y-2 text-sm text-zinc-600">
+        <ul className="mt-4 space-y-2 text-sm text-[#4b5a72]">
           {exercise.technique.map((tip) => (
             <li key={tip} className="flex items-start gap-2">
               <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-zinc-400" aria-hidden />
@@ -205,7 +205,7 @@ export default function ExerciseDetailPage() {
         <form className="space-y-5" onSubmit={(event) => event.preventDefault()}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-xs text-zinc-500">Fecha y hora</label>
+              <label className="text-xs text-[#51607c]">Fecha y hora</label>
               <input
                 type="datetime-local"
                 value={session.sessionDate}
@@ -214,7 +214,7 @@ export default function ExerciseDetailPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs text-zinc-500">Esfuerzo percibido (RPE)</label>
+              <label className="text-xs text-[#51607c]">Esfuerzo percibido (RPE)</label>
               <input
                 type="number"
                 min="1"
@@ -228,8 +228,8 @@ export default function ExerciseDetailPage() {
 
           <div className="space-y-3">
             {session.sets.map((set, index) => (
-              <div key={index} className="rounded-2xl border border-[rgba(34,99,255,0.18)] bg-white/80 px-4 py-3">
-                <div className="flex items-center justify-between text-xs text-zinc-500">
+              <div key={index} className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 px-4 py-3">
+                <div className="flex items-center justify-between text-xs text-[#51607c]">
                   <span>Serie {index + 1}</span>
                   <button
                     type="button"
@@ -237,8 +237,8 @@ export default function ExerciseDetailPage() {
                     className={clsx(
                       "rounded-full px-2 py-0.5",
                       set.completed
-                        ? "bg-[#2263ff] text-white"
-                        : "border border-[rgba(34,99,255,0.26)] bg-white/80 text-zinc-500"
+                        ? "bg-[#0a2e5c] text-white"
+                        : "border border-[rgba(10,46,92,0.26)] bg-white/80 text-[#51607c]"
                     )}
                   >
                     {set.completed ? "Completada" : "Pendiente"}
@@ -250,7 +250,7 @@ export default function ExerciseDetailPage() {
                     placeholder="Kg"
                     value={set.weight}
                     onChange={(event) => handleSetField(index, "weight")(event.target.value)}
-                    className="w-full rounded-xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-2 py-1"
+                    className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
                     min="0"
                     step="0.5"
                   />
@@ -259,7 +259,7 @@ export default function ExerciseDetailPage() {
                     placeholder="Reps"
                     value={set.reps}
                     onChange={(event) => handleSetField(index, "reps")(event.target.value)}
-                    className="w-full rounded-xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-2 py-1"
+                    className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
                     min="0"
                   />
                   <input
@@ -267,7 +267,7 @@ export default function ExerciseDetailPage() {
                     placeholder="RIR"
                     value={set.rir}
                     onChange={(event) => handleSetField(index, "rir")(event.target.value)}
-                    className="w-full rounded-xl border border-[rgba(34,99,255,0.26)] bg-white/90 px-2 py-1"
+                    className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
                     min="0"
                     max="5"
                   />
@@ -276,11 +276,11 @@ export default function ExerciseDetailPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-zinc-500">
-            <button type="button" onClick={addExtraSet} className="rounded-full border border-[rgba(34,99,255,0.24)] px-3 py-1 text-xs font-medium text-zinc-600">
+          <div className="flex items-center gap-3 text-xs text-[#51607c]">
+            <button type="button" onClick={addExtraSet} className="rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-medium text-[#4b5a72]">
               Anadir serie
             </button>
-            <button type="button" onClick={removeLastSet} className="rounded-full border border-[rgba(34,99,255,0.24)] px-3 py-1 text-xs font-medium text-zinc-600">
+            <button type="button" onClick={removeLastSet} className="rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-medium text-[#4b5a72]">
               Quitar ultima
             </button>
           </div>
@@ -301,7 +301,7 @@ export default function ExerciseDetailPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs text-zinc-500">Notas</label>
+            <label className="text-xs text-[#51607c]">Notas</label>
             <textarea
               className="w-full rounded border px-3 py-2 text-sm"
               rows={3}
@@ -327,20 +327,20 @@ export default function ExerciseDetailPage() {
       <section className="rounded-2xl border bg-white/70 p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-zinc-900">Historial del ejercicio</h2>
         {history.length === 0 ? (
-          <p className="mt-4 text-sm text-zinc-600">
+          <p className="mt-4 text-sm text-[#4b5a72]">
             Todavia no tienes registros para este ejercicio. Guarda tu primera sesion y aparecera aqui.
           </p>
         ) : (
           <ul className="mt-4 space-y-4">
             {history.map((log) => (
-              <li key={log.id} className="rounded-xl border px-4 py-3 text-sm text-zinc-600">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500">
+              <li key={log.id} className="rounded-xl border px-4 py-3 text-sm text-[#4b5a72]">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#51607c]">
                   <span>{formatDate(log.date) ?? "Fecha desconocida"}</span>
                   {log.perceivedEffort && <span>RPE {log.perceivedEffort}</span>}
                 </div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   {log.sets.map((set, index) => (
-                    <div key={index} className="rounded border px-3 py-2 text-xs text-zinc-500">
+                    <div key={index} className="rounded border px-3 py-2 text-xs text-[#51607c]">
                       Serie {index + 1}: {set.weight ?? "-"} kg - {set.reps ?? "-"} reps
                       {set.rir ? ` - RIR ${set.rir}` : ""}
                       {set.completed ? " - OK" : ""}
@@ -349,7 +349,7 @@ export default function ExerciseDetailPage() {
                 </div>
                 {log.notes && <p className="mt-2 text-xs">Notas: {log.notes}</p>}
                 {(log.mediaImage || log.mediaVideo) && (
-                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-zinc-500">
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#51607c]">
                     {log.mediaImage && (
                       <a href={log.mediaImage} target="_blank" rel="noreferrer" className="underline">
                         Ver imagen
@@ -375,7 +375,7 @@ type ChipProps = { label: string };
 
 function Chip({ label }: ChipProps) {
   return (
-    <span className="rounded-full border border-zinc-200 bg-white/60 px-3 py-1 text-xs text-zinc-600">
+    <span className="rounded-full border border-zinc-200 bg-white/60 px-3 py-1 text-xs text-[#4b5a72]">
       {label}
     </span>
   );
@@ -420,7 +420,7 @@ type MediaFieldProps = {
 function MediaField({ label, value, placeholder, onChange }: MediaFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="text-xs text-zinc-500">{label}</label>
+      <label className="text-xs text-[#51607c]">{label}</label>
       <input
         type="url"
         value={value}
@@ -431,6 +431,9 @@ function MediaField({ label, value, placeholder, onChange }: MediaFieldProps) {
     </div>
   );
 }
+
+
+
 
 
 

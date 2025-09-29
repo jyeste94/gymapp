@@ -2,33 +2,50 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import type { ComponentType } from "react";
 import { navItems } from "@/app/(app)/_components/nav-items";
 
 export default function MobileNav() {
   const pathname = usePathname();
+
   return (
-    <div className="lg:hidden">
-      <div className="mt-4 flex items-center gap-3 overflow-x-auto pb-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(10,46,92,0.12)] bg-white/95 shadow-[0_-8px_24px_-18px_rgba(10,46,92,0.4)] backdrop-blur-md lg:hidden">
+      <ul className="flex items-center justify-between gap-1 px-4 py-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={clsx(
-                "flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition",
-                isActive
-                  ? "border-[#2263ff]/30 bg-[#e6edff] text-[#1c2d5a] shadow"
-                  : "border-[rgba(34,99,255,0.16)] bg-white/80 text-zinc-500"
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {item.label}
-            </Link>
+            <li key={item.href} className="flex-1">
+              <LinkButton icon={Icon} label={item.label} href={item.href} active={isActive} />
+            </li>
           );
         })}
-      </div>
-    </div>
+      </ul>
+    </nav>
+  );
+}
+
+type LinkButtonProps = {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  href: string;
+  active: boolean;
+};
+
+function LinkButton({ icon: Icon, label, href, active }: LinkButtonProps) {
+  return (
+    <Link
+      href={href}
+      className={clsx(
+        "flex flex-col items-center gap-1 rounded-2xl px-3 py-2 text-xs font-semibold transition",
+        active
+          ? "bg-[#0a2e5c]/10 text-[#0a2e5c]"
+          : "text-[#51607c] hover:bg-[#0a2e5c]/5"
+      )}
+      aria-current={active ? "page" : undefined}
+    >
+      <Icon className={clsx("h-5 w-5", active ? "text-[#0a2e5c]" : "text-[#51607c]")} />
+      {label}
+    </Link>
   );
 }

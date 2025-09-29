@@ -1,49 +1,29 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { PlusCircle } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import {
   defaultRoutines,
   mergeRoutines,
   templateToRoutineDefinition,
-  createRoutineAliasIndex,
   type RoutineDefinition,
   type RoutineTemplateDoc,
 } from "@/lib/data/routine-library";
-import { useRoutineLogs, type RoutineLog } from "@/lib/firestore/routine-logs";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 import CreateRoutineDrawer from "@/app/(app)/routines/create-routine-drawer";
 
-const dateFormatter =
-  typeof Intl !== "undefined"
-    ? new Intl.DateTimeFormat("es-ES", { dateStyle: "medium" })
-    : null;
-
-const formatDate = (iso?: string) => {
-  if (!iso) return null;
-  try {
-    const date = new Date(iso);
-    return dateFormatter ? dateFormatter.format(date) : iso.split("T")[0];
-  } catch {
-    return null;
-  }
-};
-
-const summarizeRoutine = (routine: RoutineDefinition) => {
-  const dayCount = routine.days.length;
-  const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
-  return { dayCount, exerciseCount };
-};
+const formatDaysLabel = (count: number) => `${count} dia${count === 1 ? "" : "s"}`;
 
 export default function RoutinesPage() {
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
-  const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
-  const { data: routineLogs } = useRoutineLogs(user?.uid);
-
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { data: routineTemplates, loading } = useCol<RoutineTemplateDoc>(templatesPath, {
+    by: "title",
+    dir: "asc",
+  });
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(templateToRoutineDefinition),
@@ -57,100 +37,42 @@ export default function RoutinesPage() {
 
   const exerciseCatalog = useMemo(() => buildExerciseCatalog(routines), [routines]);
 
-  const aliasIndex = useMemo(() => createRoutineAliasIndex(routines), [routines]);
-
-  const lastCompleted = useMemo(() => {
-    const map = new Map<string, string>();
-    (routineLogs ?? []).forEach((log: RoutineLog) => {
-      const key = log.routineId || log.routineName || log.dayId || log.dayName || log.day;
-      if (!key) return;
-      const alias = aliasIndex.get(key.trim().toLowerCase());
-      if (!alias) return;
-      const routineId = alias.routine.id;
-      if (!map.has(routineId)) {
-        map.set(routineId, log.date);
-      }
-    });
-    return map;
-  }, [routineLogs, aliasIndex]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <>
-      <div className="space-y-6">
-        <header className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Tus rutinas</p>
-              <h1 className="text-2xl font-semibold text-zinc-900">Gestiona tus planes</h1>
-              <p className="mt-2 text-sm text-zinc-600">
-                Revisa tus rutinas guardadas, consulta los dias y accede rapido a los ejercicios con sus registros.
-              </p>
-            </div>
-            <div className="flex flex-col items-end gap-3 text-xs text-zinc-400 md:flex-row md:items-center">
-              <div className="flex items-center gap-2">
-                <span>Intensidad</span>
-                <span>|</span>
-                <span>Duracion</span>
-                <span>|</span>
-                <span>Ultimo seguimiento</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-                className="rounded-2xl bg-[#2263ff] px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60"
-                disabled={!user}
-                aria-disabled={!user}
-              >
-                Crear rutina personalizada
-              </button>
-            </div>
+    <div className="space-y-6">
+      <section className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold text-[#0a2e5c]">Rutinas</h1>
+          <p className="text-sm text-[#51607c]">
+            Crea planes propios o reutiliza las rutinas guardadas.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          disabled={!user}
+          className="inline-flex items-center gap-2 rounded-full bg-[#0a2e5c] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60"
+        >
+          <PlusCircle className="h-4 w-4" /> Crear rutina personalizada
+        </button>
+      </section>
+
+      <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
+        {loading ? (
+          <p className="text-sm text-[#51607c]">Cargando tus rutinas...</p>
+        ) : routines.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[rgba(10,46,92,0.2)] bg-white/70 p-6 text-sm text-[#51607c]">
+            Todavia no tienes rutinas guardadas. Crea tu primera rutina personalizada para verla aqui.
           </div>
-        </header>
-
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {routines.map((routine) => {
-            const lastDate = formatDate(lastCompleted.get(routine.id));
-            const summary = summarizeRoutine(routine);
-            return (
-              <Link
-                key={routine.id}
-                href={`/routines/${routine.id}`}
-                className="group relative overflow-hidden rounded-3xl border border-[rgba(34,99,255,0.18)] bg-white/75 p-5 text-sm text-zinc-600 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-              >                <div className="relative flex flex-col gap-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">{routine.focus ?? "Rutina"}</p>
-                      <h2 className="mt-1 text-lg font-semibold text-zinc-900">{routine.title}</h2>
-                    </div>
-                    {routine.level && <span className="tag-pill">{routine.level}</span>}
-                  </div>
-
-                  {routine.description && <p className="text-xs text-zinc-500">{routine.description}</p>}
-
-                  <div className="flex flex-wrap gap-2 text-xs text-zinc-500">
-                    <span className="rounded-full border border-[rgba(34,99,255,0.2)] px-2 py-0.5">
-                      {summary.dayCount} dias
-                    </span>
-                    <span className="rounded-full border border-[rgba(34,99,255,0.2)] px-2 py-0.5">
-                      {summary.exerciseCount} ejercicios
-                    </span>
-                    {routine.frequency && (
-                      <span className="rounded-full border border-[rgba(34,99,255,0.2)] px-2 py-0.5">{routine.frequency}</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-zinc-500">
-                    <span>{lastDate ? `Ultimo registro ${lastDate}` : "Sin registro aun"}</span>
-                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-zinc-700">
-                      Abrir rutina <span className="text-xs">&gt;</span>
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </section>
-      </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {routines.map((routine) => (
+              <RoutineCard key={routine.id} routine={routine} />
+            ))}
+          </div>
+        )}
+      </section>
 
       <CreateRoutineDrawer
         open={drawerOpen}
@@ -159,7 +81,41 @@ export default function RoutinesPage() {
         exercises={exerciseCatalog}
         userId={user?.uid}
       />
-    </>
+    </div>
   );
 }
 
+type RoutineCardProps = {
+  routine: RoutineDefinition;
+};
+
+function RoutineCard({ routine }: RoutineCardProps) {
+  const dayCount = routine.days.length;
+  const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
+
+  return (
+    <Link
+      href={`/routines/${routine.id}`}
+      className="group flex flex-col gap-3 rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/90 p-5 text-sm text-[#4b5a72] transition hover:-translate-y-0.5 hover:shadow-lg"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#51607c]">{routine.focus ?? "Rutina"}</p>
+          <h2 className="mt-1 text-lg font-semibold text-[#0a2e5c]">{routine.title}</h2>
+        </div>
+        {routine.level && <span className="tag-pill">{routine.level}</span>}
+      </div>
+      {routine.description && <p className="text-xs text-[#51607c]">{routine.description}</p>}
+      <div className="flex flex-wrap gap-2 text-xs text-[#51607c]">
+        <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">{formatDaysLabel(dayCount)}</span>
+        <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">{exerciseCount} ejercicios</span>
+        {routine.frequency && (
+          <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5">{routine.frequency}</span>
+        )}
+      </div>
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0a2e5c]">
+        Ver detalles <span>{">"}</span>
+      </span>
+    </Link>
+  );
+}

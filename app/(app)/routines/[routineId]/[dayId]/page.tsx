@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -100,9 +100,9 @@ export default function RoutineDayPage() {
 
   if (!routine || !day) {
     return (
-      <div className="rounded-2xl border border-[rgba(34,99,255,0.18)] bg-white/80 p-6 text-sm text-zinc-600">
+      <div className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-6 text-sm text-[#4b5a72]">
         <p>No encontramos este dia en la rutina seleccionada.</p>
-        <Link className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-zinc-600" href="/routines">
+        <Link className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]" href="/routines">
           Volver a rutinas
         </Link>
       </div>
@@ -111,20 +111,20 @@ export default function RoutineDayPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 text-sm text-zinc-500">
-        <Link href={`/routines/${routine.id}`} className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-600">
+      <div className="flex items-center gap-3 text-sm text-[#51607c]">
+        <Link href={`/routines/${routine.id}`} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
           {"<- Volver a "}{routine.title}
         </Link>
       </div>
 
-      <header className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-6">
+      <header className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Dia {day.order}</p>
             <h1 className="text-2xl font-semibold text-zinc-900">{day.title}</h1>
-            {day.focus && <p className="mt-2 text-sm text-zinc-600">{day.focus}</p>}
+            {day.focus && <p className="mt-2 text-sm text-[#4b5a72]">{day.focus}</p>}
           </div>
-          <div className="flex flex-col items-end gap-2 text-xs text-zinc-500">
+          <div className="flex flex-col items-end gap-2 text-xs text-[#51607c]">
             {day.intensity && <span>Intensidad: {day.intensity}</span>}
             {day.estimatedDuration && <span>Duracion estimada: {day.estimatedDuration}</span>}
             <span>{day.exercises.length} ejercicios</span>
@@ -151,7 +151,7 @@ export default function RoutineDayPage() {
         })}
       </section>
 
-      <section className="rounded-2xl border border-[rgba(34,99,255,0.18)] bg-white/80 p-5 text-xs text-zinc-500">
+      <section className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-5 text-xs text-[#51607c]">
         <p>
           Selecciona un ejercicio para abrir su ficha completa, ver recomendaciones y registrar pesos, repeticiones y notas.
         </p>
@@ -168,12 +168,12 @@ type InfoCardProps = {
 function InfoCard({ title, items }: InfoCardProps) {
   if (!items.length) return null;
   return (
-    <div className="rounded-2xl border border-[rgba(34,99,255,0.16)] bg-white/80 p-4">
+    <div className="rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/80 p-4">
       <h3 className="text-sm font-semibold text-zinc-800">{title}</h3>
-      <ul className="mt-3 space-y-2 text-sm text-zinc-600">
+      <ul className="mt-3 space-y-2 text-sm text-[#4b5a72]">
         {items.map((item) => (
           <li key={item} className="flex items-center gap-2">
-            <span className="inline-flex h-2 w-2 rounded-full bg-[rgba(34,99,255,0.45)]" aria-hidden />
+            <span className="inline-flex h-2 w-2 rounded-full bg-[rgba(10,46,92,0.45)]" aria-hidden />
             {item}
           </li>
         ))}
@@ -191,26 +191,26 @@ type ExerciseCardProps = {
 function ExerciseCard({ day, exercise, lastRecord }: ExerciseCardProps) {
   const detailHref = `/exercises/${exercise.id}`;
   return (
-    <article className="glass-card border-[rgba(34,99,255,0.16)] bg-white/80 p-5 transition hover:-translate-y-0.5 hover:shadow-lg">
+    <article className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-5 transition hover:-translate-y-0.5 hover:shadow-lg">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-zinc-400">{day.title}</p>
           <h3 className="text-base font-semibold text-zinc-900">{exercise.name}</h3>
-          <p className="text-xs text-zinc-500">{summarizeExercise(exercise)}</p>
+          <p className="text-xs text-[#51607c]">{summarizeExercise(exercise)}</p>
         </div>
         <Link
           href={detailHref}
-          className="inline-flex items-center gap-2 rounded-full border border-[rgba(34,99,255,0.24)] bg-white/70 px-3 py-1 text-xs font-medium text-zinc-600"
+          className="inline-flex items-center gap-2 rounded-full border border-[rgba(10,46,92,0.24)] bg-white/70 px-3 py-1 text-xs font-medium text-[#4b5a72]"
         >
           Abrir ejercicio
         </Link>
       </header>
 
-      <p className="mt-3 text-sm text-zinc-600">{exercise.tip}</p>
+      <p className="mt-3 text-sm text-[#4b5a72]">{exercise.tip}</p>
 
       {lastRecord && (
-        <div className="mt-4 rounded-2xl border border-dashed border-[rgba(34,99,255,0.24)] bg-white/70 px-3 py-2 text-xs text-zinc-500">
-          <p className="font-medium text-zinc-600">Ultimo registro</p>
+        <div className="mt-4 rounded-2xl border border-dashed border-[rgba(10,46,92,0.24)] bg-white/70 px-3 py-2 text-xs text-[#51607c]">
+          <p className="font-medium text-[#4b5a72]">Ultimo registro</p>
           <p>
             {lastRecord.set.weight ? `${lastRecord.set.weight} kg` : "-"} -
             {lastRecord.set.reps ? ` ${lastRecord.set.reps} reps` : " -"}
@@ -223,3 +223,4 @@ function ExerciseCard({ day, exercise, lastRecord }: ExerciseCardProps) {
     </article>
   );
 }
+
