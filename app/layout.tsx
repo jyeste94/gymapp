@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
 import type { ReactNode } from "react";
 
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 export const metadata = {
   title: "Fitness App",
   description: "Mediciones, rutinas, dieta y progreso"
