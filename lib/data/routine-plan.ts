@@ -1,4 +1,4 @@
-﻿export type RoutineExercise = {
+export type RoutineExercise = {
   id: string;
   name: string;
   sets: number;
@@ -73,7 +73,7 @@ export const routinePlan: RoutinePlan = {
             "Empuja en linea vertical con control",
           ],
           image: "https://images.unsplash.com/photo-1517832606294-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/press-banca-demo.mp4",
+          video: "https://www.youtube.com/embed/rT7DgCr-3pg",
         },
         {
           id: "press_inclinado",
@@ -90,7 +90,7 @@ export const routinePlan: RoutinePlan = {
             "Mantiene tension continua",
           ],
           image: "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/press-inclinado.mp4",
+          video: "https://www.youtube.com/embed/IiDzhb4ccXU",
         },
         {
           id: "press_militar",
@@ -107,7 +107,7 @@ export const routinePlan: RoutinePlan = {
             "Baja hasta la barbilla",
           ],
           image: "https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/press-militar.mp4",
+          video: "https://www.youtube.com/embed/qEwKCR5JCog",
         },
         {
           id: "elevaciones_laterales",
@@ -124,7 +124,7 @@ export const routinePlan: RoutinePlan = {
             "Controla la bajada",
           ],
           image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/elevaciones-laterales.mp4",
+          video: "https://www.youtube.com/embed/3VcKaXpzqRo",
         },
         {
           id: "fondos_paralelas",
@@ -140,7 +140,8 @@ export const routinePlan: RoutinePlan = {
             "Baja hasta 90 grados en codo",
             "Empuja fuerte al subir",
           ],
-          image: "https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=800&q=80",
+          image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/2emkY4GlkDo",
         },
         {
           id: "triceps_cuerda",
@@ -156,6 +157,8 @@ export const routinePlan: RoutinePlan = {
             "Sin mover el hombro",
             "Controla el retorno",
           ],
+          image: "https://images.unsplash.com/photo-1583454110551-21f2fa2ac4c0?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/vYp8qx_kA_U",
         },
       ],
     },
@@ -188,7 +191,7 @@ export const routinePlan: RoutinePlan = {
             "Desciende controlado",
           ],
           image: "https://images.unsplash.com/photo-1546484959-f1e94ff3cba6?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/dominadas.mp4",
+          video: "https://www.youtube.com/embed/HRVYwPK1wnM",
         },
         {
           id: "remo_barra",
@@ -204,6 +207,8 @@ export const routinePlan: RoutinePlan = {
             "Tira con codos pegados",
             "Pausa sutil arriba",
           ],
+          image: "https://images.unsplash.com/photo-1517964106626-460c4a9b1fca?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/j-Uzc2VJ5O4",
         },
         {
           id: "remo_mancuerna",
@@ -219,6 +224,8 @@ export const routinePlan: RoutinePlan = {
             "Mantiene torso estable",
             "Contrae en cada rep",
           ],
+          image: "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/pYcpY20QaE8",
         },
         {
           id: "facepull",
@@ -234,6 +241,8 @@ export const routinePlan: RoutinePlan = {
             "Divide la cuerda al tirar",
             "Mantiene tension continua",
           ],
+          image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/Rep-qVOkqgk",
         },
         {
           id: "curl_barra",
@@ -249,6 +258,8 @@ export const routinePlan: RoutinePlan = {
             "Sube en 1 seg, baja en 2 seg",
             "Aplica squeeze arriba",
           ],
+          image: "https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/kwG2ipFRgfo",
         },
         {
           id: "curl_inclinado",
@@ -264,6 +275,8 @@ export const routinePlan: RoutinePlan = {
             "Gira las palmas al subir",
             "Controla la bajada",
           ],
+          image: "https://images.unsplash.com/photo-1517964106626-460c4a9b1fca?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/gfUeU3NbQKc",
         },
       ],
     },
@@ -296,7 +309,7 @@ export const routinePlan: RoutinePlan = {
             "Empuja el suelo al subir",
           ],
           image: "https://images.unsplash.com/photo-1596306498424-5a26f2520f4d?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/sentadilla.mp4",
+          video: "https://www.youtube.com/embed/Dy28eq2PjcM",
         },
         {
           id: "prensa",
@@ -312,6 +325,8 @@ export const routinePlan: RoutinePlan = {
             "Profundiza sin despegar la espalda",
             "Controla el movimiento",
           ],
+          image: "https://images.unsplash.com/photo-1583454155886-91b7a95c9082?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/x0vnJ6ve-0s",
         },
         {
           id: "zancadas",
@@ -327,6 +342,8 @@ export const routinePlan: RoutinePlan = {
             "Empuja con el talon",
             "Activa el core",
           ],
+          image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/QOVaHwm-Q6U",
         },
         {
           id: "peso_muerto_rumano",
@@ -342,6 +359,8 @@ export const routinePlan: RoutinePlan = {
             "Espalda neutra",
             "Pausa breve abajo",
           ],
+          image: "https://images.unsplash.com/photo-1605296867424-35fc25c9210b?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/2SHsk9Azd0g",
         },
         {
           id: "gemelos",
@@ -357,6 +376,8 @@ export const routinePlan: RoutinePlan = {
             "Mantiene rodillas extendidas",
             "Controla el ritmo",
           ],
+          image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/6VtTQnOz8iM",
         },
         {
           id: "core_combo",
@@ -371,6 +392,8 @@ export const routinePlan: RoutinePlan = {
             "Plancha con hombros alineados",
             "Rueda manteniendo pelvis neutra",
           ],
+          image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/IODxDxX7oi4",
         },
       ],
     },
@@ -404,7 +427,7 @@ export const routinePlan: RoutinePlan = {
             "Cierra el movimiento con gluteos",
           ],
           image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=800&q=80",
-          video: "https://storage.googleapis.com/fitness-app-demos/peso-muerto.mp4",
+          video: "https://www.youtube.com/embed/Opv71lvGf0s",
         },
         {
           id: "dominada_supina",
@@ -420,6 +443,8 @@ export const routinePlan: RoutinePlan = {
             "Tira con dorsales",
             "Controla el descenso",
           ],
+          image: "https://images.unsplash.com/photo-1594737625785-c66858a24b47?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/TL1eJxF0oGI",
         },
         {
           id: "remo_polea",
@@ -435,6 +460,8 @@ export const routinePlan: RoutinePlan = {
             "No encorvar hombros",
             "Recorrido completo",
           ],
+          image: "https://images.unsplash.com/photo-1579751628192-7b1c211f7c1f?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/GZbfZ033f74",
         },
         {
           id: "curl_femoral",
@@ -450,6 +477,8 @@ export const routinePlan: RoutinePlan = {
             "Apoya cadera firmemente",
             "Evita arquear la espalda",
           ],
+          image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/1Tq3QdYUuHs",
         },
         {
           id: "curl_martillo",
@@ -465,6 +494,8 @@ export const routinePlan: RoutinePlan = {
             "Evita balanceos",
             "Sujeta firme las mancuernas",
           ],
+          image: "https://images.unsplash.com/photo-1594737625785-0fe274509ddd?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/zC3nLlEvin4",
         },
         {
           id: "core_polea",
@@ -480,6 +511,8 @@ export const routinePlan: RoutinePlan = {
             "Tira de la cuerda hacia rodillas",
             "Pausa al final",
           ],
+          image: "https://images.unsplash.com/photo-1571019613610-eca12e02f2a7?auto=format&fit=crop&w=800&q=80",
+          video: "https://www.youtube.com/embed/TP7fHv2v74U",
         },
       ],
     },
