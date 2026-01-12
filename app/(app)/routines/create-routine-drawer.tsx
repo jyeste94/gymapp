@@ -93,7 +93,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
   const availableMuscles = useMemo(() => {
     const set = new Set<string>();
     exercises.forEach((exercise) => {
-      exercise.muscleTags.forEach((tag) => set.add(tag));
+      exercise.muscleGroup.forEach((tag) => set.add(tag));
     });
     return Array.from(set.values()).sort((a, b) => a.localeCompare(b));
   }, [exercises]);
@@ -101,7 +101,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
   const availableEquipment = useMemo(() => {
     const set = new Set<string>();
     exercises.forEach((exercise) => {
-      exercise.equipmentTags.forEach((tag) => set.add(tag));
+      exercise.equipment.forEach((tag) => set.add(tag));
     });
     return Array.from(set.values()).sort((a, b) => a.localeCompare(b));
   }, [exercises]);
@@ -117,13 +117,13 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
         }
       }
       if (muscleFilter) {
-        const matchesMuscle = exercise.muscleTags.some(
+        const matchesMuscle = exercise.muscleGroup.some(
           (tag) => normalize(tag) === normalize(muscleFilter),
         );
         if (!matchesMuscle) return false;
       }
       if (equipmentFilter) {
-        const matchesEquipment = exercise.equipmentTags.some(
+        const matchesEquipment = exercise.equipment.some(
           (tag) => normalize(tag) === normalize(equipmentFilter),
         );
         if (!matchesEquipment) return false;
@@ -146,7 +146,13 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
       }
       return {
         ...day,
-        exercises: [...day.exercises, exercise],
+        exercises: [...day.exercises, {
+          ...exercise,
+          sets: 3,
+          repRange: "10-12",
+          rest: "90 s",
+          tip: "",
+        }],
       };
     });
   };
@@ -229,8 +235,8 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
   const footerMessage = !userId
     ? "Inicia sesion para crear tus rutinas."
     : !allDaysHaveExercises
-    ? "Cada dia debe tener al menos un ejercicio."
-    : "Revisa los datos antes de guardar.";
+      ? "Cada dia debe tener al menos un ejercicio."
+      : "Revisa los datos antes de guardar.";
 
   const openDay = (dayId: string) => {
     setSelectedDayId(dayId);

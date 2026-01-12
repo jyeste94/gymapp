@@ -68,7 +68,7 @@ export default function RoutinesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {routines.map((routine) => (
-              <RoutineCard key={routine.id} routine={routine} />
+              <RoutineCard key={routine.id} routine={routine} userId={user?.uid} />
             ))}
           </div>
         )}
@@ -85,25 +85,52 @@ export default function RoutinesPage() {
   );
 }
 
+import { Trash2 } from "lucide-react";
+import { deleteRoutineTemplate } from "@/lib/firestore/routines";
+
+// ... existing imports ...
+
 type RoutineCardProps = {
   routine: RoutineDefinition;
+  userId?: string;
 };
 
-function RoutineCard({ routine }: RoutineCardProps) {
+function RoutineCard({ routine, userId }: RoutineCardProps) {
   const dayCount = routine.days.length;
   const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
+  const isCustom = !defaultRoutines.some(r => r.id === routine.id);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!userId || !isCustom) return;
+    if (confirm("Estas seguro de eliminar esta rutina?")) {
+      await deleteRoutineTemplate(userId, routine.id);
+    }
+  };
 
   return (
     <Link
       href={`/routines/${routine.id}`}
-      className="group flex flex-col gap-3 rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/90 p-5 text-sm text-[#4b5a72] transition hover:-translate-y-0.5 hover:shadow-lg"
+      className="group relative flex flex-col gap-3 rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/90 p-5 text-sm text-[#4b5a72] transition hover:-translate-y-0.5 hover:shadow-lg"
     >
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-[#51607c]">{routine.focus ?? "Rutina"}</p>
           <h2 className="mt-1 text-lg font-semibold text-[#0a2e5c]">{routine.title}</h2>
         </div>
-        {routine.level && <span className="tag-pill">{routine.level}</span>}
+        <div className="flex items-center gap-2">
+          {routine.level && <span className="tag-pill">{routine.level}</span>}
+          {isCustom && (
+            <button
+              onClick={handleDelete}
+              className="rounded-full p-1 text-red-500 hover:bg-red-50"
+              title="Eliminar rutina"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
       {routine.description && <p className="text-xs text-[#51607c]">{routine.description}</p>}
       <div className="flex flex-wrap gap-2 text-xs text-[#51607c]">
@@ -119,3 +146,4 @@ function RoutineCard({ routine }: RoutineCardProps) {
     </Link>
   );
 }
+

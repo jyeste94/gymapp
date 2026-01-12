@@ -1,5 +1,6 @@
-﻿import { routinePlan } from "@/lib/data/routine-plan";
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+﻿import { pushPullLegsRoutine, upperLowerRoutine } from "@/lib/data/routine-plan";
+import type { RoutineExercise, RoutineExerciseConfig } from "@/lib/data/routine-plan";
+import { defaultExercises } from "@/lib/data/exercises";
 
 type RoutineDayTemplate = {
   id: string;
@@ -11,7 +12,7 @@ type RoutineDayTemplate = {
   notes?: string;
   warmup?: string[];
   finisher?: string[];
-  exercises: RoutineExercise[];
+  exercises: (RoutineExercise | RoutineExerciseConfig)[];
 };
 
 export type RoutineDefinition = {
@@ -49,6 +50,29 @@ export type RoutineTemplateDoc = {
   days: RoutineDayTemplate[];
 };
 
+const hydrateExercise = (entry: RoutineExercise | RoutineExerciseConfig): RoutineExercise => {
+  // Check if it's already a full RoutineExercise (has 'name' and 'muscleGroup')
+  if ("name" in entry && "muscleGroup" in entry) {
+    return entry as RoutineExercise;
+  }
+
+  // Otherwise it's a Config, look it up
+  const base = defaultExercises.find(e => e.id === entry.id);
+  if (!base) {
+    // Fallback if not found (should not happen for default routines)
+    return {
+      ...entry,
+      name: "Ejercicio desconocido",
+      muscleGroup: [],
+      equipment: [],
+      description: "",
+      technique: [],
+    } as RoutineExercise;
+  }
+
+  return { ...base, ...entry };
+};
+
 const normalizeDay = (day: RoutineDayTemplate, index: number): RoutineDayDefinition => ({
   id: day.id,
   title: day.title ?? `Dia ${index + 1}`,
@@ -59,19 +83,45 @@ const normalizeDay = (day: RoutineDayTemplate, index: number): RoutineDayDefinit
   notes: day.notes,
   warmup: day.warmup ?? [],
   finisher: day.finisher ?? [],
-  exercises: day.exercises,
+  exercises: day.exercises.map(hydrateExercise),
 });
 
 export const defaultRoutines: RoutineDefinition[] = [
   {
     id: "ppl-4d",
-    title: routinePlan.name,
-    description: routinePlan.goal,
-    focus: routinePlan.goal,
-    level: routinePlan.level,
-    frequency: routinePlan.frequency,
-    equipment: routinePlan.equipment,
-    days: routinePlan.days.map((day, index) =>
+    title: pushPullLegsRoutine.name,
+    description: pushPullLegsRoutine.goal,
+    focus: pushPullLegsRoutine.goal,
+    level: pushPullLegsRoutine.level,
+    frequency: pushPullLegsRoutine.frequency,
+    equipment: pushPullLegsRoutine.equipment,
+    days: pushPullLegsRoutine.days.map((day, index) =>
+      normalizeDay(
+        {
+          id: day.id,
+          title: day.name,
+          focus: day.focus,
+          order: index + 1,
+          intensity: day.intensity,
+          estimatedDuration: day.estimatedDuration,
+          notes: day.notes,
+          warmup: day.warmup,
+          finisher: day.finisher,
+          exercises: day.exercises,
+        },
+        index,
+      ),
+    ),
+  },
+  {
+    id: "upper-lower-4d",
+    title: upperLowerRoutine.name,
+    description: upperLowerRoutine.goal,
+    focus: upperLowerRoutine.goal,
+    level: upperLowerRoutine.level,
+    frequency: upperLowerRoutine.frequency,
+    equipment: upperLowerRoutine.equipment,
+    days: upperLowerRoutine.days.map((day, index) =>
       normalizeDay(
         {
           id: day.id,

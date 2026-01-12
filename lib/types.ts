@@ -7,10 +7,15 @@ export type Measurement = {
 };
 
 export type Exercise = {
-  id: UUID; name: string;
-  muscleGroup: 'Chest'|'Back'|'Legs'|'Shoulders'|'Arms'|'Core'|'Full';
-  equipment?: 'Barbell'|'Dumbbell'|'Machine'|'Cable'|'Bodyweight'|'Kettlebell'|'Other';
-  ormFormula?: 'Epley'|'Brzycki';
+  id: UUID;
+  name: string;
+  muscleGroup: string[];
+  equipment: string[];
+  description?: string;
+  technique?: string[];
+  image?: string;
+  video?: string;
+  ormFormula?: 'Epley' | 'Brzycki';
 };
 
 export type RoutineDay = { id: UUID; name: string; exerciseIds: UUID[]; };
@@ -27,7 +32,7 @@ export type WorkoutSession = {
 
 export type Ingredient = {
   id: UUID; name: string;
-  unit: 'g'|'ml'|'pcs';
+  unit: 'g' | 'ml' | 'pcs';
   kcalPerUnit: number; proteinPerUnit: number; carbsPerUnit: number; fatPerUnit: number;
 };
 
@@ -40,7 +45,7 @@ export type Recipe = {
 };
 
 export type MealItem = {
-  id: UUID; type: 'recipe'|'ingredient';
+  id: UUID; type: 'recipe' | 'ingredient';
   refId: UUID;
   servingsOrQty: number;
   notes?: string;
@@ -48,7 +53,7 @@ export type MealItem = {
 
 export type DayMeals = {
   id: UUID; date?: string;
-  meals: { kind: 'Breakfast'|'Lunch'|'Dinner'|'Snack'; items: MealItem[]; }[];
+  meals: { kind: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack'; items: MealItem[]; }[];
 };
 
 export type DietWeek = {
@@ -58,7 +63,7 @@ export type DietWeek = {
 };
 
 export type DietSettings = {
-  defaultMealKinds: ('Breakfast'|'Lunch'|'Dinner'|'Snack')[];
+  defaultMealKinds: ('Breakfast' | 'Lunch' | 'Dinner' | 'Snack')[];
   dailyTarget: { kcal: number; protein: number; carbs: number; fat: number; };
 };
 

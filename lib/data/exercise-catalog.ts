@@ -1,90 +1,56 @@
 import type { RoutineDefinition } from "@/lib/data/routine-library";
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+import { defaultExercises } from "@/lib/data/exercises";
+import type { Exercise } from "@/lib/types";
 
-export type ExerciseCatalogEntry = RoutineExercise & {
-  routineId: string;
-  routineTitle: string;
+export type ExerciseCatalogEntry = Exercise & {
+  routineId?: string;
+  routineTitle?: string;
   routineFocus?: string;
-  dayId: string;
-  dayTitle: string;
-  muscleTags: string[];
-  equipmentTags: string[];
+  dayId?: string;
+  dayTitle?: string;
+  tags: string[]; // Keep for compatibility if needed, or derived
   keywords: string;
 };
-
-const MUSCLE_TAGS = [
-  "Pecho",
-  "Espalda",
-  "Pierna",
-  "Isquios",
-  "Gluteos",
-  "Hombro",
-  "Triceps",
-  "Biceps",
-  "Core",
-  "Abdominales",
-  "Cuadriceps",
-  "Femoral",
-  "Gemelos",
-  "Full body",
-];
-
-const EQUIPMENT_TAGS = [
-  "Barra",
-  "Mancuernas",
-  "Polea",
-  "Maquina",
-  "Peso corporal",
-  "Kettlebell",
-  "Banda",
-  "Banco",
-  "Superset",
-  "Cable",
-];
 
 const normalize = (value: string) => value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
 export function buildExerciseCatalog(routines: RoutineDefinition[]): ExerciseCatalogEntry[] {
-  const seen = new Map<string, ExerciseCatalogEntry>();
+  // Map to store the first usage context for each exercise
+  const usageMap = new Map<string, { routine: RoutineDefinition; dayTitle: string; dayId: string }>();
 
   routines.forEach((routine) => {
     routine.days.forEach((day) => {
       day.exercises.forEach((exercise) => {
-        if (seen.has(exercise.id)) return;
-        const normalizedTags = exercise.tags.map((tag) => tag.trim());
-
-        const muscleTags = MUSCLE_TAGS.filter((candidate) =>
-          normalizedTags.some((tag) => normalize(tag).includes(normalize(candidate))),
-        );
-
-        const equipmentTags = EQUIPMENT_TAGS.filter((candidate) =>
-          normalizedTags.some((tag) => normalize(tag).includes(normalize(candidate))),
-        );
-
-        seen.set(exercise.id, {
-          ...exercise,
-          routineId: routine.id,
-          routineTitle: routine.title,
-          routineFocus: routine.focus,
-          dayId: day.id,
-          dayTitle: day.title,
-          muscleTags,
-          equipmentTags,
-          keywords: [
-            exercise.name,
-            routine.title,
-            routine.focus,
-            day.title,
-            ...exercise.tags,
-            exercise.description,
-          ]
-            .filter(Boolean)
-            .map((value) => normalize(String(value)))
-            .join(" \u2022 "),
-        });
+        if (!usageMap.has(exercise.id)) {
+          usageMap.set(exercise.id, { routine, dayTitle: day.title, dayId: day.id });
+        }
       });
     });
   });
 
-  return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
+  return defaultExercises.map((exercise) => {
+    const usage = usageMap.get(exercise.id);
+    const tags = [...exercise.muscleGroup, ...exercise.equipment];
+
+    return {
+      ...exercise,
+      routineId: usage?.routine.id,
+      routineTitle: usage?.routine.title ?? "General",
+      routineFocus: usage?.routine.focus,
+      dayId: usage?.dayId,
+      dayTitle: usage?.dayTitle,
+      tags,
+      keywords: [
+        exercise.name,
+        usage?.routine.title,
+        usage?.routine.focus,
+        usage?.dayTitle,
+        ...tags,
+        exercise.description,
+      ]
+        .filter(Boolean)
+        .map((value) => normalize(String(value)))
+        .join(" \u2022 "),
+    };
+  }).sort((a, b) => a.name.localeCompare(b.name));
 }

@@ -12,6 +12,11 @@ import {
   type RoutineTemplateDoc,
 } from "@/lib/data/routine-library";
 
+type MetricVariant = "blue" | "amber" | "rose";
+type RoutineAccent = "blue" | "amber" | "rose" | "navy";
+
+const ROUTINE_ACCENTS: RoutineAccent[] = ["blue", "amber", "rose", "navy"];
+
 const formatter =
   typeof Intl !== "undefined"
     ? new Intl.DateTimeFormat("es-ES", { dateStyle: "medium" })
@@ -60,6 +65,7 @@ export default function Dashboard() {
           title="Calorias ingeridas"
           value="Proximamente"
           helper="Sincroniza tu dieta para ver este dato"
+          variant="blue"
         />
         <MetricCard
           title="Ultimo peso"
@@ -70,7 +76,8 @@ export default function Dashboard() {
               ? `${lastMeasurement.weightKg.toFixed(1)} kg`
               : "Sin datos"
           }
-          helper={lastMeasurement ? `Registrado el ${formatDate(lastMeasurement.date) ?? "-"}` : "A?ade tu primera medicion"}
+          helper={lastMeasurement ? `Registrado el ${formatDate(lastMeasurement.date) ?? "-"}` : "Anade tu primera medicion"}
+          variant="amber"
         />
         <MetricCard
           title="Indice de grasa"
@@ -82,6 +89,7 @@ export default function Dashboard() {
               : "Sin registro"
           }
           helper="Basado en tu medicion mas reciente"
+          variant="rose"
         />
       </section>
 
@@ -102,8 +110,12 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {featuredRoutines.map((routine) => (
-              <RoutineCard key={routine.id} routine={routine} />
+            {featuredRoutines.map((routine, index) => (
+              <RoutineCard
+                key={routine.id}
+                routine={routine}
+                accent={ROUTINE_ACCENTS[index % ROUTINE_ACCENTS.length]}
+              />
             ))}
           </div>
         )}
