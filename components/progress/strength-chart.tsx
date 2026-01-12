@@ -12,15 +12,12 @@ import {
 } from "recharts";
 import { calculateOneRM } from "@/lib/fitness-utils";
 import type { RoutineLog } from "@/lib/firestore/routine-logs";
-import { Search } from "lucide-react";
 
 type Props = {
     logs: RoutineLog[];
 };
 
 export default function StrengthChart({ logs }: Props) {
-    const [searchTerm, setSearchTerm] = useState("");
-
     // Extract all exercises found in logs
     const exerciseStats = useMemo(() => {
         const stats = new Map<string, { count: number; maxWeight: number }>();

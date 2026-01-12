@@ -73,8 +73,8 @@ export default function Dashboard() {
             measurementsLoading
               ? "Cargando..."
               : lastMeasurement
-              ? `${lastMeasurement.weightKg.toFixed(1)} kg`
-              : "Sin datos"
+                ? `${lastMeasurement.weightKg.toFixed(1)} kg`
+                : "Sin datos"
           }
           helper={lastMeasurement ? `Registrado el ${formatDate(lastMeasurement.date) ?? "-"}` : "Anade tu primera medicion"}
           variant="amber"
@@ -85,8 +85,8 @@ export default function Dashboard() {
             measurementsLoading
               ? "Cargando..."
               : lastMeasurement?.bodyFatPct
-              ? `${lastMeasurement.bodyFatPct.toFixed(1)} %`
-              : "Sin registro"
+                ? `${lastMeasurement.bodyFatPct.toFixed(1)} %`
+                : "Sin registro"
           }
           helper="Basado en tu medicion mas reciente"
           variant="rose"
@@ -167,6 +167,7 @@ type MetricCardProps = {
   title: string;
   value: string;
   helper: string;
+  variant?: MetricVariant;
 };
 
 function MetricCard({ title, value, helper }: MetricCardProps) {
@@ -181,6 +182,7 @@ function MetricCard({ title, value, helper }: MetricCardProps) {
 
 type RoutineCardProps = {
   routine: RoutineDefinition;
+  accent?: RoutineAccent;
 };
 
 function RoutineCard({ routine }: RoutineCardProps) {
