@@ -13,10 +13,22 @@ const bodyFatSchema = z.preprocess((val) => {
   return Number.isFinite(num) ? num : val;
 }, z.number().min(3).max(70).optional());
 
+const measurementSchema = z.preprocess((val) => {
+  if (val === "" || val === undefined || val === null) return undefined;
+  const num = typeof val === "number" ? val : Number(val);
+  return Number.isFinite(num) ? num : val;
+}, z.number().min(5).max(300).optional());
+
 const schema = z.object({
   date: z.string().min(1),
   weightKg: z.coerce.number().min(30).max(300),
   bodyFatPct: bodyFatSchema,
+  chest: measurementSchema,
+  waist: measurementSchema,
+  hips: measurementSchema,
+  arm: measurementSchema,
+  thigh: measurementSchema,
+  calf: measurementSchema,
   notes: z.string().max(200).optional(),
 });
 
@@ -80,6 +92,30 @@ export default function MeasurementForm() {
           {...register("bodyFatPct")}
           className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
         />
+      </div>
+
+      <div className="col-span-full my-2 border-t border-[rgba(10,46,92,0.1)]" />
+      <p className="col-span-full text-xs font-semibold text-[#0a2e5c]">Medidas (cm)</p>
+
+      <div className="space-y-2 md:col-span-1">
+        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Pecho</label>
+        <input type="number" step="0.5" {...register("chest")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+      </div>
+      <div className="space-y-2 md:col-span-1">
+        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Cintura</label>
+        <input type="number" step="0.5" {...register("waist")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+      </div>
+      <div className="space-y-2 md:col-span-1">
+        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Cadera</label>
+        <input type="number" step="0.5" {...register("hips")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+      </div>
+      <div className="space-y-2 md:col-span-1">
+        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Brazo</label>
+        <input type="number" step="0.5" {...register("arm")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+      </div>
+      <div className="space-y-2 md:col-span-1">
+        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Muslo</label>
+        <input type="number" step="0.5" {...register("thigh")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-2">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Notas</label>

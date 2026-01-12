@@ -3,7 +3,14 @@ export type UUID = string;
 export type Measurement = {
   id: UUID; date: string;
   weightKg: number;
-  bodyFatPct?: number; notes?: string;
+  bodyFatPct?: number;
+  chest?: number;
+  waist?: number;
+  hips?: number;
+  arm?: number;
+  thigh?: number;
+  calf?: number;
+  notes?: string;
 };
 
 export type Exercise = {

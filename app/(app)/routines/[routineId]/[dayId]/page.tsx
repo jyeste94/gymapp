@@ -14,6 +14,9 @@ import {
 } from "@/lib/data/routine-library";
 import { useRoutineLogs, type RoutineLogSet } from "@/lib/firestore/routine-logs";
 import type { RoutineExercise } from "@/lib/data/routine-plan";
+import { useWorkoutStore } from "@/lib/stores/workout-session";
+import { Play } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const dateFormatter =
   typeof Intl !== "undefined"
@@ -82,12 +85,12 @@ export default function RoutineDayPage() {
         const sets = entry.sets?.length ? entry.sets : undefined;
         const fallback = entry.weight || entry.reps || entry.rir || entry.comment
           ? [{
-              weight: entry.weight,
-              reps: entry.reps,
-              rir: entry.rir,
-              comment: entry.comment,
-              notes: entry.notes,
-            }]
+            weight: entry.weight,
+            reps: entry.reps,
+            rir: entry.rir,
+            comment: entry.comment,
+            notes: entry.notes,
+          }]
           : undefined;
         const chosen = sets?.[sets.length - 1] ?? fallback?.[fallback.length - 1];
         if (!chosen) continue;
@@ -124,10 +127,19 @@ export default function RoutineDayPage() {
             <h1 className="text-2xl font-semibold text-zinc-900">{day.title}</h1>
             {day.focus && <p className="mt-2 text-sm text-[#4b5a72]">{day.focus}</p>}
           </div>
-          <div className="flex flex-col items-end gap-2 text-xs text-[#51607c]">
-            {day.intensity && <span>Intensidad: {day.intensity}</span>}
-            {day.estimatedDuration && <span>Duracion estimada: {day.estimatedDuration}</span>}
-            <span>{day.exercises.length} ejercicios</span>
+          <div className="flex flex-col items-end gap-3">
+            <StartWorkoutButton
+              routineId={routine.id}
+              routineTitle={routine.title}
+              dayId={day.id}
+              dayTitle={day.title}
+              exercises={day.exercises}
+            />
+            <div className="flex flex-col items-end gap-1 text-xs text-[#51607c]">
+              {day.intensity && <span>Intensidad: {day.intensity}</span>}
+              {day.estimatedDuration && <span>Duracion estimada: {day.estimatedDuration}</span>}
+              <span>{day.exercises.length} ejercicios</span>
+            </div>
           </div>
         </div>
       </header>
@@ -221,6 +233,44 @@ function ExerciseCard({ day, exercise, lastRecord }: ExerciseCardProps) {
         </div>
       )}
     </article>
+  );
+}
+
+function StartWorkoutButton({
+  routineId,
+  routineTitle,
+  dayId,
+  dayTitle,
+  exercises
+}: {
+  routineId: string,
+  routineTitle: string,
+  dayId: string,
+  dayTitle: string,
+  exercises: RoutineExercise[]
+}) {
+  const router = useRouter();
+  const startWorkout = useWorkoutStore((state) => state.startWorkout);
+
+  const handleStart = () => {
+    startWorkout({
+      routineId,
+      routineTitle,
+      dayId,
+      dayTitle,
+      exercises,
+    });
+    router.push("/workout/active");
+  };
+
+  return (
+    <button
+      onClick={handleStart}
+      className="group flex items-center gap-2 rounded-full bg-[#0a2e5c] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-[#0a2e5c] hover:ring-offset-2"
+    >
+      <Play className="h-4 w-4 fill-current" />
+      Empieza ahora
+    </button>
   );
 }
 

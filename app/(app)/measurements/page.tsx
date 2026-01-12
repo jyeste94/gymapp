@@ -31,6 +31,9 @@ export default function MeasurementsPage() {
                   <th className="pb-3">Fecha</th>
                   <th className="pb-3">Peso</th>
                   <th className="pb-3">Grasa</th>
+                  <th className="hidden pb-3 md:table-cell">Pecho</th>
+                  <th className="hidden pb-3 md:table-cell">Cintura</th>
+                  <th className="hidden pb-3 md:table-cell">Brazo</th>
                   <th className="pb-3">Notas</th>
                 </tr>
               </thead>
@@ -46,12 +49,15 @@ export default function MeasurementsPage() {
                       <td className="py-3 text-[#0a2e5c]">{new Date(row.date).toLocaleDateString()}</td>
                       <td className="py-3 font-medium text-zinc-800">{row.weightKg.toFixed(1)} kg</td>
                       <td className="py-3 text-[#0a2e5c]">{row.bodyFatPct ?? "-"}</td>
+                      <td className="hidden py-3 text-[#51607c] md:table-cell">{row.chest ?? "-"}</td>
+                      <td className="hidden py-3 text-[#51607c] md:table-cell">{row.waist ?? "-"}</td>
+                      <td className="hidden py-3 text-[#51607c] md:table-cell">{row.arm ?? "-"}</td>
                       <td className="py-3 text-[#51607c]">{row.notes ?? ""}</td>
                     </tr>
                   ))}
                 {!loading && !hasRows && (
                   <tr>
-                    <td colSpan={4} className="py-4 text-center text-[#51607c]">Sin registros todavia.</td>
+                    <td colSpan={7} className="py-4 text-center text-[#51607c]">Sin registros todavia.</td>
                   </tr>
                 )}
               </tbody>
