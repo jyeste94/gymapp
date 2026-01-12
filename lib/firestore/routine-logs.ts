@@ -31,3 +31,12 @@ export type RoutineLog = {
 
 export const useRoutineLogs = (userId?: string | null) =>
   useCol<RoutineLog>(userId ? `users/${userId}/routines` : null, { by: "date", dir: "desc" });
+
+import { add } from "@/lib/firestore/crud";
+
+export const addRoutineLog = async (userId: string, log: Omit<RoutineLog, "id">) => {
+  return add(`users/${userId}/routines`, {
+    ...log,
+    id: crypto.randomUUID(),
+  });
+};

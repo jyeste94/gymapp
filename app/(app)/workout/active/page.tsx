@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Check, Plus, ArrowLeft } from "lucide-react";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { WorkoutTimer } from "@/components/workout/workout-timer";
 import clsx from "clsx";
@@ -113,9 +113,8 @@ function SetRow({
     set,
     exerciseId,
     setId,
-    setIndex
 }: {
-    set: any,
+    set: import("@/lib/stores/workout-session").WorkoutSet,
     exerciseId: string,
     setId: string,
     setIndex: number

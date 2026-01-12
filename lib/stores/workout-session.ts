@@ -62,7 +62,7 @@ export const useWorkoutStore = create<WorkoutState>()(
                     exercises: exercises.map((ex) => ({
                         ...ex,
                         originalSets: ex.sets,
-                        sets: Array.from({ length: ex.sets || 3 }).map((_, i) => ({
+                        sets: Array.from({ length: ex.sets || 3 }).map(() => ({
                             id: crypto.randomUUID(),
                             weight: "",
                             reps: "",
