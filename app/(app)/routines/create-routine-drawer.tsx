@@ -674,9 +674,6 @@ function ExercisePicker({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-col">
                   <p className="font-semibold text-[#0a2e5c]">{exercise.name}</p>
-                  <p className="text-xs text-[#51607c]">
-                    {exercise.sets}x {exercise.repRange} - {exercise.rest} descanso
-                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
