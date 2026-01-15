@@ -1,19 +1,22 @@
+
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut } from "lucide-react";
-import { logout } from "@/lib/firebase/auth-hooks";
+import { useFirebase } from "@/lib/firebase/client-context";
+import { signOut } from "firebase/auth";
 
 export default function SidebarFooter() {
   const router = useRouter();
+  const { auth } = useFirebase();
   const [pending, setPending] = useState(false);
 
   const handleLogout = async () => {
-    if (pending) return;
+    if (pending || !auth) return;
     try {
       setPending(true);
-      await logout();
+      await signOut(auth);
       router.replace("/login");
     } catch (error) {
       console.error("logout failed", error);

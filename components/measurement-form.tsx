@@ -1,9 +1,11 @@
+
 "use client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { add } from "@/lib/firestore/crud";
 import { useAuth } from "@/lib/firebase/auth-hooks";
+import { useFirebase } from "@/lib/firebase/client-context";
 
 const bodyFatSchema = z.preprocess((val) => {
   if (val === "" || val === undefined || val === null) {
@@ -36,6 +38,7 @@ type Form = z.infer<typeof schema>;
 
 export default function MeasurementForm() {
   const { user } = useAuth();
+  const { db } = useFirebase();
   const {
     register,
     handleSubmit,
@@ -47,8 +50,8 @@ export default function MeasurementForm() {
   });
 
   const onSubmit = async (data: Form) => {
-    if (!user) return;
-    await add(`users/${user.uid}/measurements`, {
+    if (!user || !db) return;
+    await add(db, `users/${user.uid}/measurements`, {
       ...data,
       id: crypto.randomUUID(),
       date: new Date(data.date).toISOString(),
@@ -134,4 +137,3 @@ export default function MeasurementForm() {
     </form>
   );
 }
-

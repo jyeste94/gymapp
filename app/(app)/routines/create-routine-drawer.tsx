@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
@@ -6,6 +7,7 @@ import { ArrowLeft, Plus, Search, Trash2, X, Eye } from "lucide-react";
 import type { RoutineExercise } from "@/lib/data/routine-plan";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
 import { createRoutineTemplate, type RoutineTemplateInput } from "@/lib/firestore/routines";
+import { useFirebase } from "@/lib/firebase/client-context";
 
 const normalize = (value: string) =>
   value
@@ -66,6 +68,7 @@ type ViewState =
   | { type: "picker"; dayId: string };
 
 export default function CreateRoutineDrawer({ open, userId, exercises, onClose, onCreated }: Props) {
+  const { db } = useFirebase();
   const [form, setForm] = useState<RoutineFormState>(() => buildDefaultState());
   const [view, setView] = useState<ViewState>({ type: "overview" });
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
@@ -194,10 +197,10 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
 
   const allDaysHaveExercises = form.days.every((day) => day.exercises.length > 0);
 
-  const canSave = Boolean(userId) && !saving && form.title.trim().length > 2 && allDaysHaveExercises;
+  const canSave = Boolean(userId && db) && !saving && form.title.trim().length > 2 && allDaysHaveExercises;
 
   const handleSave = async () => {
-    if (!userId || !canSave) return;
+    if (!userId || !db || !canSave) return;
     try {
       setSaving(true);
       setError(null);
@@ -221,7 +224,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           exercises: day.exercises,
         })),
       };
-      await createRoutineTemplate(userId, payload);
+      await createRoutineTemplate(db, userId, payload);
       onCreated?.();
       onClose();
     } catch (error) {

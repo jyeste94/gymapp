@@ -1,8 +1,10 @@
+
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
+import { useFirebase } from "@/lib/firebase/client-context";
 import { useCol } from "@/lib/firestore/hooks";
 import {
   defaultRoutines,
@@ -31,6 +33,7 @@ export default function ExerciseDetailPage() {
   const router = useRouter();
   const params = useParams<{ exerciseId: string }>();
   const { user } = useAuth();
+  const { db } = useFirebase();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
   const [isSaving, setIsSaving] = useState(false);
@@ -109,7 +112,7 @@ export default function ExerciseDetailPage() {
   };
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user || !db) return;
     setIsSaving(true);
     const cleanedSets = session.sets
       .filter((set) => Boolean(set.weight || set.reps || set.rir))
@@ -122,7 +125,7 @@ export default function ExerciseDetailPage() {
     }
 
     try {
-      await saveExerciseLog(user.uid, {
+      await saveExerciseLog(db, user.uid, {
         exerciseId: exercise.id,
         exerciseName: exercise.name,
         routineId: routine.id,

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,12 +6,14 @@ import { useRouter } from "next/navigation";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { addRoutineLog } from "@/lib/firestore/routine-logs";
+import { useFirebase } from "@/lib/firebase/client-context";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import confetti from "canvas-confetti";
 
 export default function WorkoutFinishPage() {
     const router = useRouter();
     const { user } = useAuth();
+    const { db } = useFirebase();
     const state = useWorkoutStore();
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -34,11 +37,11 @@ export default function WorkoutFinishPage() {
     };
 
     const handleSave = async () => {
-        if (!user || saving) return;
+        if (!user || !db || saving) return;
 
         setSaving(true);
         try {
-            await addRoutineLog(user.uid, {
+            await addRoutineLog(db, user.uid, {
                 date: new Date().toISOString(),
                 routineId: state.routineId || undefined,
                 routineName: state.routineTitle || undefined,
@@ -97,7 +100,7 @@ export default function WorkoutFinishPage() {
                 <div className="flex flex-col gap-3 pt-8">
                     <button
                         onClick={handleSave}
-                        disabled={saving}
+                        disabled={saving || !db}
                         className="group relative flex w-full items-center justify-center justify-items-center gap-2 rounded-2xl bg-[#0a2e5c] px-6 py-4 text-base font-semibold text-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl disabled:opacity-70"
                     >
                         {saving ? "Guardando..." : "Guardar Entrenamiento"}

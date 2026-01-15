@@ -1,7 +1,8 @@
+
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Trash2 } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import {
@@ -13,6 +14,8 @@ import {
 } from "@/lib/data/routine-library";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 import CreateRoutineDrawer from "@/app/(app)/routines/create-routine-drawer";
+import { deleteRoutineTemplate } from "@/lib/firestore/routines";
+import { useFirebase } from "@/lib/firebase/client-context";
 
 const formatDaysLabel = (count: number) => `${count} dia${count === 1 ? "" : "s"}`;
 
@@ -85,17 +88,13 @@ export default function RoutinesPage() {
   );
 }
 
-import { Trash2 } from "lucide-react";
-import { deleteRoutineTemplate } from "@/lib/firestore/routines";
-
-// ... existing imports ...
-
 type RoutineCardProps = {
   routine: RoutineDefinition;
   userId?: string;
 };
 
 function RoutineCard({ routine, userId }: RoutineCardProps) {
+  const { db } = useFirebase();
   const dayCount = routine.days.length;
   const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
   const isCustom = !defaultRoutines.some(r => r.id === routine.id);
@@ -103,9 +102,9 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!userId || !isCustom) return;
+    if (!userId || !isCustom || !db) return;
     if (confirm("Estas seguro de eliminar esta rutina?")) {
-      await deleteRoutineTemplate(userId, routine.id);
+      await deleteRoutineTemplate(db, userId, routine.id);
     }
   };
 
@@ -124,7 +123,8 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
           {isCustom && (
             <button
               onClick={handleDelete}
-              className="rounded-full p-1 text-red-500 hover:bg-red-50"
+              disabled={!db}
+              className="rounded-full p-1 text-red-500 hover:bg-red-50 disabled:opacity-50"
               title="Eliminar rutina"
             >
               <Trash2 className="h-4 w-4" />
@@ -146,4 +146,3 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
     </Link>
   );
 }
-
