@@ -28,7 +28,7 @@ export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc
     const q = orderConstraint ? query(base, orderConstraint) : base;
 
     const unsub = onSnapshot(q, (snap) => {
-      setData(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as T[]);
+      setData(snap.docs.map((d) => ({ ...d.data(), id: d.id })) as T[]);
       setLoading(false);
     });
 
