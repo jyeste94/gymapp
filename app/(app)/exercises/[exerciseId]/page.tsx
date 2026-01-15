@@ -133,10 +133,10 @@ export default function ExerciseDetailPage() {
         dayId: exerciseEntry.day.id,
         dayName: exerciseEntry.day.title,
         date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
-        perceivedEffort: session.perceivedEffort || undefined,
-        notes: session.notes.trim() || undefined,
-        mediaImage: session.mediaImage.trim() || undefined,
-        mediaVideo: session.mediaVideo.trim() || undefined,
+        perceivedEffort: session.perceivedEffort || null,
+        notes: session.notes.trim() || null,
+        mediaImage: session.mediaImage.trim() || null,
+        mediaVideo: session.mediaVideo.trim() || null,
         sets: cleanedSets,
       });
 

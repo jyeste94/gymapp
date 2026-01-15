@@ -19,10 +19,10 @@ export type ExerciseLog = {
   dayId?: string;
   dayName?: string;
   date: string;
-  perceivedEffort?: string;
-  notes?: string;
-  mediaImage?: string;
-  mediaVideo?: string;
+  perceivedEffort?: string | null;
+  notes?: string | null;
+  mediaImage?: string | null;
+  mediaVideo?: string | null;
   sets: ExerciseLogSet[];
 };
 
