@@ -173,7 +173,7 @@ export const pushPullLegsRoutine: RoutinePlan = {
       legacyNames: ["Dia 3 - Pierna anterior", "Dia 3 - Empuje (Piernas anterior + Core)"],
       exercises: [
         {
-          id: "sentadilla",
+          id: "sentadilla_trasera",
           sets: 4,
           repRange: "6-8",
           rest: "2-3 min",
@@ -295,7 +295,7 @@ export const upperLowerRoutine: RoutinePlan = {
       notes: "Enfasis en patrones de empuje y pierna anterior.",
       warmup: ["Movilidad hombros", "Sentadilla peso corporal"],
       exercises: [
-        { id: "sentadilla", sets: 3, repRange: "8-10", rest: "2-3 min", tip: "Profundidad al paralelo." },
+        { id: "sentadilla_trasera", sets: 3, repRange: "8-10", rest: "2-3 min", tip: "Profundidad al paralelo." },
         { id: "press_banca", sets: 3, repRange: "8-10", rest: "2-3 min", tip: "Controla la excentrica." },
         { id: "press_militar", sets: 3, repRange: "10-12", rest: "2 min", tip: "Sin arquear espalda." },
         { id: "extension_cuadriceps", sets: 3, repRange: "12-15", rest: "90 s", tip: "Aprieta arriba 1s." },
