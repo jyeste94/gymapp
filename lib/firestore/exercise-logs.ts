@@ -1,5 +1,7 @@
-﻿import { add } from "@/lib/firestore/crud";
+
+import { add } from "@/lib/firestore/crud";
 import { useCol } from "@/lib/firestore/hooks";
+import { Firestore } from "firebase/firestore";
 
 export type ExerciseLogSet = {
   weight?: string;
@@ -29,8 +31,8 @@ export type ExerciseLogInput = Omit<ExerciseLog, "id">;
 export const useExerciseLogs = (userId?: string | null) =>
   useCol<ExerciseLog>(userId ? `users/${userId}/exerciseLogs` : null, { by: "date", dir: "desc" });
 
-export async function saveExerciseLog(userId: string, data: ExerciseLogInput) {
-  return add(`users/${userId}/exerciseLogs`, {
+export async function saveExerciseLog(db: Firestore, userId: string, data: ExerciseLogInput) {
+  return add(db, `users/${userId}/exerciseLogs`, {
     id: crypto.randomUUID(),
     ...data,
   });

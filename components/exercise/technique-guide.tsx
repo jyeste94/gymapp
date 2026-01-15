@@ -1,8 +1,7 @@
-
-import type { Exercise } from "@/lib/data/routine-library";
+import type { RoutineExercise } from "@/lib/data/routine-plan";
 
 type TechniqueGuideProps = {
-  exercise: Exercise;
+  exercise: RoutineExercise;
 };
 
 export default function TechniqueGuide({ exercise }: TechniqueGuideProps) {

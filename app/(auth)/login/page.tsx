@@ -1,8 +1,11 @@
+
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import type { FirebaseError } from "firebase/app";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/lib/firebase/auth-hooks";
+import { useFirebase } from "@/lib/firebase/client-context";
 import {
   loginEmail,
   signupEmail,
@@ -10,22 +13,9 @@ import {
   loginFacebook,
   loginTwitter,
   loginApple,
-  useAuth,
-} from "@/lib/firebase/auth-hooks";
+} from "@/lib/firebase/auth-actions";
 
 type ProviderId = "google" | "facebook" | "twitter" | "apple";
-type ProviderButtonConfig = {
-  id: ProviderId;
-  label: string;
-  action: () => Promise<unknown>;
-};
-
-const PROVIDERS: ProviderButtonConfig[] = [
-  { id: "google", label: "Continuar con Google", action: loginGoogle },
-  { id: "facebook", label: "Continuar con Facebook", action: loginFacebook },
-  { id: "twitter", label: "Continuar con Twitter", action: loginTwitter },
-  { id: "apple", label: "Continuar con Apple", action: loginApple },
-];
 
 export default function LoginPage() {
   return (
@@ -36,7 +26,8 @@ export default function LoginPage() {
 }
 
 function LoginForm() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { app } = useFirebase(); // Get the Firebase app instance from the context
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,13 +39,27 @@ function LoginForm() {
   const redirect = searchParams.get("redirect") ?? "/";
   const isSignup = mode === "signup";
 
+  const providerActions: Record<ProviderId, () => Promise<unknown>> = {
+    google: () => loginGoogle(app!),
+    facebook: () => loginFacebook(app!),
+    twitter: () => loginTwitter(app!),
+    apple: () => loginApple(app!),
+  };
+
+  const PROVIDERS: { id: ProviderId; label: string }[] = [
+    { id: "google", label: "Continuar con Google" },
+    { id: "facebook", label: "Continuar con Facebook" },
+    { id: "twitter", label: "Continuar con Twitter" },
+    { id: "apple", label: "Continuar con Apple" },
+  ];
+
   useEffect(() => {
-    if (!loading && user) {
+    if (!authLoading && user) {
       router.replace(redirect);
     }
-  }, [user, loading, router, redirect]);
+  }, [user, authLoading, router, redirect]);
 
-  const isBusy = emailLoading || providerLoading !== null;
+  const isBusy = emailLoading || providerLoading !== null || !app;
 
   const parseFirebaseError = (error: unknown) => {
     const fbError = error as FirebaseError | undefined;
@@ -81,7 +86,7 @@ function LoginForm() {
   };
 
   const handleEmailSubmit = async () => {
-    if (!email || !password) {
+    if (!email || !password || !app) {
       setErrorMessage("Introduce correo y contrasena.");
       return;
     }
@@ -89,9 +94,9 @@ function LoginForm() {
       setErrorMessage(null);
       setEmailLoading(true);
       if (isSignup) {
-        await signupEmail(email, password);
+        await signupEmail(app, email, password);
       } else {
-        await loginEmail(email, password);
+        await loginEmail(app, email, password);
       }
     } catch (error) {
       setErrorMessage(parseFirebaseError(error));
@@ -100,11 +105,12 @@ function LoginForm() {
     }
   };
 
-  const handleProviderLogin = async (provider: ProviderButtonConfig) => {
+  const handleProviderLogin = async (providerId: ProviderId) => {
+    if (!app) return;
     try {
       setErrorMessage(null);
-      setProviderLoading(provider.id);
-      await provider.action();
+      setProviderLoading(providerId);
+      await providerActions[providerId]();
     } catch (error) {
       setErrorMessage(parseFirebaseError(error));
     } finally {
@@ -112,7 +118,12 @@ function LoginForm() {
     }
   };
 
-  return (
+  // Render a loading state if Firebase app is not initialized yet.
+  if (!app || authLoading) {
+    return <div className="min-h-dvh grid place-items-center text-sm text-[#51607c]">Cargando...</div>;
+  }
+  
+    return (
     <main className="min-h-dvh grid place-items-center px-6 py-10">
       <div className="glass-card w-full max-w-lg border-[rgba(10,46,92,0.16)] bg-white/80 p-8">
         <div className="space-y-1 text-center">
@@ -172,7 +183,7 @@ function LoginForm() {
             <ProviderButton
               key={provider.id}
               provider={provider.id}
-              onClick={() => handleProviderLogin(provider)}
+              onClick={() => handleProviderLogin(provider.id)}
               disabled={isBusy}
               loading={providerLoading === provider.id}
             >

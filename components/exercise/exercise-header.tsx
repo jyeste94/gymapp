@@ -1,10 +1,11 @@
 
 import Chip from "@/components/ui/chip";
-import type { Exercise, Routine } from "@/lib/data/routine-library";
+import type { RoutineDefinition } from "@/lib/data/routine-library";
+import type { RoutineExercise } from "@/lib/data/routine-plan";
 
 type ExerciseHeaderProps = {
-  exercise: Exercise;
-  routine: Routine;
+  exercise: RoutineExercise;
+  routine: RoutineDefinition;
 };
 
 export default function ExerciseHeader({ exercise, routine }: ExerciseHeaderProps) {

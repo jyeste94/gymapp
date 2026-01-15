@@ -1,9 +1,11 @@
+
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { db } from "@/lib/firebase/client";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { useFirebase } from "@/lib/firebase/client-context";
 
 export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc" | "desc" }) {
+  const { db } = useFirebase();
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +17,7 @@ export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc
   );
 
   useEffect(() => {
-    if (!path) {
+    if (!path || !db) {
       setData([]);
       setLoading(false);
       return undefined;
@@ -31,7 +33,7 @@ export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc
     });
 
     return () => unsub();
-  }, [path, orderConstraint]);
+  }, [path, orderConstraint, db]);
 
   return { data, loading };
 }
