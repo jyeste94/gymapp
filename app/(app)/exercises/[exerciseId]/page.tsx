@@ -41,12 +41,11 @@ const isToday = (isoDate: string) => {
   );
 };
 
-// Helper to convert a Log Set (optional fields) to a Session Set (required fields)
 const logSetToSessionSet = (logSet: ExerciseLogSet): SessionSet => ({
   weight: logSet.weight || "",
   reps: logSet.reps || "",
   rir: logSet.rir || "",
-  completed: false, // Always start unchecked when loading a session
+  completed: false,
 });
 
 export default function ExerciseDetailPage() {
@@ -96,7 +95,6 @@ export default function ExerciseDetailPage() {
     sets: defaultSets,
   });
 
-  // Effect to find and load today's log
   useEffect(() => {
     const todaysLog = history.find(log => isToday(log.date));
     if (todaysLog) {
@@ -155,15 +153,19 @@ export default function ExerciseDetailPage() {
   const handleSave = async () => {
     if (!user || !db) return;
     setIsSaving(true);
-    const cleanedSets = session.sets
-      .filter((set) => Boolean(set.weight || set.reps || set.rir))
-      .map((set) => ({ weight: set.weight, reps: set.reps, rir: set.rir }));
 
-    if (!cleanedSets.length && !session.notes.trim()) {
+    const hasSetData = session.sets.some(set => Boolean(set.weight || set.reps || set.rir));
+    if (!hasSetData && !session.notes.trim()) {
       toast.error("No hay datos para guardar.");
       setIsSaving(false);
       return;
     }
+
+    const setsToSave = session.sets.map(set => ({
+      weight: set.weight,
+      reps: set.reps,
+      rir: set.rir,
+    }));
 
     const logData = {
       exerciseId: exercise.id,
@@ -177,7 +179,7 @@ export default function ExerciseDetailPage() {
       notes: session.notes.trim() || null,
       mediaImage: session.mediaImage.trim() || null,
       mediaVideo: session.mediaVideo.trim() || null,
-      sets: cleanedSets,
+      sets: setsToSave,
     };
 
     try {
