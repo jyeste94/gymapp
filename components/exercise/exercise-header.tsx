@@ -1,14 +1,13 @@
 
 import Chip from "@/components/ui/chip";
-import type { Exercise, Routine, Day } from "@/lib/data/routine-library";
+import type { Exercise, Routine } from "@/lib/data/routine-library";
 
 type ExerciseHeaderProps = {
   exercise: Exercise;
   routine: Routine;
-  day: Day;
 };
 
-export default function ExerciseHeader({ exercise, routine, day }: ExerciseHeaderProps) {
+export default function ExerciseHeader({ exercise, routine }: ExerciseHeaderProps) {
   return (
     <header className="rounded-2xl border bg-white/70 p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">

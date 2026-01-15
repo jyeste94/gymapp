@@ -1,7 +1,5 @@
-
-import { useState } from "react";
 import clsx from "clsx";
-import type { SessionState, SessionSet } from "./types";
+import type { SessionState } from "./types";
 import MediaField from "@/components/ui/media-field";
 
 type SessionFormProps = {

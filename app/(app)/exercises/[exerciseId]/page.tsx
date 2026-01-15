@@ -113,7 +113,7 @@ export default function ExerciseDetailPage() {
     setIsSaving(true);
     const cleanedSets = session.sets
       .filter((set) => Boolean(set.completed || set.weight || set.reps || set.rir))
-      .map(({ completed, ...rest }) => rest);
+      .map(({ completed: _, ...rest }) => rest);
 
     if (!cleanedSets.length && !session.notes.trim()) {
       toast.error("No hay datos para guardar.");
@@ -146,7 +146,7 @@ export default function ExerciseDetailPage() {
         sets: createSets(exercise.sets),
       });
       toast.success("Registro guardado con éxito!");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al guardar el registro.");
     } finally {
       setIsSaving(false);
