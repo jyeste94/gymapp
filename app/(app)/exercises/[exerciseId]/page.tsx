@@ -82,7 +82,7 @@ export default function ExerciseDetailPage() {
     );
   }
 
-  const { exercise, routine, day } = exerciseEntry;
+  const { exercise, routine } = exerciseEntry;
 
   const handleSetField = (index: number, field: "weight" | "reps" | "rir") => (value: string) => {
     setSession((prev) => {
@@ -112,8 +112,8 @@ export default function ExerciseDetailPage() {
     if (!user) return;
     setIsSaving(true);
     const cleanedSets = session.sets
-      .filter((set) => Boolean(set.completed || set.weight || set.reps || set.rir))
-      .map(({ completed: _, ...rest }) => rest);
+      .filter((set) => Boolean(set.weight || set.reps || set.rir))
+      .map((set) => ({ weight: set.weight, reps: set.reps, rir: set.rir }));
 
     if (!cleanedSets.length && !session.notes.trim()) {
       toast.error("No hay datos para guardar.");
@@ -127,8 +127,8 @@ export default function ExerciseDetailPage() {
         exerciseName: exercise.name,
         routineId: routine.id,
         routineName: routine.title,
-        dayId: day.id,
-        dayName: day.title,
+        dayId: exerciseEntry.day.id,
+        dayName: exerciseEntry.day.title,
         date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
         perceivedEffort: session.perceivedEffort || undefined,
         notes: session.notes.trim() || undefined,
@@ -146,8 +146,9 @@ export default function ExerciseDetailPage() {
         sets: createSets(exercise.sets),
       });
       toast.success("Registro guardado con éxito!");
-    } catch (_error) {
+    } catch (e) {
       toast.error("Error al guardar el registro.");
+      console.error(e);
     } finally {
       setIsSaving(false);
     }
@@ -159,7 +160,7 @@ export default function ExerciseDetailPage() {
         {"<- Volver"}
       </button>
 
-      <ExerciseHeader exercise={exercise} routine={routine} day={day} />
+      <ExerciseHeader exercise={exercise} routine={routine} />
 
       <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 
