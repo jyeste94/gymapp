@@ -32,8 +32,5 @@ export const useExerciseLogs = (userId?: string | null) =>
   useCol<ExerciseLog>(userId ? `users/${userId}/exerciseLogs` : null, { by: "date", dir: "desc" });
 
 export async function saveExerciseLog(db: Firestore, userId: string, data: ExerciseLogInput) {
-  return add(db, `users/${userId}/exerciseLogs`, {
-    id: crypto.randomUUID(),
-    ...data,
-  });
+  return add(db, `users/${userId}/exerciseLogs`, data);
 }
