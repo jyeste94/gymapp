@@ -1,6 +1,6 @@
 
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
@@ -16,6 +16,7 @@ import {
 import {
   useExerciseLogs,
   saveExerciseLog,
+  updateExerciseLog, // Import the update function
   type ExerciseLog,
 } from "@/lib/firestore/exercise-logs";
 import MediaShowcase from "@/components/ui/media-showcase";
@@ -29,6 +30,17 @@ import toast from 'react-hot-toast';
 const createSets = (count: number): SessionSet[] =>
   Array.from({ length: count }, () => ({ weight: "", reps: "", rir: "", completed: false }));
 
+// Helper to check if a log is from today
+const isToday = (isoDate: string) => {
+  const today = new Date();
+  const logDate = new Date(isoDate);
+  return (
+    today.getFullYear() === logDate.getFullYear() &&
+    today.getMonth() === logDate.getMonth() &&
+    today.getDate() === logDate.getDate()
+  );
+};
+
 export default function ExerciseDetailPage() {
   const router = useRouter();
   const params = useParams<{ exerciseId: string }>();
@@ -37,6 +49,7 @@ export default function ExerciseDetailPage() {
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
   const [isSaving, setIsSaving] = useState(false);
+  const [activeLogId, setActiveLogId] = useState<string | null>(null);
 
   const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
   const { data: exerciseLogs } = useExerciseLogs(user?.uid);
@@ -70,6 +83,22 @@ export default function ExerciseDetailPage() {
     if (!exerciseEntry) return [] as ExerciseLog[];
     return (exerciseLogs ?? []).filter((log) => log.exerciseId === exerciseEntry.exercise.id);
   }, [exerciseLogs, exerciseEntry]);
+
+  // Effect to find and load today's log
+  useEffect(() => {
+    const todaysLog = history.find(log => isToday(log.date));
+    if (todaysLog) {
+      setActiveLogId(todaysLog.id);
+      setSession({
+        sessionDate: new Date(todaysLog.date).toISOString().slice(0, 16),
+        perceivedEffort: todaysLog.perceivedEffort || "",
+        notes: todaysLog.notes || "",
+        mediaImage: todaysLog.mediaImage || exerciseEntry?.exercise.image || "",
+        mediaVideo: todaysLog.mediaVideo || exerciseEntry?.exercise.video || "",
+        sets: todaysLog.sets.length > 0 ? todaysLog.sets.map(s => ({...s, completed: false})) : defaultSets,
+      });
+    }
+  }, [history, exerciseEntry, defaultSets]);
 
   if (!exerciseEntry) {
     return (
@@ -124,31 +153,32 @@ export default function ExerciseDetailPage() {
       return;
     }
 
-    try {
-      await saveExerciseLog(db, user.uid, {
-        exerciseId: exercise.id,
-        exerciseName: exercise.name,
-        routineId: routine.id,
-        routineName: routine.title,
-        dayId: exerciseEntry.day.id,
-        dayName: exerciseEntry.day.title,
-        date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
-        perceivedEffort: session.perceivedEffort || null,
-        notes: session.notes.trim() || null,
-        mediaImage: session.mediaImage.trim() || null,
-        mediaVideo: session.mediaVideo.trim() || null,
-        sets: cleanedSets,
-      });
+    const logData = {
+      exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      routineId: routine.id,
+      routineName: routine.title,
+      dayId: exerciseEntry.day.id,
+      dayName: exerciseEntry.day.title,
+      date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
+      perceivedEffort: session.perceivedEffort || null,
+      notes: session.notes.trim() || null,
+      mediaImage: session.mediaImage.trim() || null,
+      mediaVideo: session.mediaVideo.trim() || null,
+      sets: cleanedSets,
+    };
 
-      setSession({
-        sessionDate: new Date().toISOString().slice(0, 16),
-        perceivedEffort: "",
-        notes: "",
-        mediaImage: exercise.image ?? "",
-        mediaVideo: exercise.video ?? "",
-        sets: createSets(exercise.sets),
-      });
-      toast.success("Registro guardado con éxito!");
+    try {
+      if (activeLogId) {
+        // If we have an active log ID, update it
+        await updateExerciseLog(db, user.uid, activeLogId, logData);
+        toast.success("Registro actualizado con éxito!");
+      } else {
+        // Otherwise, create a new log
+        const newLogId = await saveExerciseLog(db, user.uid, logData);
+        setActiveLogId(newLogId); // Save the new ID for subsequent updates
+        toast.success("Registro guardado con éxito!");
+      }
     } catch (e) {
       toast.error("Error al guardar el registro.");
       console.error(e);

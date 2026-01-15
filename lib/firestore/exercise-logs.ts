@@ -1,5 +1,5 @@
 
-import { add } from "@/lib/firestore/crud";
+import { add, update } from "@/lib/firestore/crud";
 import { useCol } from "@/lib/firestore/hooks";
 import { Firestore } from "firebase/firestore";
 
@@ -33,4 +33,8 @@ export const useExerciseLogs = (userId?: string | null) =>
 
 export async function saveExerciseLog(db: Firestore, userId: string, data: ExerciseLogInput) {
   return add(db, `users/${userId}/exerciseLogs`, data);
+}
+
+export async function updateExerciseLog(db: Firestore, userId: string, logId: string, data: Partial<ExerciseLogInput>) {
+  return update(db, `users/${userId}/exerciseLogs`, logId, data);
 }
