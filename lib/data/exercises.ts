@@ -182,7 +182,7 @@ export const defaultExercises: Exercise[] = [
     },
     // Legs Anterior
     {
-        id: "sentadilla",
+        id: "sentadilla_trasera",
         name: "Sentadilla trasera",
         muscleGroup: ["Cuadriceps", "Gluteos"],
         equipment: ["Barra"],
