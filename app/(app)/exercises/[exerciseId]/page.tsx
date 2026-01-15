@@ -1,8 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import clsx from "clsx";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import {
@@ -17,45 +16,24 @@ import {
   saveExerciseLog,
   type ExerciseLog,
 } from "@/lib/firestore/exercise-logs";
-
-type SessionSet = {
-  weight: string;
-  reps: string;
-  rir: string;
-  completed: boolean;
-};
-
-type SessionState = {
-  sessionDate: string;
-  perceivedEffort: string;
-  notes: string;
-  mediaImage: string;
-  mediaVideo: string;
-  sets: SessionSet[];
-};
-
-const dateFormatter =
-  typeof Intl !== "undefined"
-    ? new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeStyle: "short" })
-    : null;
-
-const formatDate = (iso?: string) => {
-  if (!iso) return null;
-  try {
-    const date = new Date(iso);
-    return dateFormatter ? dateFormatter.format(date) : iso;
-  } catch {
-    return null;
-  }
-};
+import MediaShowcase from "@/components/ui/media-showcase";
+import ExerciseHeader from "@/components/exercise/exercise-header";
+import TechniqueGuide from "@/components/exercise/technique-guide";
+import SessionForm from "@/components/exercise/session-form";
+import ExerciseHistory from "@/components/exercise/exercise-history";
+import type { SessionState, SessionSet } from "@/components/exercise/types";
+import toast from 'react-hot-toast';
 
 const createSets = (count: number): SessionSet[] =>
   Array.from({ length: count }, () => ({ weight: "", reps: "", rir: "", completed: false }));
 
 export default function ExerciseDetailPage() {
+  const router = useRouter();
   const params = useParams<{ exerciseId: string }>();
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
   const { data: exerciseLogs } = useExerciseLogs(user?.uid);
@@ -132,358 +110,74 @@ export default function ExerciseDetailPage() {
 
   const handleSave = async () => {
     if (!user) return;
-    const cleanedSets = session.sets.filter((set) =>
-      Boolean(set.completed || set.weight || set.reps || set.rir)
-    );
+    setIsSaving(true);
+    const cleanedSets = session.sets
+      .filter((set) => Boolean(set.completed || set.weight || set.reps || set.rir))
+      .map(({ completed, ...rest }) => rest);
 
-    if (!cleanedSets.length && !session.notes.trim()) return;
+    if (!cleanedSets.length && !session.notes.trim()) {
+      toast.error("No hay datos para guardar.");
+      setIsSaving(false);
+      return;
+    }
 
-    await saveExerciseLog(user.uid, {
-      exerciseId: exercise.id,
-      exerciseName: exercise.name,
-      routineId: routine.id,
-      routineName: routine.title,
-      dayId: day.id,
-      dayName: day.title,
-      date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
-      perceivedEffort: session.perceivedEffort || undefined,
-      notes: session.notes.trim() || undefined,
-      mediaImage: session.mediaImage.trim() || undefined,
-      mediaVideo: session.mediaVideo.trim() || undefined,
-      sets: cleanedSets,
-    });
+    try {
+      await saveExerciseLog(user.uid, {
+        exerciseId: exercise.id,
+        exerciseName: exercise.name,
+        routineId: routine.id,
+        routineName: routine.title,
+        dayId: day.id,
+        dayName: day.title,
+        date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
+        perceivedEffort: session.perceivedEffort || undefined,
+        notes: session.notes.trim() || undefined,
+        mediaImage: session.mediaImage.trim() || undefined,
+        mediaVideo: session.mediaVideo.trim() || undefined,
+        sets: cleanedSets,
+      });
 
-    setSession({
-      sessionDate: new Date().toISOString().slice(0, 16),
-      perceivedEffort: "",
-      notes: "",
-      mediaImage: exercise.image ?? "",
-      mediaVideo: exercise.video ?? "",
-      sets: createSets(exercise.sets),
-    });
+      setSession({
+        sessionDate: new Date().toISOString().slice(0, 16),
+        perceivedEffort: "",
+        notes: "",
+        mediaImage: exercise.image ?? "",
+        mediaVideo: exercise.video ?? "",
+        sets: createSets(exercise.sets),
+      });
+      toast.success("Registro guardado con éxito!");
+    } catch (error) {
+      toast.error("Error al guardar el registro.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      <Link href={`/routines/${routine.id}/${day.id}`} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-        {"<- Volver a "}{day.title}
-      </Link>
+      <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
+        {"<- Volver"}
+      </button>
 
-      <header className="rounded-2xl border bg-white/70 p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-[#51607c]">{routine.title}</p>
-            <h1 className="text-2xl font-semibold text-zinc-900">{exercise.name}</h1>
-            <p className="mt-2 text-sm text-[#4b5a72]">{exercise.description}</p>
-          </div>
-          <div className="flex flex-wrap justify-end gap-2 text-xs text-[#51607c]">
-            <Chip label={`${exercise.sets} series`} />
-            <Chip label={`${exercise.repRange} reps`} />
-            <Chip label={`Descanso ${exercise.rest}`} />
-            {[...exercise.muscleGroup, ...exercise.equipment].map((tag) => (
-              <Chip key={tag} label={tag} />
-            ))}
-          </div>
-        </div>
-      </header>
+      <ExerciseHeader exercise={exercise} routine={routine} day={day} />
 
       <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 
-      <section className="rounded-2xl border bg-white/70 p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900">Tecnica recomendada</h2>
-        <ul className="mt-4 space-y-2 text-sm text-[#4b5a72]">
-          {exercise.technique?.map((tip) => (
-            <li key={tip} className="flex items-start gap-2">
-              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-zinc-400" aria-hidden />
-              <span>{tip}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <TechniqueGuide exercise={exercise} />
 
-      <section className="rounded-2xl border bg-white/70 p-6 shadow-sm">
-        <form className="space-y-5" onSubmit={(event) => event.preventDefault()}>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-xs text-[#51607c]">Fecha y hora</label>
-              <input
-                type="datetime-local"
-                value={session.sessionDate}
-                onChange={(event) => setSession((prev) => ({ ...prev, sessionDate: event.target.value }))}
-                className="w-full rounded border px-3 py-2 text-sm"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs text-[#51607c]">Esfuerzo percibido (RPE)</label>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={session.perceivedEffort}
-                onChange={(event) => setSession((prev) => ({ ...prev, perceivedEffort: event.target.value }))}
-                className="w-full rounded border px-3 py-2 text-sm"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {session.sets.map((set, index) => (
-              <div key={index} className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 px-4 py-3">
-                <div className="flex items-center justify-between text-xs text-[#51607c]">
-                  <span>Serie {index + 1}</span>
-                  <button
-                    type="button"
-                    onClick={() => toggleSetCompleted(index)}
-                    className={clsx(
-                      "rounded-full px-2 py-0.5",
-                      set.completed
-                        ? "bg-[#0a2e5c] text-white"
-                        : "border border-[rgba(10,46,92,0.26)] bg-white/80 text-[#51607c]"
-                    )}
-                  >
-                    {set.completed ? "Completada" : "Pendiente"}
-                  </button>
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
-                  <input
-                    type="number"
-                    placeholder="Kg"
-                    value={set.weight}
-                    onChange={(event) => handleSetField(index, "weight")(event.target.value)}
-                    className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
-                    min="0"
-                    step="0.5"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Reps"
-                    value={set.reps}
-                    onChange={(event) => handleSetField(index, "reps")(event.target.value)}
-                    className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
-                    min="0"
-                  />
-                  <input
-                    type="number"
-                    placeholder="RIR"
-                    value={set.rir}
-                    onChange={(event) => handleSetField(index, "rir")(event.target.value)}
-                    className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
-                    min="0"
-                    max="5"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3 text-xs text-[#51607c]">
-            <button type="button" onClick={addExtraSet} className="rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-medium text-[#4b5a72]">
-              Anadir serie
-            </button>
-            <button type="button" onClick={removeLastSet} className="rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-medium text-[#4b5a72]">
-              Quitar ultima
-            </button>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <MediaField
-              label="Imagen de referencia"
-              value={session.mediaImage}
-              placeholder="https://images.unsplash.com/..."
-              onChange={(value) => setSession((prev) => ({ ...prev, mediaImage: value }))}
-            />
-            <MediaField
-              label="Video de referencia"
-              value={session.mediaVideo}
-              placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
-              onChange={(value) => setSession((prev) => ({ ...prev, mediaVideo: value }))}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs text-[#51607c]">Notas</label>
-            <textarea
-              className="w-full rounded border px-3 py-2 text-sm"
-              rows={3}
-              value={session.notes}
-              onChange={(event) => setSession((prev) => ({ ...prev, notes: event.target.value }))}
-              placeholder="Puntos tecnicos, ajustes o molestias"
-            />
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleSave}
-              className="rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2 text-sm text-white"
-              disabled={!user}
-            >
-              Guardar registro
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <section className="rounded-2xl border bg-white/70 p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900">Historial del ejercicio</h2>
-        {history.length === 0 ? (
-          <p className="mt-4 text-sm text-[#4b5a72]">
-            Todavia no tienes registros para este ejercicio. Guarda tu primera sesion y aparecera aqui.
-          </p>
-        ) : (
-          <ul className="mt-4 space-y-4">
-            {history.map((log) => (
-              <li key={log.id} className="rounded-xl border px-4 py-3 text-sm text-[#4b5a72]">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#51607c]">
-                  <span>{formatDate(log.date) ?? "Fecha desconocida"}</span>
-                  {log.perceivedEffort && <span>RPE {log.perceivedEffort}</span>}
-                </div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {log.sets.map((set, index) => (
-                    <div key={index} className="rounded border px-3 py-2 text-xs text-[#51607c]">
-                      Serie {index + 1}: {set.weight ?? "-"} kg - {set.reps ?? "-"} reps
-                      {set.rir ? ` - RIR ${set.rir}` : ""}
-                      {set.completed ? " - OK" : ""}
-                    </div>
-                  ))}
-                </div>
-                {log.notes && <p className="mt-2 text-xs">Notas: {log.notes}</p>}
-                {(log.mediaImage || log.mediaVideo) && (
-                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#51607c]">
-                    {log.mediaImage && (
-                      <a href={log.mediaImage} target="_blank" rel="noreferrer" className="underline">
-                        Ver imagen
-                      </a>
-                    )}
-                    {log.mediaVideo && (
-                      <a href={log.mediaVideo} target="_blank" rel="noreferrer" className="underline">
-                        Ver video
-                      </a>
-                    )}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </div>
-  );
-}
-
-type ChipProps = { label: string };
-
-function Chip({ label }: ChipProps) {
-  return (
-    <span className="rounded-full border border-zinc-200 bg-white/60 px-3 py-1 text-xs text-[#4b5a72]">
-      {label}
-    </span>
-  );
-}
-
-type MediaShowcaseProps = {
-  image?: string;
-  video?: string;
-};
-
-function MediaShowcase({ image, video }: MediaShowcaseProps) {
-  if (!image && !video) {
-    return null;
-  }
-  const hasImage = Boolean(image);
-  const hasVideo = Boolean(video);
-  const isYouTube = Boolean(video && isYouTubeUrl(video));
-  const videoSrc = video ? (isYouTube ? normalizeYouTubeEmbed(video) : video) : null;
-  return (
-    <section className="grid gap-4 md:grid-cols-2">
-      {hasImage && image && (
-        <figure className="overflow-hidden rounded-2xl border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image} alt="Referencia del ejercicio" className="h-full w-full object-cover" loading="lazy" />
-        </figure>
-      )}
-      {hasVideo && videoSrc && (
-        <div className="rounded-2xl border bg-black/90 p-2">
-          {isYouTube ? (
-            <div className="aspect-video w-full overflow-hidden rounded-xl">
-              <iframe
-                src={videoSrc}
-                title="Video de demostracion"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="h-full w-full"
-              />
-            </div>
-          ) : (
-            <video controls preload="metadata" className="w-full rounded-xl">
-              <source src={videoSrc} type="video/mp4" />
-              Tu navegador no soporta video embebido.
-            </video>
-          )}
-        </div>
-      )}
-    </section>
-  );
-}
-
-const isYouTubeUrl = (url: string) => /youtube\.com|youtu\.be/.test(url.toLowerCase());
-
-const normalizeYouTubeEmbed = (url: string) => {
-  try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.toLowerCase();
-
-    if (host.includes("youtu.be")) {
-      const identifier = parsed.pathname.split("/").filter(Boolean)[0];
-      if (identifier) {
-        return `https://www.youtube.com/embed/${identifier}?rel=0`;
-      }
-    }
-
-    if (host.includes("youtube.com")) {
-      if (parsed.pathname.startsWith("/embed/")) {
-        if (url.includes("rel=")) {
-          return url;
-        }
-        return url.includes("?") ? `${url}&rel=0` : `${url}?rel=0`;
-      }
-      const videoId = parsed.searchParams.get("v");
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}?rel=0`;
-      }
-    }
-  } catch {
-    return url;
-  }
-  return url;
-};
-
-
-type MediaFieldProps = {
-  label: string;
-  value: string;
-  placeholder?: string;
-  onChange: (value: string) => void;
-};
-
-function MediaField({ label, value, placeholder, onChange }: MediaFieldProps) {
-  return (
-    <div className="space-y-2">
-      <label className="text-xs text-[#51607c]">{label}</label>
-      <input
-        type="url"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded border px-3 py-2 text-sm"
+      <SessionForm
+        session={session}
+        setSession={setSession}
+        handleSave={handleSave}
+        isSaving={isSaving}
+        userId={user?.uid}
+        addExtraSet={addExtraSet}
+        removeLastSet={removeLastSet}
+        toggleSetCompleted={toggleSetCompleted}
+        handleSetField={handleSetField}
       />
+
+      <ExerciseHistory history={history} />
     </div>
   );
 }
-
-
-
-
-
-
-

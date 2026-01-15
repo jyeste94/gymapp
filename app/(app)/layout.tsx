@@ -6,10 +6,12 @@ import SidebarFooter from "@/app/(app)/_components/sidebar-footer";
 import MobileNav from "@/app/(app)/_components/mobile-nav";
 import type { ReactNode } from "react";
 import { Dumbbell, Leaf } from "lucide-react";
+import { Toaster } from 'react-hot-toast';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <Providers>
+      <Toaster />
       <div className="min-h-dvh bg-transparent">
         <div className="mx-auto flex min-h-dvh max-w-[1400px] flex-col gap-6 px-5 py-8 lg:flex-row lg:px-10">
           <aside className="glass-card hidden w-full max-w-[280px] flex-shrink-0 flex-col border-[rgba(10,46,92,0.15)] bg-white/80 p-6 lg:flex">

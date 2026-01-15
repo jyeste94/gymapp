@@ -361,8 +361,8 @@ export const defaultExercises: Exercise[] = [
             "Extiende completo sin bloquear brusco",
             "Baja controlado",
         ],
-        image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80", // Placeholder
-        video: "",
+        image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80", 
+        video: "https://www.youtube.com/embed/swZg2w4I6Jo",
     },
     {
         id: "jalon_al_pecho",
@@ -375,8 +375,8 @@ export const defaultExercises: Exercise[] = [
             "Baja la barra a la clavicula",
             "Codos apuntan al suelo",
         ],
-        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80", // Placeholder
-        video: "",
+        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80",
+        video: "https://www.youtube.com/embed/CAwf7n6Luuc",
     },
     {
         id: "curl_mancuerna",
@@ -390,7 +390,7 @@ export const defaultExercises: Exercise[] = [
             "Evita inercia lumbar",
         ],
         image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
-        video: "",
+        video: "https://www.youtube.com/embed/u_28tXuzG-E",
     },
     {
         id: "aperturas_maquina",
@@ -404,7 +404,7 @@ export const defaultExercises: Exercise[] = [
             "Estira sin perder tension",
         ],
         image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
-        video: "",
+        video: "https://www.youtube.com/embed/Z57LliR2-3w",
     },
     {
         id: "press_frances",
@@ -417,8 +417,8 @@ export const defaultExercises: Exercise[] = [
             "Codos cerrados",
             "Solo mueve antebrazos",
         ],
-        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80", // Placeholder
-        video: "",
+        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
+        video: "https://www.youtube.com/embed/TrèsGYLU-i4",
     },
     {
         id: "pullover_polea",
@@ -431,8 +431,8 @@ export const defaultExercises: Exercise[] = [
             "Lleva la barra a la cadera",
             "Estira dorsal al subir",
         ],
-        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80", // Placeholder
-        video: "",
+        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80",
+        video: "https://www.youtube.com/embed/v1-i93fS4sI",
     },
     {
         id: "encogimientos_hombro",
@@ -445,8 +445,8 @@ export const defaultExercises: Exercise[] = [
             "Pausa arriba",
             "Baja completo",
         ],
-        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80", // Placeholder
-        video: "",
+        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
+        video: "https://www.youtube.com/embed/I-yCkDWeogE",
     },
     {
         id: "triceps_polea",
@@ -460,6 +460,6 @@ export const defaultExercises: Exercise[] = [
             "Controla la subida",
         ],
         image: "https://images.unsplash.com/photo-1583454110551-21f2fa2ac4c0?auto=format&fit=crop&w=800&q=80",
-        video: "",
+        video: "https://www.youtube.com/embed/z-1gS-guolY",
     },
 ];
