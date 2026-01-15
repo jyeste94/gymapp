@@ -1,7 +1,8 @@
-﻿import { pushPullLegsRoutine, upperLowerRoutine } from "@/lib/data/routine-plan";
+
 import type { RoutineExercise, RoutineExerciseConfig } from "@/lib/data/routine-plan";
 import { defaultExercises } from "@/lib/data/exercises";
 
+// --- Type Definitions (unchanged) ---
 type RoutineDayTemplate = {
   id: string;
   title?: string;
@@ -50,16 +51,13 @@ export type RoutineTemplateDoc = {
   days: RoutineDayTemplate[];
 };
 
+// --- Helper Functions (unchanged) ---
 const hydrateExercise = (entry: RoutineExercise | RoutineExerciseConfig): RoutineExercise => {
-  // Check if it's already a full RoutineExercise (has 'name' and 'muscleGroup')
   if ("name" in entry && "muscleGroup" in entry) {
     return entry as RoutineExercise;
   }
-
-  // Otherwise it's a Config, look it up
   const base = defaultExercises.find(e => e.id === entry.id);
   if (!base) {
-    // Fallback if not found (should not happen for default routines)
     return {
       ...entry,
       name: "Ejercicio desconocido",
@@ -69,7 +67,6 @@ const hydrateExercise = (entry: RoutineExercise | RoutineExerciseConfig): Routin
       technique: [],
     } as RoutineExercise;
   }
-
   return { ...base, ...entry };
 };
 
@@ -86,53 +83,91 @@ const normalizeDay = (day: RoutineDayTemplate, index: number): RoutineDayDefinit
   exercises: day.exercises.map(hydrateExercise),
 });
 
+// --- THE FINAL, CORRECTED NEW Routine Data ---
+const newRoutineData = {
+    name: "Rutina de Fuerza e Hipertrofia",
+    goal: "Foco en la ganancia de fuerza y masa muscular, con dias dedicados a empuje y tiron.",
+    level: "Intermedio",
+    frequency: "4 dias/semana",
+    equipment: ["Barra", "Mancuernas", "Peso corporal", "Polea"],
+    days: [
+        {
+            id: "dia-1-empuje-a",
+            name: "LUNES (Empuje A)",
+            focus: "Fuerza",
+            exercises: [
+                { id: "sentadilla_trasera", sets: 4, repRange: "5", rest: "2-3 min", tip: "" },
+                { id: "press_banca", sets: 4, repRange: "5", rest: "2-3 min", tip: "" },
+                { id: "press_militar", sets: 3, repRange: "6", rest: "2 min", tip: "" },
+                { id: "fondos_paralelas", sets: 3, repRange: "8-10", rest: "90s", tip: "" },
+                { id: "elevaciones_laterales", sets: 3, repRange: "12-15", rest: "60s", tip: "" },
+                { id: "core_combo", sets: 3, repRange: "10-12", rest: "60s", tip: "" },
+            ] as RoutineExerciseConfig[]
+        },
+        {
+            id: "dia-2-tiron-a",
+            name: "MARTES (Tirón A)",
+            focus: "Fuerza",
+            exercises: [
+                { id: "peso_muerto_conv", sets: 4, repRange: "3-5", rest: "3 min", tip: "" },
+                { id: "dominadas", sets: 4, repRange: "6-8", rest: "2-3 min", tip: "" },
+                { id: "remo_barra", sets: 3, repRange: "8", rest: "2 min", tip: "" },
+                { id: "facepull", sets: 3, repRange: "12-20", rest: "60s", tip: "" },
+                { id: "curl_barra", sets: 3, repRange: "8-10", rest: "90s", tip: "" },
+                { id: "gemelos", sets: 3, repRange: "12-15", rest: "60s", tip: "" },
+            ] as RoutineExerciseConfig[]
+        },
+        {
+            id: "dia-3-descanso",
+            name: "MIÉRCOLES",
+            focus: "Descanso",
+            exercises: [] as RoutineExerciseConfig[]
+        },
+        {
+            id: "dia-4-empuje-b",
+            name: "JUEVES (Empuje B)",
+            focus: "Hipertrofia",
+            exercises: [
+                { id: "sentadilla_trasera", sets: 3, repRange: "8-10", rest: "90s", tip: "" },
+                { id: "press_inclinado", sets: 3, repRange: "8-10", rest: "90s", tip: "" },
+                { id: "press_militar", sets: 3, repRange: "10", rest: "90s", tip: "" },
+                { id: "triceps_polea", sets: 3, repRange: "12-15", rest: "60s", tip: "" },
+                { id: "elevaciones_laterales", sets: 3, repRange: "15-20", rest: "60s", tip: "" },
+            ] as RoutineExerciseConfig[]
+        },
+        {
+            id: "dia-5-tiron-b",
+            name: "VIERNES (Tirón B)",
+            focus: "Hipertrofia",
+            exercises: [
+                { id: "peso_muerto_rumano", sets: 3, repRange: "8-10", rest: "90s", tip: "" },
+                { id: "remo_mancuerna", sets: 3, repRange: "10-12", rest: "90s", tip: "" },
+                { id: "jalon_al_pecho", sets: 3, repRange: "10-12", rest: "90s", tip: "" },
+                { id: "curl_femoral", sets: 3, repRange: "12-15", rest: "60s", tip: "" },
+                { id: "curl_martillo", sets: 3, repRange: "12", rest: "60s", tip: "" },
+                { id: "encogimientos_hombro", sets: 4, repRange: "40m", rest: "60s", tip: "" },
+            ] as RoutineExerciseConfig[]
+        }
+    ]
+};
+
+// --- Updated defaultRoutines ---
 export const defaultRoutines: RoutineDefinition[] = [
   {
-    id: "ppl-4d",
-    title: pushPullLegsRoutine.name,
-    description: pushPullLegsRoutine.goal,
-    focus: pushPullLegsRoutine.goal,
-    level: pushPullLegsRoutine.level,
-    frequency: pushPullLegsRoutine.frequency,
-    equipment: pushPullLegsRoutine.equipment,
-    days: pushPullLegsRoutine.days.map((day, index) =>
+    id: "fuerza-hipertrofia-4d",
+    title: newRoutineData.name,
+    description: newRoutineData.goal,
+    focus: newRoutineData.goal,
+    level: newRoutineData.level,
+    frequency: newRoutineData.frequency,
+    equipment: newRoutineData.equipment,
+    days: newRoutineData.days.map((day, index) =>
       normalizeDay(
         {
           id: day.id,
           title: day.name,
           focus: day.focus,
           order: index + 1,
-          intensity: day.intensity,
-          estimatedDuration: day.estimatedDuration,
-          notes: day.notes,
-          warmup: day.warmup,
-          finisher: day.finisher,
-          exercises: day.exercises,
-        },
-        index,
-      ),
-    ),
-  },
-  {
-    id: "upper-lower-4d",
-    title: upperLowerRoutine.name,
-    description: upperLowerRoutine.goal,
-    focus: upperLowerRoutine.goal,
-    level: upperLowerRoutine.level,
-    frequency: upperLowerRoutine.frequency,
-    equipment: upperLowerRoutine.equipment,
-    days: upperLowerRoutine.days.map((day, index) =>
-      normalizeDay(
-        {
-          id: day.id,
-          title: day.name,
-          focus: day.focus,
-          order: index + 1,
-          intensity: day.intensity,
-          estimatedDuration: day.estimatedDuration,
-          notes: day.notes,
-          warmup: day.warmup,
-          finisher: day.finisher,
           exercises: day.exercises,
         },
         index,
@@ -141,6 +176,7 @@ export const defaultRoutines: RoutineDefinition[] = [
   },
 ];
 
+// --- Other Exported Functions (unchanged) ---
 export const templateToRoutineDefinition = (template: RoutineTemplateDoc): RoutineDefinition => ({
   id: template.id,
   title: template.title,
@@ -165,8 +201,6 @@ export const mergeRoutines = (
   }
   return ordered;
 };
-
-
 
 export const createRoutineAliasIndex = (routines: RoutineDefinition[]) => {
   type Entry = { routine: RoutineDefinition; day?: RoutineDayDefinition };

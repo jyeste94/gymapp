@@ -2,7 +2,7 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { useCol } from "@/lib/firestore/hooks";
@@ -51,6 +51,7 @@ const logSetToSessionSet = (logSet: ExerciseLogSet): SessionSet => ({
 export default function ExerciseDetailPage() {
   const router = useRouter();
   const params = useParams<{ exerciseId: string }>();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { db } = useFirebase();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
@@ -109,6 +110,15 @@ export default function ExerciseDetailPage() {
       });
     }
   }, [history, exerciseEntry, defaultSets]);
+
+  const backHref = useMemo(() => {
+    const routineId = searchParams.get("routineId");
+    const dayId = searchParams.get("dayId");
+    if (routineId && dayId) {
+      return `/routines/${routineId}/${dayId}`;
+    }
+    return null;
+  }, [searchParams]);
 
   if (!exerciseEntry) {
     return (
@@ -201,9 +211,15 @@ export default function ExerciseDetailPage() {
 
   return (
     <div className="space-y-6">
-      <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-        {"<- Volver"}
-      </button>
+      {backHref ? (
+        <Link href={backHref} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
+          {"<- Volver"}
+        </Link>
+      ) : (
+        <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
+          {"<- Volver"}
+        </button>
+      )}
 
       <ExerciseHeader exercise={exercise} routine={routine} />
 

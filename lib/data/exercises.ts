@@ -41,7 +41,7 @@ export const defaultExercises: Exercise[] = [
     },
     {
         id: "press_militar",
-        name: "Press militar alterno",
+        name: "Press militar",
         muscleGroup: ["Hombro"],
         equipment: ["Barra"],
         description: "Movimiento vertical para deltoides anteriores y laterales.",
@@ -418,7 +418,7 @@ export const defaultExercises: Exercise[] = [
             "Solo mueve antebrazos",
         ],
         image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
-        video: "https://www.youtube.com/embed/TrèsGYLU-i4",
+        video: "https://www.youtube.com/embed/LRi_7a_G_tA",
     },
     {
         id: "pullover_polea",

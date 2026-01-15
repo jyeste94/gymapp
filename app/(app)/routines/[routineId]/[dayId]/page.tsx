@@ -155,6 +155,7 @@ export default function RoutineDayPage() {
           return (
             <ExerciseCard
               key={exercise.id}
+              routineId={routine.id}
               day={day}
               exercise={exercise}
               lastRecord={lastRecord}
@@ -195,13 +196,14 @@ function InfoCard({ title, items }: InfoCardProps) {
 }
 
 type ExerciseCardProps = {
+  routineId: string;
   day: RoutineDayDefinition;
   exercise: RoutineExercise;
   lastRecord?: { date: string; set: RoutineLogSet; notes?: string };
 };
 
-function ExerciseCard({ day, exercise, lastRecord }: ExerciseCardProps) {
-  const detailHref = `/exercises/${exercise.id}`;
+function ExerciseCard({ routineId, day, exercise, lastRecord }: ExerciseCardProps) {
+  const detailHref = `/exercises/${exercise.id}?routineId=${routineId}&dayId=${day.id}`;
   return (
     <article className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-5 transition hover:-translate-y-0.5 hover:shadow-lg">
       <header className="flex flex-wrap items-start justify-between gap-3">
@@ -273,4 +275,3 @@ function StartWorkoutButton({
     </button>
   );
 }
-
