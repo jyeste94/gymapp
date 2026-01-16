@@ -3,14 +3,11 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import type { Measurement } from "@/lib/types";
-import {
-  defaultRoutines,
-  mergeRoutines,
-  templateToRoutineDefinition,
-  type RoutineDefinition,
-  type RoutineTemplateDoc,
-} from "@/lib/data/routine-library";
+import type { Measurement, Routine, RoutineTemplate } from "@/lib/types";
+import { defaultRoutines } from "@/lib/data/routine-library";
+import { defaultExercises } from "@/lib/data/exercises";
+import { buildRoutine } from "@/lib/routine-builder";
+import { mergeRoutines } from "@/lib/routine-helpers";
 
 type MetricVariant = "blue" | "amber" | "rose";
 type RoutineAccent = "blue" | "amber" | "rose" | "navy";
@@ -42,13 +39,13 @@ export default function Dashboard() {
     dir: "desc",
   });
 
-  const { data: routineTemplates, loading: templatesLoading } = useCol<RoutineTemplateDoc>(templatesPath, {
+  const { data: routineTemplates, loading: templatesLoading } = useCol<RoutineTemplate>(templatesPath, {
     by: "title",
     dir: "desc",
   });
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
@@ -181,7 +178,7 @@ function MetricCard({ title, value, helper }: MetricCardProps) {
 }
 
 type RoutineCardProps = {
-  routine: RoutineDefinition;
+  routine: Routine;
   accent?: RoutineAccent;
 };
 
@@ -195,7 +192,7 @@ function RoutineCard({ routine }: RoutineCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-[#51607c]">{routine.focus ?? "Rutina"}</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-[#51607c]">{routine.level}</p>
           <h3 className="mt-1 text-lg font-semibold text-[#0a2e5c]">{routine.title}</h3>
         </div>
         {routine.level && <span className="tag-pill">{routine.level}</span>}

@@ -1,41 +1,15 @@
-
 import { useCol } from "@/lib/firestore/hooks";
 import { add } from "@/lib/firestore/crud";
 import { Firestore } from "firebase/firestore";
+import type { RoutineLog } from "@/lib/types";
 
-export type RoutineLogSet = {
-  weight?: string;
-  reps?: string;
-  rir?: string;
-  comment?: string;
-  notes?: string;
-  completed?: boolean;
-};
-
-export type RoutineLog = {
-  id: string;
-  date: string;
-  routineId?: string;
-  routineName?: string;
-  dayId?: string;
-  dayName?: string;
-  day?: string;
-  entries: Array<{
-    exerciseId?: string;
-    exerciseName?: string;
-    sets?: RoutineLogSet[];
-    weight?: string;
-    reps?: string;
-    rir?: string;
-    comment?: string;
-    notes?: string;
-  }>;
-};
+// Los tipos locales han sido eliminados. Ahora importamos desde lib/types.ts
 
 export const useRoutineLogs = (userId?: string | null) =>
   useCol<RoutineLog>(userId ? `users/${userId}/routines` : null, { by: "date", dir: "desc" });
 
 export const addRoutineLog = async (db: Firestore, userId: string, log: Omit<RoutineLog, "id">) => {
+  // La funcion "add" es generica. El tipo de "log" viene determinado por la importacion de RoutineLog.
   return add(db, `users/${userId}/routines`, {
     ...log,
     id: crypto.randomUUID(),

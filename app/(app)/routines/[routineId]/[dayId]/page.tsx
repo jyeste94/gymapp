@@ -1,22 +1,17 @@
 "use client";
 import { useMemo } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import {
-  defaultRoutines,
-  mergeRoutines,
-  templateToRoutineDefinition,
-  createRoutineAliasIndex,
-  type RoutineTemplateDoc,
-  type RoutineDayDefinition,
-} from "@/lib/data/routine-library";
-import { useRoutineLogs, type RoutineLogSet } from "@/lib/firestore/routine-logs";
-import type { RoutineExercise } from "@/lib/types";
+import { defaultRoutines } from "@/lib/data/routine-library";
+import { defaultExercises } from "@/lib/data/exercises";
+import { buildRoutine } from "@/lib/routine-builder";
+import { mergeRoutines } from "@/lib/routine-helpers";
+import type { RoutineDay, RoutineExercise, RoutineTemplate, RoutineLogSet } from "@/lib/types";
+import { useRoutineLogs } from "@/lib/firestore/routine-logs";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { Play } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const dateFormatter =
   typeof Intl !== "undefined"
@@ -41,22 +36,22 @@ export default function RoutineDayPage() {
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
-  const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
+  const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
   const { data: routineLogs } = useRoutineLogs(user?.uid);
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
-  const routines = useMemo(
+  const allRoutines = useMemo(
     () => mergeRoutines(customRoutines, defaultRoutines),
     [customRoutines],
   );
 
   const routine = useMemo(
-    () => routines.find((entry) => entry.id === params.routineId) ?? null,
-    [routines, params.routineId],
+    () => allRoutines.find((entry) => entry.id === params.routineId) ?? null,
+    [allRoutines, params.routineId],
   );
 
   const day = useMemo(
@@ -64,42 +59,31 @@ export default function RoutineDayPage() {
     [routine, params.dayId],
   );
 
-  const aliasIndex = useMemo(() => createRoutineAliasIndex(routines), [routines]);
-
   const lastSetByExercise = useMemo(() => {
     const map = new Map<string, { date: string; set: RoutineLogSet; notes?: string }>();
     if (!routine || !day || !routineLogs) return map;
 
     for (const log of routineLogs) {
-      const routineMatch = log.routineId || log.routineName || log.dayId || log.dayName || log.day;
-      if (!routineMatch) continue;
-      const alias = aliasIndex.get(routineMatch.trim().toLowerCase());
-      if (!alias || alias.routine.id !== routine.id) continue;
-      if (alias.day && alias.day.id !== day.id) continue;
+        if (!log.routineId) continue;
+        if (log.routineId !== routine.id) continue;
+        if (log.dayId && log.dayId !== day.id) continue;
 
-      for (const entry of log.entries ?? []) {
-        const key = entry.exerciseId || entry.exerciseName || "";
-        if (!key) continue;
-        const normalized = key.toLowerCase();
-        if (map.has(normalized)) continue;
-        const sets = entry.sets?.length ? entry.sets : undefined;
-        const fallback = entry.weight || entry.reps || entry.rir || entry.comment
-          ? [{
-            weight: entry.weight,
-            reps: entry.reps,
-            rir: entry.rir,
-            comment: entry.comment,
-            notes: entry.notes,
-          }]
-          : undefined;
-        const chosen = sets?.[sets.length - 1] ?? fallback?.[fallback.length - 1];
-        if (!chosen) continue;
-        map.set(normalized, { date: log.date, set: chosen, notes: entry.notes ?? entry.comment });
-      }
+        for (const entry of log.entries ?? []) {
+            if (!entry.exerciseId) continue;
+            if (map.has(entry.exerciseId)) continue;
+
+            const lastSet = entry.sets?.slice(-1)[0];
+            if (!lastSet) continue;
+            
+            map.set(entry.exerciseId, { 
+                date: log.date, 
+                set: lastSet, 
+                notes: entry.notes ?? entry.comment 
+            });
+        }
     }
-
     return map;
-  }, [routine, day, routineLogs, aliasIndex]);
+  }, [routine, day, routineLogs]);
 
   if (!routine || !day) {
     return (
@@ -123,7 +107,7 @@ export default function RoutineDayPage() {
       <header className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Dia {day.order}</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-zinc-400">Día de {day.focus}</p>
             <h1 className="text-2xl font-semibold text-zinc-900">{day.title}</h1>
             {day.focus && <p className="mt-2 text-sm text-[#4b5a72]">{day.focus}</p>}
           </div>
@@ -136,18 +120,11 @@ export default function RoutineDayPage() {
               exercises={day.exercises}
             />
             <div className="flex flex-col items-end gap-1 text-xs text-[#51607c]">
-              {day.intensity && <span>Intensidad: {day.intensity}</span>}
-              {day.estimatedDuration && <span>Duracion estimada: {day.estimatedDuration}</span>}
               <span>{day.exercises.length} ejercicios</span>
             </div>
           </div>
         </div>
       </header>
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <InfoCard title="Calentamiento sugerido" items={day.warmup} />
-        <InfoCard title="Finaliza con" items={day.finisher.length ? day.finisher : ["Estiramientos ligeros", "Respiracion controlada"]} />
-      </section>
 
       <section className="space-y-3">
         {day.exercises.map((exercise) => {
@@ -173,31 +150,9 @@ export default function RoutineDayPage() {
   );
 }
 
-type InfoCardProps = {
-  title: string;
-  items: string[];
-};
-
-function InfoCard({ title, items }: InfoCardProps) {
-  if (!items.length) return null;
-  return (
-    <div className="rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/80 p-4">
-      <h3 className="text-sm font-semibold text-zinc-800">{title}</h3>
-      <ul className="mt-3 space-y-2 text-sm text-[#4b5a72]">
-        {items.map((item) => (
-          <li key={item} className="flex items-center gap-2">
-            <span className="inline-flex h-2 w-2 rounded-full bg-[rgba(10,46,92,0.45)]" aria-hidden />
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 type ExerciseCardProps = {
   routineId: string;
-  day: RoutineDayDefinition;
+  day: RoutineDay;
   exercise: RoutineExercise;
   lastRecord?: { date: string; set: RoutineLogSet; notes?: string };
 };

@@ -4,12 +4,11 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import {
-  defaultRoutines,
-  mergeRoutines,
-  templateToRoutineDefinition,
-  type RoutineTemplateDoc,
-} from "@/lib/data/routine-library";
+import { defaultRoutines } from "@/lib/data/routine-library";
+import { defaultExercises } from "@/lib/data/exercises";
+import { buildRoutine } from "@/lib/routine-builder";
+import { mergeRoutines } from "@/lib/routine-helpers";
+import type { RoutineTemplate } from "@/lib/types";
 
 const formatBadge = (label: string) => (
   <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5 text-xs text-[#51607c]">
@@ -21,10 +20,10 @@ export default function RoutineOverviewPage() {
   const params = useParams<{ routineId: string }>();
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
-  const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
+  const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
@@ -49,7 +48,8 @@ export default function RoutineOverviewPage() {
     );
   }
 
-  const sortedDays = [...routine.days].sort((a, b) => a.order - b.order);
+  // El orden de los dias ya viene definido en la rutina, pero por si acaso, lo reordenamos.
+  const sortedDays = [...routine.days].sort((a, b) => a.id.localeCompare(b.id));
   const totalExercises = sortedDays.reduce((sum, day) => sum + day.exercises.length, 0);
 
   return (
@@ -84,13 +84,14 @@ export default function RoutineOverviewPage() {
           >
             <div className="flex items-center gap-4">
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(10,46,92,0.3)] bg-white text-base font-semibold text-[#0a2e5c]">
-                {day.order}
+                {/* El campo 'order' ya no existe. Mostramos el foco del dia o un numero. */}
+                {day.focus?.charAt(0) || '#'}
               </span>
               <div>
                 <p className="text-sm font-semibold text-zinc-900">{day.title}</p>
                 <p className="text-xs text-[#51607c]">
                   {day.exercises.length} ejercicios
-                  {day.focus ? ` ? ${day.focus}` : ""}
+                  {day.focus ? ` • ${day.focus}` : ""}
                 </p>
               </div>
             </div>
@@ -101,4 +102,3 @@ export default function RoutineOverviewPage() {
     </div>
   );
 }
-

@@ -5,13 +5,11 @@ import Link from "next/link";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import {
-  defaultRoutines,
-  mergeRoutines,
-  templateToRoutineDefinition,
-  type RoutineDefinition,
-  type RoutineTemplateDoc,
-} from "@/lib/data/routine-library";
+import { defaultRoutines } from "@/lib/data/routine-library";
+import { defaultExercises } from "@/lib/data/exercises";
+import { buildRoutine } from "@/lib/routine-builder";
+import { mergeRoutines } from "@/lib/routine-helpers";
+import type { Routine, RoutineTemplate } from "@/lib/types";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 import CreateRoutineDrawer from "@/app/(app)/routines/create-routine-drawer";
 import { deleteRoutineTemplate } from "@/lib/firestore/routines";
@@ -23,22 +21,22 @@ export default function RoutinesPage() {
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
-  const { data: routineTemplates, loading } = useCol<RoutineTemplateDoc>(templatesPath, {
+  const { data: routineTemplates, loading } = useCol<RoutineTemplate>(templatesPath, {
     by: "title",
     dir: "asc",
   });
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
-  const routines = useMemo(
+  const allRoutines = useMemo(
     () => mergeRoutines(customRoutines, defaultRoutines),
     [customRoutines],
   );
 
-  const exerciseCatalog = useMemo(() => buildExerciseCatalog(routines), [routines]);
+  const exerciseCatalog = useMemo(() => buildExerciseCatalog(allRoutines), [allRoutines]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -64,13 +62,13 @@ export default function RoutinesPage() {
       <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
         {loading ? (
           <p className="text-sm text-[#51607c]">Cargando tus rutinas...</p>
-        ) : routines.length === 0 ? (
+        ) : allRoutines.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-[rgba(10,46,92,0.2)] bg-white/70 p-6 text-sm text-[#51607c]">
             Todavia no tienes rutinas guardadas. Crea tu primera rutina personalizada para verla aqui.
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {routines.map((routine) => (
+            {allRoutines.map((routine) => (
               <RoutineCard key={routine.id} routine={routine} userId={user?.uid} />
             ))}
           </div>
@@ -89,7 +87,7 @@ export default function RoutinesPage() {
 }
 
 type RoutineCardProps = {
-  routine: RoutineDefinition;
+  routine: Routine;
   userId?: string;
 };
 
@@ -115,7 +113,8 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-[#51607c]">{routine.focus ?? "Rutina"}</p>
+          {/* El foco ahora es a nivel de dia, usamos el nivel de la rutina como subtitulo */}
+          <p className="text-xs uppercase tracking-[0.3em] text-[#51607c]">{routine.level ?? "Rutina"}</p>
           <h2 className="mt-1 text-lg font-semibold text-[#0a2e5c]">{routine.title}</h2>
         </div>
         <div className="flex items-center gap-2">

@@ -51,10 +51,9 @@ export default function WorkoutFinishPage() {
                     exerciseId: ex.id,
                     exerciseName: ex.name,
                     sets: ex.sets.filter(s => s.completed).map(s => ({
-                        weight: s.weight,
-                        reps: s.reps,
-                        rir: s.rir,
-                        completed: true
+                        weight: Number(s.weight) || 0,
+                        reps: Number(s.reps) || 0,
+                        rir: Number(s.rir) || 0,
                     }))
                 })).filter(e => e.sets.length > 0)
             });

@@ -6,15 +6,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { useCol } from "@/lib/firestore/hooks";
-import {
-  defaultRoutines,
-  mergeRoutines,
-  templateToRoutineDefinition,
-  buildExerciseIndex,
-  type RoutineTemplateDoc,
-} from "@/lib/data/routine-library";
+import { defaultRoutines } from "@/lib/data/routine-library";
 import { defaultExercises } from "@/lib/data/exercises";
-import { type RoutineExercise } from "@/lib/types";
+import { buildRoutine } from "@/lib/routine-builder";
+import { mergeRoutines, buildExerciseIndex } from "@/lib/routine-helpers";
+import type { RoutineExercise, RoutineTemplate } from "@/lib/types";
 import {
   useExerciseLogs,
   saveExerciseLog,
@@ -63,22 +59,24 @@ export default function ExerciseDetailPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [activeLogId, setActiveLogId] = useState<string | null>(null);
 
-  const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
+  const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
   const { data: exerciseLogs } = useExerciseLogs(user?.uid);
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
-  const routines = useMemo(
+  const allRoutines = useMemo(
     () => mergeRoutines(customRoutines, defaultRoutines),
     [customRoutines],
   );
 
+  const exerciseIndex = useMemo(() => buildExerciseIndex(allRoutines), [allRoutines]);
+
   const exerciseEntry = useMemo(
-    () => (fromCreator ? null : buildExerciseIndex(routines).get(params.exerciseId)),
-    [routines, params.exerciseId, fromCreator],
+    () => (fromCreator ? null : exerciseIndex.get(params.exerciseId)),
+    [exerciseIndex, params.exerciseId, fromCreator],
   );
 
   const contextlessExercise = useMemo(() => {
@@ -92,7 +90,7 @@ export default function ExerciseDetailPage() {
       repRange: "8-12",
       rest: "60s",
       tip: "",
-    };
+    } as RoutineExercise;
   }, [params.exerciseId, fromCreator]);
 
   const exercise = exerciseEntry?.exercise ?? contextlessExercise;
@@ -239,7 +237,7 @@ export default function ExerciseDetailPage() {
       );
     }
     if (fromCreator) {
-      return null; // No renderizar el botón si viene del creador de rutinas
+      return null;
     }
     return (
       <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
@@ -252,7 +250,7 @@ export default function ExerciseDetailPage() {
     <div className="space-y-6">
       {renderBackButton()}
 
-      <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />
+      {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
 
       <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 

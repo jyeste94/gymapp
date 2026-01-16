@@ -1,16 +1,16 @@
-
 "use client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { add } from "@/lib/firestore/crud";
-import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useFirebase } from "@/lib/firebase/client-context";
+import { addMeasurement, updateMeasurement } from "@/lib/firestore/measurements";
+import type { Measurement } from "@/lib/types";
+import { useEffect } from "react";
+import toast from 'react-hot-toast';
 
+// Esquemas de validacion con Zod (sin cambios)
 const bodyFatSchema = z.preprocess((val) => {
-  if (val === "" || val === undefined || val === null) {
-    return undefined;
-  }
+  if (val === "" || val === undefined || val === null) return undefined;
   const num = typeof val === "number" ? val : Number(val);
   return Number.isFinite(num) ? num : val;
 }, z.number().min(3).max(70).optional());
@@ -34,67 +34,99 @@ const schema = z.object({
   notes: z.string().max(200).optional(),
 });
 
-type Form = z.infer<typeof schema>;
+type FormValues = z.infer<typeof schema>;
 
-export default function MeasurementForm() {
-  const { user } = useAuth();
+type Props = {
+  userId: string | null;
+  editingMeasurement: Measurement | null;
+  onSuccess: () => void;
+};
+
+export default function MeasurementForm({ userId, editingMeasurement, onSuccess }: Props) {
   const { db } = useFirebase();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Form>({
+  } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { date: new Date().toISOString().slice(0, 10) },
   });
 
-  const onSubmit = async (data: Form) => {
-    if (!user || !db) return;
-    await add(db, `users/${user.uid}/measurements`, {
+  const isEditing = !!editingMeasurement;
+
+  useEffect(() => {
+    if (isEditing) {
+      reset({
+        date: editingMeasurement.date.slice(0, 10),
+        weightKg: editingMeasurement.weightKg,
+        bodyFatPct: editingMeasurement.bodyFatPct ?? undefined,
+        chest: editingMeasurement.chest ?? undefined,
+        waist: editingMeasurement.waist ?? undefined,
+        hips: editingMeasurement.hips ?? undefined,
+        arm: editingMeasurement.arm ?? undefined,
+        thigh: editingMeasurement.thigh ?? undefined,
+        calf: editingMeasurement.calf ?? undefined,
+        notes: editingMeasurement.notes ?? undefined,
+      });
+    } else {
+      reset({ date: new Date().toISOString().slice(0, 10), weightKg: undefined, bodyFatPct: undefined, notes: '', chest: undefined, waist: undefined, hips: undefined, arm: undefined, thigh: undefined, calf: undefined });
+    }
+  }, [editingMeasurement, isEditing, reset]);
+
+  const onSubmit = async (data: FormValues) => {
+    if (!userId || !db) return;
+
+    const dataToSave = {
       ...data,
-      id: crypto.randomUUID(),
       date: new Date(data.date).toISOString(),
-    });
-    reset({ date: new Date().toISOString().slice(0, 10) });
+    };
+
+    try {
+      if (isEditing) {
+        await updateMeasurement(db, userId, editingMeasurement.id, dataToSave);
+        toast.success("Medición actualizada con éxito");
+      } else {
+        await addMeasurement(db, userId, dataToSave);
+        toast.success("Medición guardada con éxito");
+      }
+      onSuccess();
+    } catch (error) {
+      toast.error("Error al guardar la medición.");
+      console.error(error);
+    }
   };
 
-  const firstError =
-    (errors?.date?.message ??
-      errors?.weightKg?.message ??
-      errors?.bodyFatPct?.message ??
-      errors?.notes?.message) as string | undefined;
+  const firstError = errors[Object.keys(errors)[0] as keyof typeof errors]?.message;
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="glass-card grid gap-4 border-[rgba(10,46,92,0.16)] bg-white/80 p-6 md:grid-cols-5"
     >
+        <div className="col-span-full flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-zinc-900">
+                {isEditing ? "Editar Medición" : "Registrar Nueva Medición"}
+            </h2>
+            {isEditing && (
+                <button type="button" onClick={onSuccess} className="text-sm font-semibold text-blue-600 hover:underline">
+                    Cancelar
+                </button>
+            )}
+        </div>
+
+      {/* Campos del formulario (sin cambios en el JSX, solo en la logica) */}
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Fecha</label>
-        <input
-          type="date"
-          {...register("date")}
-          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
-        />
+        <input type="date" {...register("date")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Peso (kg)</label>
-        <input
-          type="number"
-          step="0.1"
-          {...register("weightKg")}
-          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
-        />
+        <input type="number" step="0.1" {...register("weightKg")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Grasa (%)</label>
-        <input
-          type="number"
-          step="0.1"
-          {...register("bodyFatPct")}
-          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
-        />
+        <input type="number" step="0.1" {...register("bodyFatPct")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
 
       <div className="col-span-full my-2 border-t border-[rgba(10,46,92,0.1)]" />
@@ -122,17 +154,13 @@ export default function MeasurementForm() {
       </div>
       <div className="space-y-2 md:col-span-2">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Notas</label>
-        <input
-          {...register("notes")}
-          className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm"
-          placeholder="Sue?o, alimentacion, biorritmo..."
-        />
+        <input {...register("notes")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" placeholder="Sueño, alimentación, biorritmo..." />
       </div>
       <div className="md:col-span-5 flex flex-wrap items-center gap-3">
-        <button className="primary-button" disabled={!user || isSubmitting}>
-          {user ? (isSubmitting ? "Guardando..." : "Guardar medicion") : "Inicia sesion"}
+        <button className="primary-button" disabled={!userId || isSubmitting}>
+          {isSubmitting ? "Guardando..." : (isEditing ? "Actualizar Medición" : "Guardar Medición")}
         </button>
-        {firstError && <span className="text-xs text-red-500">{firstError}</span>}
+        {firstError && <span className="text-xs text-red-500">{String(firstError)}</span>}
       </div>
     </form>
   );

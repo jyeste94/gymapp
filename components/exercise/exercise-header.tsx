@@ -1,35 +1,31 @@
-
 import Chip from "@/components/ui/chip";
-import type { RoutineDefinition } from "@/lib/data/routine-library";
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+import type { Routine } from "@/lib/types";
+import type { RoutineExercise } from "@/lib/types";
 
 type ExerciseHeaderProps = {
-  exercise: RoutineExercise;
-  routine?: RoutineDefinition;
+    exercise: RoutineExercise;
+    routine: Routine;
 };
 
 export default function ExerciseHeader({ exercise, routine }: ExerciseHeaderProps) {
-  return (
-    <header className="rounded-2xl border bg-white/70 p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          {routine ? (
-            <p className="text-xs uppercase tracking-wide text-[#51607c]">{routine.title}</p>
-          ) : (
-            <p className="text-xs uppercase tracking-wide text-[#51607c]">Ficha de Ejercicio</p>
-          )}
-          <h1 className="text-2xl font-semibold text-zinc-900">{exercise.name}</h1>
-          <p className="mt-2 text-sm text-[#4b5a72]">{exercise.description}</p>
-        </div>
-        <div className="flex flex-wrap justify-end gap-2 text-xs text-[#51607c]">
-          <Chip label={`${exercise.sets} series`} />
-          <Chip label={`${exercise.repRange} reps`} />
-          <Chip label={`Descanso ${exercise.rest}`} />
-          {[...exercise.muscleGroup, ...exercise.equipment].map((tag) => (
-            <Chip key={tag} label={tag} />
-          ))}
-        </div>
-      </div>
-    </header>
-  );
+    return (
+        <header className="bg-zinc-900 text-white p-6">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold uppercase tracking-wide text-blue-400">
+                        {routine.title} - {routine.level}
+                    </p>
+                </div>
+                <h1 className="text-4xl font-bold mb-3">{exercise.name}</h1>
+                <div className="flex flex-wrap gap-2">
+                    {exercise.muscleGroup.map((group) => (
+                        <Chip key={group} label={group} />
+                    ))}
+                    {exercise.equipment.map((equip) => (
+                        <Chip key={equip} label={equip} />
+                    ))}
+                </div>
+            </div>
+        </header>
+    );
 }

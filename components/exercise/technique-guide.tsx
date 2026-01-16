@@ -1,4 +1,4 @@
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+import type { RoutineExercise } from "@/lib/types";
 
 type TechniqueGuideProps = {
   exercise: RoutineExercise;

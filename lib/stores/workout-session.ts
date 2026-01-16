@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+import type { RoutineExercise } from "@/lib/types";
 
 export type WorkoutSet = {
     id: string;

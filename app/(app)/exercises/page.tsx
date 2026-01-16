@@ -3,30 +3,32 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import {
-  defaultRoutines,
-  mergeRoutines,
-  templateToRoutineDefinition,
-  type RoutineTemplateDoc,
-} from "@/lib/data/routine-library";
+import { defaultRoutines } from "@/lib/data/routine-library";
+import { defaultExercises } from "@/lib/data/exercises";
+import { buildRoutine } from "@/lib/routine-builder";
+import { mergeRoutines } from "@/lib/routine-helpers";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
+import type { RoutineTemplate } from "@/lib/types";
 
 export default function ExercisesPage() {
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
-  const { data: routineTemplates } = useCol<RoutineTemplateDoc>(templatesPath, { by: "title", dir: "asc" });
+  const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
 
+  // Construye las rutinas personalizadas a partir de las plantillas de Firestore.
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(templateToRoutineDefinition),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
-  const routines = useMemo(
+  // Combina las rutinas personalizadas con las de por defecto.
+  const allRoutines = useMemo(
     () => mergeRoutines(customRoutines, defaultRoutines),
     [customRoutines],
   );
 
-  const exercises = useMemo(() => buildExerciseCatalog(routines), [routines]);
+  // Construye el catalogo de ejercicios enriquecido para la UI.
+  const exercises = useMemo(() => buildExerciseCatalog(allRoutines), [allRoutines]);
 
   return (
     <div className="space-y-6">
@@ -67,6 +69,3 @@ export default function ExercisesPage() {
     </div>
   );
 }
-
-
-

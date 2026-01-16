@@ -1,6 +1,12 @@
+/* eslint-disable */
 
-// Definiciones de tipos para valores especificos, evitando strings magicos.
+// ==========================================================================================
+// --- ENUMS Y TIPOS BASICOS
+// ==========================================================================================
 
+/**
+ * Grupos musculares especificos para evitar errores de tipeo.
+ */
 export type MuscleGroup = 
   | 'Pecho'
   | 'Espalda'
@@ -14,6 +20,9 @@ export type MuscleGroup =
   | 'Core'
   | 'Trapecio';
 
+/**
+ * Equipamiento disponible, para consistencia.
+ */
 export type Equipment = 
   | 'Barra'
   | 'Mancuernas'
@@ -21,69 +30,171 @@ export type Equipment =
   | 'Maquina'
   | 'Peso corporal';
 
+/**
+ * Niveles de dificultad de las rutinas.
+ */
 export type RoutineLevel = 'Principiante' | 'Intermedio' | 'Avanzado';
-export type RoutineIntensity = 'Bajo' | 'Moderado' | 'Intenso';
-export type RoutineFrequency = '3 dias' | '4 dias' | '5 dias';
-export type DayIntensity = 'Bajo' | 'Moderado' | 'Intenso';
 
 
-// Definicion central del modelo de datos para un ejercicio.
+// ==========================================================================================
+// --- MODELO DE DATOS DE EJERCICIOS
+// ==========================================================================================
 
+/**
+ * Representa la definicion base de un ejercicio en la biblioteca.
+ * Contiene toda la informacion estatica y descriptiva.
+ */
 export type Exercise = {
-    id: string;
-    name: string;
+    id: string; // Identificador unico, ej: 'press_banca'
+    name: string; // Nombre legible, ej: 'Press de Banca'
     description: string;
     muscleGroup: MuscleGroup[];
     equipment: Equipment[];
-    technique: string[];
-    image?: string;
-    video?: string;
-};
-
-// Definicion para los registros de medidas corporales.
-export type Measurement = {
-    id: string;
-    date: string;
-    weightKg: number;
-    bodyFatPct?: number;
-    chest?: number;
-    waist?: number;
-    arm?: number;
-    notes?: string;
+    technique: string[]; // Array de consejos o pasos para la tecnica
+    image?: string; // Opcional: URL o path a una imagen
+    video?: string; // Opcional: URL a un video demostrativo
 };
 
 
-// --- Modelo de Datos para Planes de Rutina ---
+// ==========================================================================================
+// --- ESTRUCTURA DE PLANTILLAS DE RUTINAS (TEMPLATES)
+// ==========================================================================================
+// Las plantillas son la "receta" para construir una rutina. Usan IDs para referenciar
+// ejercicios y contienen solo la configuracion especifica de la rutina.
 
+/**
+ * Configuracion de un ejercicio dentro de una plantilla de rutina.
+ * Solo contiene el ID del ejercicio y los parametros de entrenamiento.
+ */
 export type RoutineExerciseConfig = {
-    id: string;
+    id: string; // Referencia al Exercise.id
     sets: number;
     repRange: string;
     rest: string;
-    tip: string;
-  };
-  
-export type RoutineExercise = Exercise & RoutineExerciseConfig;
-
-export type RoutineDay = {
-    id: string;
-    name: string;
-    focus: string;
-    intensity: DayIntensity;
-    estimatedDuration: string;
-    notes: string;
-    warmup: string[];
-    finisher?: string[];
-    legacyNames?: string[];
-    exercises: RoutineExerciseConfig[];
+    tip?: string; // Consejo especifico para este ejercicio en esta rutina
 };
 
-export type RoutinePlan = {
-    name: string;
-    goal: string;
+/**
+ * Plantilla para un dia de entrenamiento.
+ */
+export type RoutineDayTemplate = {
+    id: string; // Identificador del dia, ej: 'dia-1-empuje'
+    title: string; // Nombre del dia, ej: 'Dia 1: Empuje (Fuerza)'
+    focus?: string; // Foco del dia, ej: 'Fuerza' o 'Hipertrofia'
+    exercises: RoutineExerciseConfig[]; // Lista de ejercicios configurados
+};
+
+/**
+ * Plantilla completa de una rutina.
+ * Esta es la definicion base que se guarda en la biblioteca de rutinas.
+ */
+export type RoutineTemplate = {
+    id: string; // Identificador unico de la rutina, ej: 'fuerza-hipertrofia-4d'
+    title: string;
+    description: string;
     level: RoutineLevel;
-    durationWeeks: number;
-    frequency: RoutineFrequency;
+    frequency: string; // ej: '4 dias/semana'
+    equipment: Equipment[];
+    days: RoutineDayTemplate[];
+};
+
+
+// ==========================================================================================
+// --- MODELO DE DATOS DE RUTINAS HIDRATADAS
+// ==========================================================================================
+// Las rutinas "hidratadas" son objetos completos listos para ser usados en la UI.
+// Contienen los detalles completos de cada ejercicio, no solo sus IDs.
+
+/**
+ * Un ejercicio dentro de una rutina ya procesada.
+ * Es la fusion de 'Exercise' (info base) y 'RoutineExerciseConfig' (parametros).
+ */
+export type RoutineExercise = Exercise & {
+    sets: number;
+    repRange: string;
+    rest: string;
+    tip?: string;
+};
+
+/**
+ * Un dia de entrenamiento completamente detallado, listo para la UI.
+ */
+export type RoutineDay = {
+    id: string;
+    title: string;
+    focus?: string;
+    exercises: RoutineExercise[]; // Contiene los objetos de ejercicio completos
+};
+
+/**
+ * La rutina completa y procesada, con todos los datos necesarios para su visualizacion y uso.
+ */
+export type Routine = {
+    id: string;
+    title: string;
+    description: string;
+    level: RoutineLevel;
+    frequency: string;
     equipment: Equipment[];
     days: RoutineDay[];
+};
+
+// ==========================================================================================
+// --- MODELO DE DATOS DE MEDICIONES
+// ==========================================================================================
+
+/**
+ * Representa una entrada de medicion corporal en una fecha especifica.
+ */
+export type Measurement = {
+  id: string; // ID unico del documento de Firestore
+  date: string; // Fecha en formato ISO (YYYY-MM-DDTHH:mm:ss.sssZ)
+  weightKg: number;
+  bodyFatPct?: number | null;
+  chest?: number | null;
+  waist?: number | null;
+  hips?: number | null;
+  arm?: number | null;
+  thigh?: number | null;
+  calf?: number | null;
+  notes?: string | null;
+};
+
+// ==========================================================================================
+// --- MODELO DE DATOS DE REGISTROS (LOGS)
+// ==========================================================================================
+
+/**
+ * Representa un set individual registrado para un ejercicio.
+ */
+export type RoutineLogSet = {
+  reps: number;
+  weight: number;
+  rir?: number; // Reps in Reserve
+};
+
+/**
+ * Representa el registro de un ejercicio especifico dentro de una sesion de entrenamiento.
+ */
+export type RoutineLogEntry = {
+  exerciseId: string;
+  exerciseName: string;
+  sets: RoutineLogSet[];
+  comment?: string; // Comentarios especificos del ejercicio
+  notes?: string;
+};
+
+/**
+ * Representa el registro completo de una sesion de entrenamiento de un dia especifico.
+ */
+export type RoutineLog = {
+  id: string; // ID unico del log
+  date: string; // Fecha de la sesion en formato ISO
+  routineId?: string;
+  routineName?: string;
+  dayId?: string;
+  dayName?: string;
+  entries: RoutineLogEntry[];
+  effort?: number; // Percepcion del esfuerzo (ej: 1-10)
+  duration?: string; // Duracion total de la sesion (ej: '1h 15m')
 };

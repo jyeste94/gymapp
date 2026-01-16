@@ -25,9 +25,11 @@ export default function ProgressPage() {
     const totalVolume = routineLogs.reduce((acc, log) => {
       log.entries.forEach(e => {
         e.sets?.forEach(s => {
-          const w = parseFloat(s.weight || "0");
-          const r = parseFloat(s.reps || "0");
-          if (s.completed) acc += w * r;
+          // AHORA s.weight y s.reps SON NUMEROS
+          const w = s.weight || 0;
+          const r = s.reps || 0;
+          // El campo completed fue eliminado, asumimos que si hay log, esta completado.
+          acc += w * r;
         });
       });
       return acc;
