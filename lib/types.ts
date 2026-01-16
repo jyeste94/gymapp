@@ -1,86 +1,89 @@
-export type UUID = string;
 
-export type Measurement = {
-  id: UUID; date: string;
-  weightKg: number;
-  bodyFatPct?: number;
-  chest?: number;
-  waist?: number;
-  hips?: number;
-  arm?: number;
-  thigh?: number;
-  calf?: number;
-  notes?: string;
-};
+// Definiciones de tipos para valores especificos, evitando strings magicos.
+
+export type MuscleGroup = 
+  | 'Pecho'
+  | 'Espalda'
+  | 'Hombro'
+  | 'Biceps'
+  | 'Triceps'
+  | 'Cuadriceps'
+  | 'Isquios'
+  | 'Gluteos'
+  | 'Gemelos'
+  | 'Core'
+  | 'Trapecio';
+
+export type Equipment = 
+  | 'Barra'
+  | 'Mancuernas'
+  | 'Polea'
+  | 'Maquina'
+  | 'Peso corporal';
+
+export type RoutineLevel = 'Principiante' | 'Intermedio' | 'Avanzado';
+export type RoutineIntensity = 'Bajo' | 'Moderado' | 'Intenso';
+export type RoutineFrequency = '3 dias' | '4 dias' | '5 dias';
+export type DayIntensity = 'Bajo' | 'Moderado' | 'Intenso';
+
+
+// Definicion central del modelo de datos para un ejercicio.
 
 export type Exercise = {
-  id: UUID;
-  name: string;
-  muscleGroup: string[];
-  equipment: string[];
-  description?: string;
-  technique?: string[];
-  image?: string;
-  video?: string;
-  ormFormula?: 'Epley' | 'Brzycki';
+    id: string;
+    name: string;
+    description: string;
+    muscleGroup: MuscleGroup[];
+    equipment: Equipment[];
+    technique: string[];
+    image?: string;
+    video?: string;
 };
 
-export type RoutineDay = { id: UUID; name: string; exerciseIds: UUID[]; };
-export type Routine = { id: UUID; name: string; days: RoutineDay[]; notes?: string; };
-
-export type SetEntry = {
-  id: UUID; exerciseId: UUID; weightKg: number; reps: number;
-  rir?: number; pe?: number; notes?: string;
-};
-export type WorkoutSession = {
-  id: UUID; date: string; routineId?: UUID; dayId?: UUID;
-  sets: SetEntry[]; durationMin?: number; notes?: string;
-};
-
-export type Ingredient = {
-  id: UUID; name: string;
-  unit: 'g' | 'ml' | 'pcs';
-  kcalPerUnit: number; proteinPerUnit: number; carbsPerUnit: number; fatPerUnit: number;
+// Definicion para los registros de medidas corporales.
+export type Measurement = {
+    id: string;
+    date: string;
+    weightKg: number;
+    bodyFatPct?: number;
+    chest?: number;
+    waist?: number;
+    arm?: number;
+    notes?: string;
 };
 
-export type RecipeIngredient = { ingredientId: UUID; quantity: number; };
-export type Recipe = {
-  id: UUID; name: string; servings: number;
-  ingredients: RecipeIngredient[];
-  instructions?: string;
-  perServing?: { kcal: number; protein: number; carbs: number; fat: number; };
+
+// --- Modelo de Datos para Planes de Rutina ---
+
+export type RoutineExerciseConfig = {
+    id: string;
+    sets: number;
+    repRange: string;
+    rest: string;
+    tip: string;
+  };
+  
+export type RoutineExercise = Exercise & RoutineExerciseConfig;
+
+export type RoutineDay = {
+    id: string;
+    name: string;
+    focus: string;
+    intensity: DayIntensity;
+    estimatedDuration: string;
+    notes: string;
+    warmup: string[];
+    finisher?: string[];
+    legacyNames?: string[];
+    exercises: RoutineExerciseConfig[];
 };
 
-export type MealItem = {
-  id: UUID; type: 'recipe' | 'ingredient';
-  refId: UUID;
-  servingsOrQty: number;
-  notes?: string;
-};
-
-export type DayMeals = {
-  id: UUID; date?: string;
-  meals: { kind: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack'; items: MealItem[]; }[];
-};
-
-export type DietWeek = {
-  id: UUID; name: string;
-  days: DayMeals[];
-  target?: { kcal: number; protein: number; carbs: number; fat: number; };
-};
-
-export type DietSettings = {
-  defaultMealKinds: ('Breakfast' | 'Lunch' | 'Dinner' | 'Snack')[];
-  dailyTarget: { kcal: number; protein: number; carbs: number; fat: number; };
-};
-
-export type BackupPayload = {
-  measurements: Measurement[];
-  exercises: Exercise[];
-  routines: Routine[];
-  workouts: WorkoutSession[];
-  ingredients: Ingredient[];
-  recipes: Recipe[];
-  dietWeeks: DietWeek[];
-  dietSettings: DietSettings;
+export type RoutinePlan = {
+    name: string;
+    goal: string;
+    level: RoutineLevel;
+    durationWeeks: number;
+    frequency: RoutineFrequency;
+    equipment: Equipment[];
+    days: RoutineDay[];
 };

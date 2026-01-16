@@ -13,7 +13,7 @@ import {
   type RoutineDayDefinition,
 } from "@/lib/data/routine-library";
 import { useRoutineLogs, type RoutineLogSet } from "@/lib/firestore/routine-logs";
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+import type { RoutineExercise } from "@/lib/types";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { Play } from "lucide-react";
 import { useRouter } from "next/navigation";

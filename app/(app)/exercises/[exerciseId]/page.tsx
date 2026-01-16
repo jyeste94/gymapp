@@ -13,6 +13,8 @@ import {
   buildExerciseIndex,
   type RoutineTemplateDoc,
 } from "@/lib/data/routine-library";
+import { defaultExercises } from "@/lib/data/exercises";
+import { type RoutineExercise } from "@/lib/types";
 import {
   useExerciseLogs,
   saveExerciseLog,
@@ -56,6 +58,8 @@ export default function ExerciseDetailPage() {
   const { db } = useFirebase();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
+  const fromCreator = searchParams.get("from") === "creator";
+
   const [isSaving, setIsSaving] = useState(false);
   const [activeLogId, setActiveLogId] = useState<string | null>(null);
 
@@ -73,30 +77,49 @@ export default function ExerciseDetailPage() {
   );
 
   const exerciseEntry = useMemo(
-    () => buildExerciseIndex(routines).get(params.exerciseId),
-    [routines, params.exerciseId],
+    () => (fromCreator ? null : buildExerciseIndex(routines).get(params.exerciseId)),
+    [routines, params.exerciseId, fromCreator],
   );
 
+  const contextlessExercise = useMemo(() => {
+    if (!fromCreator) return null;
+    const baseExercise = defaultExercises.find((ex) => ex.id === params.exerciseId);
+    if (!baseExercise) return null;
+
+    return {
+      ...baseExercise,
+      sets: 3,
+      repRange: "8-12",
+      rest: "60s",
+      tip: "",
+    };
+  }, [params.exerciseId, fromCreator]);
+
+  const exercise = exerciseEntry?.exercise ?? contextlessExercise;
+  const routine = exerciseEntry?.routine;
+
   const history = useMemo(() => {
-    if (!exerciseEntry) return [] as ExerciseLog[];
-    return (exerciseLogs ?? []).filter((log) => log.exerciseId === exerciseEntry.exercise.id);
-  }, [exerciseLogs, exerciseEntry]);
+    if (!exercise) return [] as ExerciseLog[];
+    return (exerciseLogs ?? []).filter((log) => log.exerciseId === exercise.id);
+  }, [exerciseLogs, exercise]);
 
   const defaultSets = useMemo(
-    () => (exerciseEntry ? createSets(exerciseEntry.exercise.sets) : []),
-    [exerciseEntry]
+    () => (exercise ? createSets(exercise.sets) : []),
+    [exercise]
   );
 
   const [session, setSession] = useState<SessionState>({
     sessionDate: new Date().toISOString().slice(0, 16),
     perceivedEffort: "",
     notes: "",
-    mediaImage: exerciseEntry?.exercise.image ?? "",
-    mediaVideo: exerciseEntry?.exercise.video ?? "",
+    mediaImage: exercise?.image ?? "",
+    mediaVideo: exercise?.video ?? "",
     sets: defaultSets,
   });
 
   useEffect(() => {
+    if (fromCreator || !exercise) return;
+
     const todaysLog = history.find(log => isToday(log.date));
     if (todaysLog) {
       setActiveLogId(todaysLog.id);
@@ -104,12 +127,12 @@ export default function ExerciseDetailPage() {
         sessionDate: new Date(todaysLog.date).toISOString().slice(0, 16),
         perceivedEffort: todaysLog.perceivedEffort || "",
         notes: todaysLog.notes || "",
-        mediaImage: todaysLog.mediaImage || exerciseEntry?.exercise.image || "",
-        mediaVideo: todaysLog.mediaVideo || exerciseEntry?.exercise.video || "",
+        mediaImage: todaysLog.mediaImage || exercise.image || "",
+        mediaVideo: todaysLog.mediaVideo || exercise.video || "",
         sets: todaysLog.sets.length > 0 ? todaysLog.sets.map(logSetToSessionSet) : defaultSets,
       });
     }
-  }, [history, exerciseEntry, defaultSets]);
+  }, [history, exercise, defaultSets, fromCreator]);
 
   const backHref = useMemo(() => {
     const routineId = searchParams.get("routineId");
@@ -120,7 +143,7 @@ export default function ExerciseDetailPage() {
     return null;
   }, [searchParams]);
 
-  if (!exerciseEntry) {
+  if (!exercise) {
     return (
       <div className="space-y-4 rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-6">
         <h1 className="text-xl font-semibold text-zinc-900">Ejercicio no encontrado</h1>
@@ -133,8 +156,6 @@ export default function ExerciseDetailPage() {
       </div>
     );
   }
-
-  const { exercise, routine } = exerciseEntry;
 
   const handleSetField = (index: number, field: "weight" | "reps" | "rir") => (value: string) => {
     setSession((prev) => {
@@ -161,7 +182,7 @@ export default function ExerciseDetailPage() {
   };
 
   const handleSave = async () => {
-    if (!user || !db) return;
+    if (!user || !db || !exerciseEntry) return;
     setIsSaving(true);
 
     const hasSetData = session.sets.some(set => Boolean(set.weight || set.reps || set.rir));
@@ -180,8 +201,8 @@ export default function ExerciseDetailPage() {
     const logData = {
       exerciseId: exercise.id,
       exerciseName: exercise.name,
-      routineId: routine.id,
-      routineName: routine.title,
+      routineId: exerciseEntry.routine.id,
+      routineName: exerciseEntry.routine.title,
       dayId: exerciseEntry.day.id,
       dayName: exerciseEntry.day.title,
       date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
@@ -208,38 +229,51 @@ export default function ExerciseDetailPage() {
       setIsSaving(false);
     }
   };
-
-  return (
-    <div className="space-y-6">
-      {backHref ? (
+  
+  const renderBackButton = () => {
+    if (backHref) {
+      return (
         <Link href={backHref} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
           {"<- Volver"}
         </Link>
-      ) : (
-        <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-          {"<- Volver"}
-        </button>
-      )}
+      );
+    }
+    if (fromCreator) {
+      return null; // No renderizar el botón si viene del creador de rutinas
+    }
+    return (
+      <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
+        {"<- Volver"}
+      </button>
+    );
+  };
 
-      <ExerciseHeader exercise={exercise} routine={routine} />
+  return (
+    <div className="space-y-6">
+      {renderBackButton()}
+
+      <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />
 
       <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 
-      <TechniqueGuide exercise={exercise} />
-
-      <SessionForm
-        session={session}
-        setSession={setSession}
-        handleSave={handleSave}
-        isSaving={isSaving}
-        userId={user?.uid}
-        addExtraSet={addExtraSet}
-        removeLastSet={removeLastSet}
-        toggleSetCompleted={toggleSetCompleted}
-        handleSetField={handleSetField}
-      />
-
-      <ExerciseHistory history={history} />
+      <TechniqueGuide exercise={exercise as RoutineExercise} />
+      
+      {!fromCreator && (
+        <>
+          <SessionForm
+            session={session}
+            setSession={setSession}
+            handleSave={handleSave}
+            isSaving={isSaving}
+            userId={user?.uid}
+            addExtraSet={addExtraSet}
+            removeLastSet={removeLastSet}
+            toggleSetCompleted={toggleSetCompleted}
+            handleSetField={handleSetField}
+          />
+          <ExerciseHistory history={history} />
+        </>
+      )}
     </div>
   );
 }

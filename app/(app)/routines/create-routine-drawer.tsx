@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Plus, Search, Trash2, X, Eye } from "lucide-react";
-import type { RoutineExercise } from "@/lib/data/routine-plan";
+import type { RoutineExercise } from "@/lib/types";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
 import { createRoutineTemplate, type RoutineTemplateInput } from "@/lib/firestore/routines";
 import { useFirebase } from "@/lib/firebase/client-context";
@@ -229,7 +229,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
       onClose();
     } catch (error) {
       console.error("create routine failed", error);
-      setError(error instanceof Error ? error.message : "No se pudo crear la rutina.");
+      setError("Error al guardar: " + (error instanceof Error ? error.message : "Ocurrió un problema desconocido."));
     } finally {
       setSaving(false);
     }
@@ -625,7 +625,7 @@ function ExercisePicker({
       <div className="space-y-2">
         <h3 className="text-sm font-semibold text-[#0a2e5c]">Selecciona ejercicios</h3>
         <p className="text-xs text-[#51607c]">
-          Filtra por nombre, musculo o material, revisa la ficha del ejercicio y a?adelo al dia.
+          Filtra por nombre, musculo o material, revisa la ficha del ejercicio y anadelo al dia.
         </p>
       </div>
 
@@ -680,7 +680,9 @@ function ExercisePicker({
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/exercises/${exercise.id}`}
+                    href={`/exercises/${exercise.id}?from=creator`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5 text-xs font-semibold text-[#0a2e5c] transition hover:-translate-y-0.5 hover:shadow"
                   >
                     <Eye className="h-3.5 w-3.5" /> Ver ficha

@@ -1,37 +1,5 @@
-import type { Exercise } from "@/lib/types";
 
-export type RoutineExerciseConfig = {
-  id: string;
-  sets: number;
-  repRange: string;
-  rest: string;
-  tip: string;
-};
-
-export type RoutineExercise = Exercise & RoutineExerciseConfig;
-
-export type RoutineDay = {
-  id: string;
-  name: string;
-  focus: string;
-  intensity: "Bajo" | "Moderado" | "Intenso";
-  estimatedDuration: string;
-  notes: string;
-  warmup: string[];
-  finisher?: string[];
-  legacyNames?: string[];
-  exercises: RoutineExerciseConfig[];
-};
-
-export type RoutinePlan = {
-  name: string;
-  goal: string;
-  level: string;
-  durationWeeks: number;
-  frequency: string;
-  equipment: string[];
-  days: RoutineDay[];
-};
+import type { RoutinePlan } from "@/lib/types";
 
 export const pushPullLegsRoutine: RoutinePlan = {
   name: "Push Pull Legs 4 dias",

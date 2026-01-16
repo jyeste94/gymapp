@@ -5,7 +5,7 @@ import type { RoutineExercise } from "@/lib/data/routine-plan";
 
 type ExerciseHeaderProps = {
   exercise: RoutineExercise;
-  routine: RoutineDefinition;
+  routine?: RoutineDefinition;
 };
 
 export default function ExerciseHeader({ exercise, routine }: ExerciseHeaderProps) {
@@ -13,7 +13,11 @@ export default function ExerciseHeader({ exercise, routine }: ExerciseHeaderProp
     <header className="rounded-2xl border bg-white/70 p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-wide text-[#51607c]">{routine.title}</p>
+          {routine ? (
+            <p className="text-xs uppercase tracking-wide text-[#51607c]">{routine.title}</p>
+          ) : (
+            <p className="text-xs uppercase tracking-wide text-[#51607c]">Ficha de Ejercicio</p>
+          )}
           <h1 className="text-2xl font-semibold text-zinc-900">{exercise.name}</h1>
           <p className="mt-2 text-sm text-[#4b5a72]">{exercise.description}</p>
         </div>

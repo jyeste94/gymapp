@@ -1,13 +1,5 @@
-export type Exercise = {
-    id: string;
-    name: string;
-    muscleGroup: string[];
-    equipment: string[];
-    description: string;
-    technique: string[];
-    image?: string;
-    video?: string;
-};
+
+import type { Exercise } from '@/lib/types';
 
 export const defaultExercises: Exercise[] = [
     // Push Day
