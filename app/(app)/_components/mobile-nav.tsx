@@ -9,8 +9,8 @@ export default function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(10,46,92,0.12)] bg-white/95 shadow-[0_-8px_24px_-18px_rgba(10,46,92,0.4)] backdrop-blur-md lg:hidden">
-      <ul className="flex items-center justify-between gap-1 px-4 py-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(10,46,92,0.12)] bg-white/95 pb-safe shadow-[0_-8px_24px_-18px_rgba(10,46,92,0.4)] backdrop-blur-md lg:hidden">
+      <ul className="flex items-center justify-between gap-1 px-4 py-2 pb-5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;

@@ -1,9 +1,9 @@
 
 import { add, remove } from "@/lib/firestore/crud";
-import type { RoutineTemplateDoc } from "@/lib/data/routine-library";
+import type { RoutineTemplate } from "@/lib/types";
 import { Firestore } from "firebase/firestore";
 
-export type RoutineTemplateInput = Omit<RoutineTemplateDoc, "id">;
+export type RoutineTemplateInput = Omit<RoutineTemplate, "id">;
 
 export function userRoutineTemplatesPath(uid: string) {
   return `users/${uid}/routineTemplates`;

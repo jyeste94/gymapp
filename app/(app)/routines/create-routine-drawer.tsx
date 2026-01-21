@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Plus, Search, Trash2, X, Eye } from "lucide-react";
-import type { RoutineExercise } from "@/lib/types";
+import type { RoutineExercise, RoutineLevel, Equipment } from "@/lib/types";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
 import { createRoutineTemplate, type RoutineTemplateInput } from "@/lib/firestore/routines";
 import { useFirebase } from "@/lib/firebase/client-context";
@@ -70,6 +70,19 @@ type ViewState =
 export default function CreateRoutineDrawer({ open, userId, exercises, onClose, onCreated }: Props) {
   const { db } = useFirebase();
   const [form, setForm] = useState<RoutineFormState>(() => buildDefaultState());
+  // ... state declarations ...
+
+  // Safe close handler
+  const handleClose = () => {
+    const isDirty = form.title.length > 0 || form.days.length > 1 || form.days.some(d => d.exercises.length > 0);
+    if (isDirty) {
+      if (confirm("Tienes cambios sin guardar. ¿Seguro que quieres cerrar? Se perderan los datos.")) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
   const [view, setView] = useState<ViewState>({ type: "overview" });
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -206,18 +219,15 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
       setError(null);
       const payload: RoutineTemplateInput = {
         title: form.title.trim(),
-        description: form.description.trim() || undefined,
-        focus: form.focus.trim() || undefined,
-        level: form.level.trim() || undefined,
-        frequency: form.frequency.trim() || undefined,
-        equipment: equipmentList,
+        description: form.description.trim(),
+        goal: form.focus.trim() || undefined,
+        level: form.level.trim() as RoutineLevel,
+        frequency: form.frequency.trim(),
+        equipment: equipmentList as Equipment[],
         days: form.days.map((day, index) => ({
           id: day.id,
           title: day.title.trim() || `Dia ${index + 1}`,
           focus: day.focus.trim() || undefined,
-          order: index + 1,
-          intensity: undefined,
-          estimatedDuration: undefined,
           notes: day.notes.trim() || undefined,
           warmup: [],
           finisher: [],
@@ -307,7 +317,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           "absolute inset-0 bg-black/40 backdrop-blur-sm transition opacity-0",
           open && "opacity-100",
         )}
-        onClick={onClose}
+        onClick={handleClose}
       />
       <aside
         className={clsx(
@@ -325,7 +335,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
             </div>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-[#4b5a72] transition hover:border-zinc-300 hover:text-[#0a2e5c]"
               aria-label="Cerrar creador"
             >
@@ -343,7 +353,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                 <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="rounded-2xl border border-zinc-200 px-4 py-2 text-sm font-semibold text-[#4b5a72] transition hover:bg-zinc-50"
                   >
                     Cancelar

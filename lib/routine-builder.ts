@@ -59,6 +59,9 @@ function hydrateDay(dayTemplate: RoutineDayTemplate, exerciseIndex: Map<string, 
         id: dayTemplate.id,
         title: dayTemplate.title,
         focus: dayTemplate.focus,
+        notes: dayTemplate.notes,
+        warmup: dayTemplate.warmup,
+        finisher: dayTemplate.finisher,
         exercises: dayTemplate.exercises.map((config) => hydrateExercise(config, exerciseIndex)),
     };
 }
@@ -74,8 +77,8 @@ function hydrateDay(dayTemplate: RoutineDayTemplate, exerciseIndex: Map<string, 
  */
 export function buildRoutine(routineTemplate: RoutineTemplate, allExercises: Exercise[]): Routine {
     const exerciseIndex = createExerciseIndex(allExercises);
-    
-    const hydratedDays = routineTemplate.days.map((dayTemplate) => 
+
+    const hydratedDays = routineTemplate.days.map((dayTemplate) =>
         hydrateDay(dayTemplate, exerciseIndex)
     );
 
@@ -83,7 +86,9 @@ export function buildRoutine(routineTemplate: RoutineTemplate, allExercises: Exe
         id: routineTemplate.id,
         title: routineTemplate.title,
         description: routineTemplate.description,
+        goal: routineTemplate.goal,
         level: routineTemplate.level,
+        durationWeeks: routineTemplate.durationWeeks,
         frequency: routineTemplate.frequency,
         equipment: routineTemplate.equipment,
         days: hydratedDays,

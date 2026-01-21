@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { addRoutineLog } from "@/lib/firestore/routine-logs";
+import { addWorkoutLog } from "@/lib/firestore/workout-logs";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -41,7 +41,7 @@ export default function WorkoutFinishPage() {
 
         setSaving(true);
         try {
-            await addRoutineLog(db, user.uid, {
+            await addWorkoutLog(db, user.uid, {
                 date: new Date().toISOString(),
                 routineId: state.routineId || undefined,
                 routineName: state.routineTitle || undefined,

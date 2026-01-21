@@ -7,7 +7,7 @@
 /**
  * Grupos musculares especificos para evitar errores de tipeo.
  */
-export type MuscleGroup = 
+export type MuscleGroup =
   | 'Pecho'
   | 'Espalda'
   | 'Hombro'
@@ -23,7 +23,7 @@ export type MuscleGroup =
 /**
  * Equipamiento disponible, para consistencia.
  */
-export type Equipment = 
+export type Equipment =
   | 'Barra'
   | 'Mancuernas'
   | 'Polea'
@@ -45,14 +45,14 @@ export type RoutineLevel = 'Principiante' | 'Intermedio' | 'Avanzado';
  * Contiene toda la informacion estatica y descriptiva.
  */
 export type Exercise = {
-    id: string; // Identificador unico, ej: 'press_banca'
-    name: string; // Nombre legible, ej: 'Press de Banca'
-    description: string;
-    muscleGroup: MuscleGroup[];
-    equipment: Equipment[];
-    technique: string[]; // Array de consejos o pasos para la tecnica
-    image?: string; // Opcional: URL o path a una imagen
-    video?: string; // Opcional: URL a un video demostrativo
+  id: string; // Identificador unico, ej: 'press_banca'
+  name: string; // Nombre legible, ej: 'Press de Banca'
+  description: string;
+  muscleGroup: MuscleGroup[];
+  equipment: Equipment[];
+  technique: string[]; // Array de consejos o pasos para la tecnica
+  image?: string; // Opcional: URL o path a una imagen
+  video?: string; // Opcional: URL a un video demostrativo
 };
 
 
@@ -67,21 +67,24 @@ export type Exercise = {
  * Solo contiene el ID del ejercicio y los parametros de entrenamiento.
  */
 export type RoutineExerciseConfig = {
-    id: string; // Referencia al Exercise.id
-    sets: number;
-    repRange: string;
-    rest: string;
-    tip?: string; // Consejo especifico para este ejercicio en esta rutina
+  id: string; // Referencia al Exercise.id
+  sets: number;
+  repRange: string;
+  rest: string;
+  tip?: string; // Consejo especifico para este ejercicio en esta rutina
 };
 
 /**
  * Plantilla para un dia de entrenamiento.
  */
 export type RoutineDayTemplate = {
-    id: string; // Identificador del dia, ej: 'dia-1-empuje'
-    title: string; // Nombre del dia, ej: 'Dia 1: Empuje (Fuerza)'
-    focus?: string; // Foco del dia, ej: 'Fuerza' o 'Hipertrofia'
-    exercises: RoutineExerciseConfig[]; // Lista de ejercicios configurados
+  id: string; // Identificador del dia, ej: 'dia-1-empuje'
+  title: string; // Nombre del dia, ej: 'Dia 1: Empuje (Fuerza)'
+  focus?: string; // Foco del dia, ej: 'Fuerza' o 'Hipertrofia'
+  notes?: string; // Notas o instrucciones generales para el dia
+  warmup?: string[]; // Lista de ejercicios de calentamiento
+  finisher?: string[]; // Lista de ejercicios para finalizar
+  exercises: RoutineExerciseConfig[]; // Lista de ejercicios configurados
 };
 
 /**
@@ -89,13 +92,15 @@ export type RoutineDayTemplate = {
  * Esta es la definicion base que se guarda en la biblioteca de rutinas.
  */
 export type RoutineTemplate = {
-    id: string; // Identificador unico de la rutina, ej: 'fuerza-hipertrofia-4d'
-    title: string;
-    description: string;
-    level: RoutineLevel;
-    frequency: string; // ej: '4 dias/semana'
-    equipment: Equipment[];
-    days: RoutineDayTemplate[];
+  id: string; // Identificador unico de la rutina, ej: 'fuerza-hipertrofia-4d'
+  title: string;
+  description: string;
+  goal?: string; // Objetivo principal
+  level: RoutineLevel;
+  durationWeeks?: number; // Duracion estimada en semanas
+  frequency: string; // ej: '4 dias/semana'
+  equipment: Equipment[];
+  days: RoutineDayTemplate[];
 };
 
 
@@ -110,33 +115,38 @@ export type RoutineTemplate = {
  * Es la fusion de 'Exercise' (info base) y 'RoutineExerciseConfig' (parametros).
  */
 export type RoutineExercise = Exercise & {
-    sets: number;
-    repRange: string;
-    rest: string;
-    tip?: string;
+  sets: number;
+  repRange: string;
+  rest: string;
+  tip?: string;
 };
 
 /**
  * Un dia de entrenamiento completamente detallado, listo para la UI.
  */
 export type RoutineDay = {
-    id: string;
-    title: string;
-    focus?: string;
-    exercises: RoutineExercise[]; // Contiene los objetos de ejercicio completos
+  id: string;
+  title: string;
+  focus?: string;
+  notes?: string;
+  warmup?: string[];
+  finisher?: string[];
+  exercises: RoutineExercise[]; // Contiene los objetos de ejercicio completos
 };
 
 /**
  * La rutina completa y procesada, con todos los datos necesarios para su visualizacion y uso.
  */
 export type Routine = {
-    id: string;
-    title: string;
-    description: string;
-    level: RoutineLevel;
-    frequency: string;
-    equipment: Equipment[];
-    days: RoutineDay[];
+  id: string;
+  title: string;
+  description: string;
+  goal?: string;
+  level: RoutineLevel;
+  durationWeeks?: number;
+  frequency: string;
+  equipment: Equipment[];
+  days: RoutineDay[];
 };
 
 // ==========================================================================================

@@ -41,7 +41,9 @@
   --shadow-floating: 0 28px 44px -30px rgba(34, 99, 255, 0.35);
 }
 
-html, body, :root {
+html,
+body,
+:root {
   height: 100%;
 }
 
@@ -61,6 +63,7 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(10, 46, 92, 0.5) transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 *::-webkit-scrollbar {
@@ -78,11 +81,23 @@ body {
 }
 
 @layer base {
-  h1, h2, h3, h4 {
+
+  h1,
+  h2,
+  h3,
+  h4 {
     color: var(--text-primary);
   }
+
   p {
     color: var(--text-secondary);
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+    /* Prevent iOS zoom */
   }
 }
 
@@ -313,4 +328,3 @@ body {
   }
 
 }
-

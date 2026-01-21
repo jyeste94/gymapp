@@ -11,7 +11,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { calculateOneRM } from "@/lib/fitness-utils";
-import type { RoutineLog } from "@/lib/firestore/routine-logs";
+import type { RoutineLog } from "@/lib/types";
 
 type Props = {
     logs: RoutineLog[];
@@ -29,7 +29,7 @@ export default function StrengthChart({ logs }: Props) {
 
                 let maxW = 0;
                 entry.sets?.forEach(s => {
-                    const w = parseFloat(s.weight || "0");
+                    const w = s.weight || 0;
                     if (w > maxW) maxW = w;
                 });
 
@@ -72,11 +72,10 @@ export default function StrengthChart({ logs }: Props) {
             let bestWeight = 0;
 
             entry.sets.forEach(set => {
-                const weight = parseFloat(set.weight || "0");
-                const reps = parseFloat(set.reps || "0");
-                const completed = set.completed;
+                const weight = set.weight || 0;
+                const reps = set.reps || 0;
 
-                if (weight > 0 && reps > 0 && completed) {
+                if (weight > 0 && reps > 0) {
                     const orm = calculateOneRM(weight, reps);
                     if (orm > best1RM) {
                         best1RM = orm;

@@ -76,7 +76,7 @@ export default function ActiveWorkoutPage() {
                         </div>
 
                         <div className="p-4">
-                            <div className="grid grid-cols-[1fr_1fr_1fr_32px] gap-2 pb-2 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                            <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 pb-2 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                                 <div>KG</div>
                                 <div>Reps</div>
                                 <div>RIR</div>
@@ -123,7 +123,7 @@ function SetRow({
 
     return (
         <div className={clsx(
-            "grid grid-cols-[1fr_1fr_1fr_32px] items-center gap-2 rounded-xl border p-1 transition-colors",
+            "grid grid-cols-[1fr_1fr_1fr_40px] items-center gap-2 rounded-xl border p-1.5 transition-colors",
             set.completed
                 ? "border-emerald-200 bg-emerald-50/30"
                 : "border-transparent bg-zinc-50"
@@ -131,21 +131,21 @@ function SetRow({
             <input
                 type="number"
                 placeholder="-"
-                className="w-full bg-transparent text-center text-sm font-semibold text-zinc-900 placeholder-zinc-300 outline-none"
+                className="w-full rounded-lg bg-transparent py-1 text-center text-base font-semibold text-zinc-900 placeholder-zinc-300 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#0a2e5c]/10"
                 value={set.weight}
                 onChange={(e) => store.updateSet(exerciseId, setId, { weight: e.target.value })}
             />
             <input
                 type="number"
                 placeholder="-"
-                className="w-full bg-transparent text-center text-sm font-semibold text-zinc-900 placeholder-zinc-300 outline-none"
+                className="w-full rounded-lg bg-transparent py-1 text-center text-base font-semibold text-zinc-900 placeholder-zinc-300 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#0a2e5c]/10"
                 value={set.reps}
                 onChange={(e) => store.updateSet(exerciseId, setId, { reps: e.target.value })}
             />
             <input
                 type="number"
                 placeholder="-"
-                className="w-full bg-transparent text-center text-sm font-semibold text-zinc-900 placeholder-zinc-300 outline-none"
+                className="w-full rounded-lg bg-transparent py-1 text-center text-base font-semibold text-zinc-900 placeholder-zinc-300 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#0a2e5c]/10"
                 value={set.rir}
                 onChange={(e) => store.updateSet(exerciseId, setId, { rir: e.target.value })}
             />
@@ -153,13 +153,13 @@ function SetRow({
             <button
                 onClick={() => store.toggleSetComplete(exerciseId, setId)}
                 className={clsx(
-                    "flex h-8 w-8 items-center justify-center rounded-lg transition-all",
+                    "flex h-10 w-10 items-center justify-center rounded-xl transition-all active:scale-95",
                     set.completed
-                        ? "bg-emerald-500 text-white shadow-sm"
+                        ? "bg-emerald-500 text-white shadow-sm shadow-emerald-200"
                         : "bg-zinc-200 text-zinc-400 hover:bg-zinc-300"
                 )}
             >
-                <Check className="h-4 w-4" />
+                <Check className="h-5 w-5" />
             </button>
         </div>
     )

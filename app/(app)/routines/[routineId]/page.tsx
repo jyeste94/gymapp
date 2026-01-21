@@ -63,11 +63,19 @@ export default function RoutineOverviewPage() {
           </div>
           <div className="flex flex-wrap justify-end gap-2">
             {routine.level && formatBadge(routine.level)}
+            {routine.durationWeeks && formatBadge(`${routine.durationWeeks} semanas`)}
             {routine.frequency && formatBadge(routine.frequency)}
             {formatBadge(`${sortedDays.length} dias`)}
             {formatBadge(`${totalExercises} ejercicios`)}
           </div>
         </div>
+
+        {routine.goal && (
+          <div className="mt-4 rounded-xl bg-blue-50/50 p-3 text-sm text-[#0a2e5c]">
+            <span className="font-semibold">Objetivo:</span> {routine.goal}
+          </div>
+        )}
+
         {routine.equipment.length > 0 && (
           <p className="mt-4 text-xs text-[#51607c]">
             Equipo sugerido: {routine.equipment.join(", ")}

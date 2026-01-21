@@ -9,7 +9,7 @@ import { defaultExercises } from "@/lib/data/exercises";
 import { buildRoutine } from "@/lib/routine-builder";
 import { mergeRoutines } from "@/lib/routine-helpers";
 import type { RoutineDay, RoutineExercise, RoutineTemplate, RoutineLogSet } from "@/lib/types";
-import { useRoutineLogs } from "@/lib/firestore/routine-logs";
+import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { Play } from "lucide-react";
 
@@ -37,7 +37,7 @@ export default function RoutineDayPage() {
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
   const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
-  const { data: routineLogs } = useRoutineLogs(user?.uid);
+  const { data: routineLogs } = useWorkoutLogs(user?.uid);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
@@ -64,23 +64,23 @@ export default function RoutineDayPage() {
     if (!routine || !day || !routineLogs) return map;
 
     for (const log of routineLogs) {
-        if (!log.routineId) continue;
-        if (log.routineId !== routine.id) continue;
-        if (log.dayId && log.dayId !== day.id) continue;
+      if (!log.routineId) continue;
+      if (log.routineId !== routine.id) continue;
+      if (log.dayId && log.dayId !== day.id) continue;
 
-        for (const entry of log.entries ?? []) {
-            if (!entry.exerciseId) continue;
-            if (map.has(entry.exerciseId)) continue;
+      for (const entry of log.entries ?? []) {
+        if (!entry.exerciseId) continue;
+        if (map.has(entry.exerciseId)) continue;
 
-            const lastSet = entry.sets?.slice(-1)[0];
-            if (!lastSet) continue;
-            
-            map.set(entry.exerciseId, { 
-                date: log.date, 
-                set: lastSet, 
-                notes: entry.notes ?? entry.comment 
-            });
-        }
+        const lastSet = entry.sets?.slice(-1)[0];
+        if (!lastSet) continue;
+
+        map.set(entry.exerciseId, {
+          date: log.date,
+          set: lastSet,
+          notes: entry.notes ?? entry.comment
+        });
+      }
     }
     return map;
   }, [routine, day, routineLogs]);
@@ -126,7 +126,30 @@ export default function RoutineDayPage() {
         </div>
       </header>
 
+      {
+        day.notes && (
+          <section className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4 text-sm text-[#0a2e5c]">
+            <p className="font-semibold">Notas del día:</p>
+            <p>{day.notes}</p>
+          </section>
+        )
+      }
+
+      {
+        day.warmup && day.warmup.length > 0 && (
+          <section className="rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/80 p-5">
+            <h3 className="mb-3 text-sm font-semibold text-[#0a2e5c]">Calentamiento</h3>
+            <ul className="space-y-1 pl-4 text-sm text-[#4b5a72] marker:text-[#0a2e5c]">
+              {day.warmup.map((item, i) => (
+                <li key={i} className="list-disc">{item}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
       <section className="space-y-3">
+        <h3 className="text-sm font-semibold text-[#0a2e5c]">Entrenamiento</h3>
         {day.exercises.map((exercise) => {
           const lastRecord = lastSetByExercise.get(exercise.id.toLowerCase());
           return (
@@ -141,12 +164,25 @@ export default function RoutineDayPage() {
         })}
       </section>
 
+      {
+        day.finisher && day.finisher.length > 0 && (
+          <section className="rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/80 p-5">
+            <h3 className="mb-3 text-sm font-semibold text-[#0a2e5c]">Finisher</h3>
+            <ul className="space-y-1 pl-4 text-sm text-[#4b5a72] marker:text-[#0a2e5c]">
+              {day.finisher.map((item, i) => (
+                <li key={i} className="list-disc">{item}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
       <section className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-5 text-xs text-[#51607c]">
         <p>
           Selecciona un ejercicio para abrir su ficha completa, ver recomendaciones y registrar pesos, repeticiones y notas.
         </p>
       </section>
-    </div>
+    </div >
   );
 }
 

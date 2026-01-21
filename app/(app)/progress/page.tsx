@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import { useRoutineLogs } from "@/lib/firestore/routine-logs";
+import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import type { Measurement } from "@/lib/types";
 import MeasurementChart from "@/components/measurement-chart";
 import StrengthChart from "@/components/progress/strength-chart";
@@ -16,7 +16,7 @@ export default function ProgressPage() {
   const { data: measurements } = useCol<Measurement>(measurementPath, { by: "date", dir: "asc" });
 
   // Fetch routine logs
-  const { data: routineLogs } = useRoutineLogs(user?.uid);
+  const { data: routineLogs } = useWorkoutLogs(user?.uid);
 
   // Stats calculation
   const stats = useMemo(() => {
