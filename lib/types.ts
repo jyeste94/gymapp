@@ -18,7 +18,8 @@ export type MuscleGroup =
   | 'Gluteos'
   | 'Gemelos'
   | 'Core'
-  | 'Trapecio';
+  | 'Trapecio'
+  | 'Antebrazo';
 
 /**
  * Equipamiento disponible, para consistencia.
@@ -207,4 +208,22 @@ export type RoutineLog = {
   entries: RoutineLogEntry[];
   effort?: number; // Percepcion del esfuerzo (ej: 1-10)
   duration?: string; // Duracion total de la sesion (ej: '1h 15m')
+};
+
+// ==========================================================================================
+// --- MODELO DE DATOS DE USUARIO
+// ==========================================================================================
+
+/**
+ * Perfil extendido del usuario.
+ */
+export type UserProfile = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  heightCm?: number | null;
+  weightKg?: number | null; // Cached latest weight for quick access
+  bodyFatPct?: number | null; // Cached latest body fat
+  createdAt: string;
 };

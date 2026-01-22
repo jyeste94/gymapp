@@ -455,4 +455,74 @@ export const defaultExercises: Exercise[] = [
         image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown_-_Rope_Attachment/1.jpg",
         video: "https://www.youtube.com/embed/z-1gS-guolY",
     },
+    {
+        id: "pajaros_mancuerna",
+        name: "Pájaros con mancuernas",
+        muscleGroup: ["Hombro", "Espalda"],
+        equipment: ["Mancuernas"],
+        description: "Ejercicio para la parte posterior del hombro (deltoides posterior).",
+        technique: [
+            "Inclina el torso hacia adelante",
+            "Eleva los brazos lateralmente",
+            "Contrae la parte posterior del hombro",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Bent-Over_Rear_Delt_Raise/1.jpg",
+        video: "https://www.youtube.com/embed/3VcKaXpzqRo", // Reuse side raise video for now or distinct
+    },
+    {
+        id: "sentadilla_frontal",
+        name: "Sentadilla Frontal",
+        muscleGroup: ["Cuadriceps", "Core"],
+        equipment: ["Barra"],
+        description: "Enfasis en cuadriceps y postura toracica.",
+        technique: [
+            "Barra sobre claviculas",
+            "Codos altos",
+            "Tronco vertical",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Squat_(Clean_Grip)/1.jpg",
+        video: "https://www.youtube.com/embed/Dy28eq2PjcM", // Reuse squat video
+    },
+    {
+        id: "press_hombro_mancuerna",
+        name: "Press militar mancuernas",
+        muscleGroup: ["Hombro"],
+        equipment: ["Mancuernas"],
+        description: "Press vertical con mancuernas para mayor rango y estabilidad.",
+        technique: [
+            "Espalda recta",
+            "Empuja verticalmente",
+            "Controla la bajada",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Press/1.jpg",
+        video: "https://www.youtube.com/embed/qEwKCR5JCog", // Reuse military press video
+    },
+    {
+        id: "jalon_neutro",
+        name: "Jalón agarre neutro",
+        muscleGroup: ["Espalda"],
+        equipment: ["Polea"],
+        description: "Variante de jalón enfocada en dorsal bajo y bíceps.",
+        technique: [
+            "Agarre neutro (palmas enfrentadas)",
+            "Tira hacia el pecho alto",
+            "Codos pegados al cuerpo",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/V-Bar_Pulldown/1.jpg",
+        video: "https://www.youtube.com/embed/CAwf7n6Luuc", // Reuse lat pulldown
+    },
+    {
+        id: "paseo_granjero",
+        name: "Paseo de granjero",
+        muscleGroup: ["Core", "Antebrazo", "Cuadriceps"],
+        equipment: ["Mancuernas"],
+        description: "Caminar cargando peso para estabilidad y fuerza de agarre.",
+        technique: [
+            "Espalda recta y hombros atrás",
+            "Pasos cortos y controlados",
+            "Activa el core fuertemente",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Farmers_Walk/1.jpg",
+        video: "https://www.youtube.com/embed/5yWaCk87YOU", // Placeholder url
+    },
 ];
