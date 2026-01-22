@@ -9,29 +9,13 @@ import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
 import { createRoutineTemplate, type RoutineTemplateInput } from "@/lib/firestore/routines";
 import { useFirebase } from "@/lib/firebase/client-context";
 
+import { validateRoutineForm, buildRoutinePayload, type RoutineFormState, type BuilderDay } from "@/lib/routine-helpers";
+
 const normalize = (value: string) =>
   value
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
-
-type BuilderDay = {
-  id: string;
-  title: string;
-  focus: string;
-  notes: string;
-  exercises: RoutineExercise[];
-};
-
-type RoutineFormState = {
-  title: string;
-  description: string;
-  focus: string;
-  level: string;
-  frequency: string;
-  equipment: string;
-  days: BuilderDay[];
-};
 
 const createDay = (index: number): BuilderDay => ({
   id:
@@ -199,41 +183,15 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     });
   };
 
-  const equipmentList = useMemo(
-    () =>
-      form.equipment
-        .split(",")
-        .map((entry) => entry.trim())
-        .filter(Boolean),
-    [form.equipment],
-  );
-
-  const allDaysHaveExercises = form.days.every((day) => day.exercises.length > 0);
-
-  const canSave = Boolean(userId && db) && !saving && form.title.trim().length > 2 && allDaysHaveExercises;
+  const validationError = validateRoutineForm(form, userId);
+  const canSave = !validationError && !saving;
 
   const handleSave = async () => {
     if (!userId || !db || !canSave) return;
     try {
       setSaving(true);
       setError(null);
-      const payload: RoutineTemplateInput = {
-        title: form.title.trim(),
-        description: form.description.trim(),
-        goal: form.focus.trim() || undefined,
-        level: form.level.trim() as RoutineLevel,
-        frequency: form.frequency.trim(),
-        equipment: equipmentList as Equipment[],
-        days: form.days.map((day, index) => ({
-          id: day.id,
-          title: day.title.trim() || `Dia ${index + 1}`,
-          focus: day.focus.trim() || undefined,
-          notes: day.notes.trim() || undefined,
-          warmup: [],
-          finisher: [],
-          exercises: day.exercises,
-        })),
-      };
+      const payload = buildRoutinePayload(form);
       await createRoutineTemplate(db, userId, payload);
       onCreated?.();
       onClose();
@@ -245,11 +203,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     }
   };
 
-  const footerMessage = !userId
-    ? "Inicia sesion para crear tus rutinas."
-    : !allDaysHaveExercises
-      ? "Cada dia debe tener al menos un ejercicio."
-      : "Revisa los datos antes de guardar.";
+  const footerMessage = validationError || "Revisa los datos antes de guardar.";
 
   const openDay = (dayId: string) => {
     setSelectedDayId(dayId);
@@ -690,7 +644,7 @@ function ExercisePicker({
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/exercises/${exercise.id}?from=creator`}
+                    href={`/exercises/detail?id=${exercise.id}&from=creator`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5 text-xs font-semibold text-[#0a2e5c] transition hover:-translate-y-0.5 hover:shadow"

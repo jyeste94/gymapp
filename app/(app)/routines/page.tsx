@@ -67,7 +67,7 @@ export default function RoutinesPage() {
             Todavia no tienes rutinas guardadas. Crea tu primera rutina personalizada para verla aqui.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {allRoutines.map((routine) => (
               <RoutineCard key={routine.id} routine={routine} userId={user?.uid} />
             ))}
@@ -108,7 +108,7 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
 
   return (
     <Link
-      href={`/routines/${routine.id}`}
+      href={`/routines/detail?id=${routine.id}`}
       className="group relative flex flex-col gap-3 rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white/90 p-5 text-sm text-[#4b5a72] transition hover:-translate-y-0.5 hover:shadow-lg"
     >
       <div className="flex items-start justify-between gap-2">

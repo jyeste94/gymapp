@@ -49,7 +49,7 @@ export default function ProgressPage() {
         </header>
 
         {/* Stats Grid */}
-        <StaggerContainer className="grid gap-4 md:grid-cols-3">
+        <StaggerContainer className="grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
           <StaggerItem>
             <div className="metric-card" data-variant="blue">
               <p className="metric-card__title">Entrenamientos</p>

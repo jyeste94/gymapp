@@ -1,99 +1,56 @@
-import type { Routine, RoutineDay, RoutineExercise } from './types';
+import type { Equipment, RoutineLevel } from "@/lib/types";
+import type { RoutineTemplateInput } from "@/lib/firestore/routines";
+import type { RoutineExercise } from "@/lib/types";
 
-// ==========================================================================================
-// --- TIPOS DE AYUDA
-// ==========================================================================================
-
-/**
- * Contexto de un ejercicio: a que rutina y dia pertenece.
- */
-export type ExerciseContext = {
-  routine: Routine;
-  day: RoutineDay;
-  exercise: RoutineExercise;
+export type BuilderDay = {
+  id: string;
+  title: string;
+  focus: string;
+  notes: string;
+  exercises: RoutineExercise[];
 };
 
-/**
- * Entrada para el indice de busqueda de rutinas por alias (ID o titulo).
- */
-export type RoutineAliasIndexEntry = {
-  routine: Routine;
-  day?: RoutineDay;
+export type RoutineFormState = {
+  title: string;
+  description: string;
+  focus: string;
+  level: string;
+  frequency: string;
+  equipment: string;
+  days: BuilderDay[];
 };
 
+export function validateRoutineForm(form: RoutineFormState, userId?: string | null): string | null {
+  if (!userId) return "Inicia sesion para crear tus rutinas.";
+  if (form.title.trim().length <= 2) return "El nombre es demasiado corto.";
 
-// ==========================================================================================
-// --- FUNCIONES DE UTILIDAD
-// ==========================================================================================
+  const allDaysHaveExercises = form.days.every((day) => day.exercises.length > 0);
+  if (!allDaysHaveExercises) return "Cada dia debe tener al menos un ejercicio.";
 
-/**
- * Combina rutinas personalizadas (custom) y por defecto (default).
- * Las rutinas personalizadas tienen prioridad si hay conflictos de ID.
- * @param customRoutines Array de rutinas del usuario.
- * @param defaultRoutines Array de rutinas por defecto de la aplicacion.
- * @returns Un unico array de rutinas combinado.
- */
-export function mergeRoutines(customRoutines: Routine[], defaultRoutines: Routine[]): Routine[] {
-  const merged = [...customRoutines];
-  const customIds = new Set(customRoutines.map(r => r.id));
-  
-  for (const defaultRoutine of defaultRoutines) {
-    if (!customIds.has(defaultRoutine.id)) {
-      merged.push(defaultRoutine);
-    }
-  }
-  
-  return merged;
+  return null; // Valid
 }
 
-/**
- * Crea un indice (Map) para buscar ejercicios por su ID.
- * Esto permite un acceso O(1) al contexto completo de un ejercicio (rutina, dia).
- * @param routines El array de rutinas sobre el que construir el indice.
- * @returns Un Map donde la clave es el ID del ejercicio y el valor es su `ExerciseContext`.
- */
-export function buildExerciseIndex(routines: Routine[]): Map<string, ExerciseContext> {
-  const index = new Map<string, ExerciseContext>();
-  
-  for (const routine of routines) {
-    for (const day of routine.days) {
-      for (const exercise of day.exercises) {
-        // Solo se añade la primera aparicion de un ejercicio para evitar duplicados.
-        if (!index.has(exercise.id)) {
-          index.set(exercise.id, { routine, day, exercise });
-        }
-      }
-    }
-  }
-  
-  return index;
-}
+export function buildRoutinePayload(form: RoutineFormState): RoutineTemplateInput {
+  const equipmentList = form.equipment
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean) as Equipment[];
 
-/**
- * Crea un indice (Map) para buscar rutinas o dias de rutina por diferentes alias (ID o titulo).
- * Normaliza las claves a minusculas para una busqueda insensible a mayusculas.
- * @param routines El array de rutinas sobre el que construir el indice.
- * @returns Un Map donde la clave es un alias y el valor es `RoutineAliasIndexEntry`.
- */
-export function createRoutineAliasIndex(routines: Routine[]): Map<string, RoutineAliasIndexEntry> {
-  const index = new Map<string, RoutineAliasIndexEntry>();
-
-  const addAlias = (key: string, entry: RoutineAliasIndexEntry) => {
-    const normalizedKey = key.trim().toLowerCase();
-    if (normalizedKey && !index.has(normalizedKey)) {
-      index.set(normalizedKey, entry);
-    }
+  return {
+    title: form.title.trim(),
+    description: form.description.trim(),
+    goal: form.focus.trim() || undefined,
+    level: form.level.trim() as RoutineLevel,
+    frequency: form.frequency.trim(),
+    equipment: equipmentList,
+    days: form.days.map((day, index) => ({
+      id: day.id,
+      title: day.title.trim() || `Dia ${index + 1}`,
+      focus: day.focus.trim() || undefined,
+      notes: day.notes.trim() || undefined,
+      warmup: [],
+      finisher: [],
+      exercises: day.exercises,
+    })),
   };
-
-  for (const routine of routines) {
-    addAlias(routine.id, { routine });
-    addAlias(routine.title, { routine });
-    
-    for (const day of routine.days) {
-      addAlias(day.id, { routine, day });
-      addAlias(day.title, { routine, day });
-    }
-  }
-
-  return index;
 }

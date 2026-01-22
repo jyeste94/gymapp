@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Athlos Fit</string>
+    <string name="title_activity_main">Athlos Fit</string>
+    <string name="package_name">com.athlos.fit</string>
+    <string name="custom_url_scheme">com.athlos.fit</string>
+</resources>

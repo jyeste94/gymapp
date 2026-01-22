@@ -9,6 +9,7 @@ import { addWorkoutLog } from "@/lib/firestore/workout-logs";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getExercisesToSave } from "@/lib/workout-helpers";
 
 export default function WorkoutFinishPage() {
     const router = useRouter();
@@ -47,15 +48,7 @@ export default function WorkoutFinishPage() {
                 routineName: state.routineTitle || undefined,
                 dayId: state.dayId || undefined,
                 dayName: state.dayTitle || undefined,
-                entries: state.exercises.map(ex => ({
-                    exerciseId: ex.id,
-                    exerciseName: ex.name,
-                    sets: ex.sets.filter(s => s.completed).map(s => ({
-                        weight: Number(s.weight) || 0,
-                        reps: Number(s.reps) || 0,
-                        rir: Number(s.rir) || 0,
-                    }))
-                })).filter(e => e.sets.length > 0)
+                entries: getExercisesToSave(state.exercises)
             });
 
             setSaved(true);
