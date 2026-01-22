@@ -21,7 +21,6 @@ import MediaShowcase from "@/components/ui/media-showcase";
 import ExerciseHeader from "@/components/exercise/exercise-header";
 import TechniqueGuide from "@/components/exercise/technique-guide";
 import SessionForm from "@/components/exercise/session-form";
-import ExerciseHistory from "@/components/exercise/exercise-history";
 import type { SessionState, SessionSet } from "@/components/exercise/types";
 import toast from 'react-hot-toast';
 
