@@ -14,7 +14,8 @@ export const defaultExercises: Exercise[] = [
             "Baja la barra al torso sin rebotar",
             "Empuja en linea vertical con control",
         ],
-        image: "https://images.unsplash.com/photo-1517832606294-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80",
+        // Using Barbell_Bench_Press_-_Medium_Grip if available or standard Barbell_Bench_Press
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/1.jpg",
         video: "https://www.youtube.com/embed/rT7DgCr-3pg",
     },
     {
@@ -28,7 +29,7 @@ export const defaultExercises: Exercise[] = [
             "Codos apuntando a 45 grados",
             "Mantiene tension continua",
         ],
-        image: "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/1.jpg",
         video: "https://www.youtube.com/embed/IiDzhb4ccXU",
     },
     {
@@ -42,7 +43,7 @@ export const defaultExercises: Exercise[] = [
             "Empuja en linea recta evitando arco exagerado",
             "Baja hasta la barbilla",
         ],
-        image: "https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Military_Press/1.jpg",
         video: "https://www.youtube.com/embed/qEwKCR5JCog",
     },
     {
@@ -56,7 +57,7 @@ export const defaultExercises: Exercise[] = [
             "Pausa corta arriba",
             "Controla la bajada",
         ],
-        image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/1.jpg",
         video: "https://www.youtube.com/embed/3VcKaXpzqRo",
     },
     {
@@ -70,7 +71,7 @@ export const defaultExercises: Exercise[] = [
             "Baja hasta 90 grados en codo",
             "Empuja fuerte al subir",
         ],
-        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Chest_Version/1.jpg",
         video: "https://www.youtube.com/embed/2emkY4GlkDo",
     },
     {
@@ -84,7 +85,7 @@ export const defaultExercises: Exercise[] = [
             "Sin mover el hombro",
             "Controla el retorno",
         ],
-        image: "https://images.unsplash.com/photo-1583454110551-21f2fa2ac4c0?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown_-_Rope_Attachment/1.jpg",
         video: "https://www.youtube.com/embed/vYp8qx_kA_U",
     },
     // Pull Day
@@ -99,7 +100,7 @@ export const defaultExercises: Exercise[] = [
             "Lleva el pecho hacia la barra",
             "Desciende controlado",
         ],
-        image: "https://images.unsplash.com/photo-1546484959-f1e94ff3cba6?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Pull_US/1.jpg",
         video: "https://www.youtube.com/embed/HRVYwPK1wnM",
     },
     {
@@ -113,7 +114,7 @@ export const defaultExercises: Exercise[] = [
             "Tira con codos pegados",
             "Pausa sutil arriba",
         ],
-        image: "https://images.unsplash.com/photo-1517964106626-460c4a9b1fca?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/1.jpg",
         video: "https://www.youtube.com/embed/j-Uzc2VJ5O4",
     },
     {
@@ -127,7 +128,7 @@ export const defaultExercises: Exercise[] = [
             "Mantiene torso estable",
             "Contrae en cada rep",
         ],
-        image: "https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/1.jpg",
         video: "https://www.youtube.com/embed/pYcpY20QaE8",
     },
     {
@@ -141,7 +142,7 @@ export const defaultExercises: Exercise[] = [
             "Divide la cuerda al tirar",
             "Mantiene tension continua",
         ],
-        image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/1.jpg",
         video: "https://www.youtube.com/embed/Rep-qVOkqgk",
     },
     {
@@ -155,7 +156,7 @@ export const defaultExercises: Exercise[] = [
             "Sube en 1 seg, baja en 2 seg",
             "Aplica squeeze arriba",
         ],
-        image: "https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/1.jpg",
         video: "https://www.youtube.com/embed/kwG2ipFRgfo",
     },
     {
@@ -169,7 +170,7 @@ export const defaultExercises: Exercise[] = [
             "Gira las palmas al subir",
             "Controla la bajada",
         ],
-        image: "https://images.unsplash.com/photo-1517964106626-460c4a9b1fca?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Curl/1.jpg",
         video: "https://www.youtube.com/embed/gfUeU3NbQKc",
     },
     // Legs Anterior
@@ -184,7 +185,7 @@ export const defaultExercises: Exercise[] = [
             "Rodillas alineadas con puntas",
             "Empuja el suelo al subir",
         ],
-        image: "https://images.unsplash.com/photo-1596306498424-5a26f2520f4d?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg",
         video: "https://www.youtube.com/embed/Dy28eq2PjcM",
     },
     {
@@ -198,7 +199,7 @@ export const defaultExercises: Exercise[] = [
             "Profundiza sin despegar la espalda",
             "Controla el movimiento",
         ],
-        image: "https://images.unsplash.com/photo-1583454155886-91b7a95c9082?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/1.jpg",
         video: "https://www.youtube.com/embed/x0vnJ6ve-0s",
     },
     {
@@ -212,7 +213,7 @@ export const defaultExercises: Exercise[] = [
             "Empuja con el talon",
             "Activa el core",
         ],
-        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/1.jpg",
         video: "https://www.youtube.com/embed/QOVaHwm-Q6U",
     },
     {
@@ -226,7 +227,7 @@ export const defaultExercises: Exercise[] = [
             "Espalda neutra",
             "Pausa breve abajo",
         ],
-        image: "https://images.unsplash.com/photo-1605296867424-35fc25c9210b?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/1.jpg",
         video: "https://www.youtube.com/embed/2SHsk9Azd0g",
     },
     {
@@ -240,7 +241,7 @@ export const defaultExercises: Exercise[] = [
             "Mantiene rodillas extendidas",
             "Controla el ritmo",
         ],
-        image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Press_On_Leg_Press_Machine/1.jpg",
         video: "https://www.youtube.com/embed/6VtTQnOz8iM",
     },
     {
@@ -253,7 +254,7 @@ export const defaultExercises: Exercise[] = [
             "Plancha con hombros alineados",
             "Rueda manteniendo pelvis neutra",
         ],
-        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/1.jpg",
         video: "https://www.youtube.com/embed/IODxDxX7oi4",
     },
     // Legs Posterior
@@ -268,7 +269,7 @@ export const defaultExercises: Exercise[] = [
             "Piernas y espalda empujan coordinadas",
             "Cierra el movimiento con gluteos",
         ],
-        image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/1.jpg",
         video: "https://www.youtube.com/embed/Opv71lvGf0s",
     },
     {
@@ -282,7 +283,7 @@ export const defaultExercises: Exercise[] = [
             "Tira con dorsales",
             "Controla el descenso",
         ],
-        image: "https://images.unsplash.com/photo-1594737625785-c66858a24b47?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Pull_US/1.jpg",
         video: "https://www.youtube.com/embed/TL1eJxF0oGI",
     },
     {
@@ -296,7 +297,7 @@ export const defaultExercises: Exercise[] = [
             "No encorvar hombros",
             "Recorrido completo",
         ],
-        image: "https://images.unsplash.com/photo-1579751628192-7b1c211f7c1f?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/1.jpg",
         video: "https://www.youtube.com/embed/GZbfZ033f74",
     },
     {
@@ -310,7 +311,7 @@ export const defaultExercises: Exercise[] = [
             "Apoya cadera firmemente",
             "Evita arquear la espalda",
         ],
-        image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/1.jpg",
         video: "https://www.youtube.com/embed/1Tq3QdYUuHs",
     },
     {
@@ -324,7 +325,7 @@ export const defaultExercises: Exercise[] = [
             "Evita balanceos",
             "Sujeta firme las mancuernas",
         ],
-        image: "https://images.unsplash.com/photo-1594737625785-0fe274509ddd?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/1.jpg",
         video: "https://www.youtube.com/embed/zC3nLlEvin4",
     },
     {
@@ -338,7 +339,7 @@ export const defaultExercises: Exercise[] = [
             "Tira de la cuerda hacia rodillas",
             "Pausa al final",
         ],
-        image: "https://images.unsplash.com/photo-1571019613610-eca12e02f2a7?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists/1.jpg",
         video: "https://www.youtube.com/embed/TP7fHv2v74U",
     },
     // New Additions
@@ -353,7 +354,7 @@ export const defaultExercises: Exercise[] = [
             "Extiende completo sin bloquear brusco",
             "Baja controlado",
         ],
-        image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80", 
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/1.jpg",
         video: "https://www.youtube.com/embed/swZg2w4I6Jo",
     },
     {
@@ -367,7 +368,7 @@ export const defaultExercises: Exercise[] = [
             "Baja la barra a la clavicula",
             "Codos apuntan al suelo",
         ],
-        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Lat_Pulldown/1.jpg",
         video: "https://www.youtube.com/embed/CAwf7n6Luuc",
     },
     {
@@ -381,7 +382,7 @@ export const defaultExercises: Exercise[] = [
             "Codos fijos a los costados",
             "Evita inercia lumbar",
         ],
-        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/1.jpg",
         video: "https://www.youtube.com/embed/u_28tXuzG-E",
     },
     {
@@ -395,7 +396,7 @@ export const defaultExercises: Exercise[] = [
             "Junta manos al frente",
             "Estira sin perder tension",
         ],
-        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Cable_Flyes/1.jpg",
         video: "https://www.youtube.com/embed/Z57LliR2-3w",
     },
     {
@@ -409,7 +410,7 @@ export const defaultExercises: Exercise[] = [
             "Codos cerrados",
             "Solo mueve antebrazos",
         ],
-        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Dumbbell_Tricep_Extension/1.jpg",
         video: "https://www.youtube.com/embed/LRi_7a_G_tA",
     },
     {
@@ -423,7 +424,7 @@ export const defaultExercises: Exercise[] = [
             "Lleva la barra a la cadera",
             "Estira dorsal al subir",
         ],
-        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Lat_Pulldown/1.jpg",
         video: "https://www.youtube.com/embed/v1-i93fS4sI",
     },
     {
@@ -437,7 +438,7 @@ export const defaultExercises: Exercise[] = [
             "Pausa arriba",
             "Baja completo",
         ],
-        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Shrug/1.jpg",
         video: "https://www.youtube.com/embed/I-yCkDWeogE",
     },
     {
@@ -451,7 +452,7 @@ export const defaultExercises: Exercise[] = [
             "Extension completa abajo",
             "Controla la subida",
         ],
-        image: "https://images.unsplash.com/photo-1583454110551-21f2fa2ac4c0?auto=format&fit=crop&w=800&q=80",
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown_-_Rope_Attachment/1.jpg",
         video: "https://www.youtube.com/embed/z-1gS-guolY",
     },
 ];
