@@ -268,7 +268,8 @@ function ExerciseDetailContent() {
             toggleSetCompleted={toggleSetCompleted}
             handleSetField={handleSetField}
           />
-          <ExerciseHistory history={history} />
+          {/* History removed per user request to avoid clutter */}
+          {/* <ExerciseHistory history={history} /> */}
         </>
       )}
     </div>
