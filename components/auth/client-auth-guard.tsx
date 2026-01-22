@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 
@@ -8,19 +8,14 @@ export default function ClientAuthGuard({ children }: { children: React.ReactNod
     const { user, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
-    const [authorized, setAuthorized] = useState(false);
-
     useEffect(() => {
         if (loading) return;
 
-        // Public routes that don't need auth (login, etc.)
         const publicRoutes = ["/login"];
         const isPublic = publicRoutes.some(route => pathname.startsWith(route));
 
         if (!user && !isPublic) {
             router.replace(`/login?redirect=${pathname}`);
-        } else {
-            setAuthorized(true);
         }
     }, [user, loading, pathname, router]);
 

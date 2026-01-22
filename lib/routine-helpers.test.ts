@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateRoutineForm, buildRoutinePayload, type RoutineFormState, type BuilderDay } from './routine-helpers';
+import { validateRoutineForm, buildRoutinePayload, type RoutineFormState } from './routine-helpers';
 import type { RoutineExercise } from './types';
 
 // Helper to create a valid exercise

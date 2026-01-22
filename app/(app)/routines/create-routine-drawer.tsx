@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Plus, Search, Trash2, X, Eye } from "lucide-react";
-import type { RoutineExercise, RoutineLevel, Equipment } from "@/lib/types";
+// import type { RoutineExercise } from "@/lib/types";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
-import { createRoutineTemplate, type RoutineTemplateInput } from "@/lib/firestore/routines";
+import { createRoutineTemplate } from "@/lib/firestore/routines";
 import { useFirebase } from "@/lib/firebase/client-context";
 
 import { validateRoutineForm, buildRoutinePayload, type RoutineFormState, type BuilderDay } from "@/lib/routine-helpers";

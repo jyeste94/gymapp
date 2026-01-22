@@ -1,6 +1,30 @@
-import type { Equipment, RoutineLevel } from "@/lib/types";
+import type { Equipment, RoutineLevel, Routine, RoutineDay } from "@/lib/types";
 import type { RoutineTemplateInput } from "@/lib/firestore/routines";
 import type { RoutineExercise } from "@/lib/types";
+
+export function mergeRoutines(custom: Routine[], defaults: Routine[]): Routine[] {
+  return [...custom, ...defaults];
+}
+
+export type ExerciseIndexEntry = {
+  exercise: RoutineExercise;
+  routine: Routine;
+  day: RoutineDay;
+};
+
+export function buildExerciseIndex(routines: Routine[]): Map<string, ExerciseIndexEntry> {
+  const index = new Map<string, ExerciseIndexEntry>();
+  for (const routine of routines) {
+    for (const day of routine.days) {
+      for (const exercise of day.exercises) {
+        if (!index.has(exercise.id)) {
+          index.set(exercise.id, { exercise, routine, day });
+        }
+      }
+    }
+  }
+  return index;
+}
 
 export type BuilderDay = {
   id: string;

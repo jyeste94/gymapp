@@ -1,4 +1,4 @@
-import type { ActiveExercise, WorkoutSet } from "@/lib/stores/workout-session";
+import type { ActiveExercise } from "@/lib/stores/workout-session";
 
 export type SavedSet = {
     weight: number;

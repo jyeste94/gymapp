@@ -7,6 +7,7 @@ import type { Measurement } from "@/lib/types";
 import MeasurementChart from "@/components/measurement-chart";
 import StrengthChart from "@/components/progress/strength-chart";
 import { PageTransition, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/motion";
+import { calculateStats } from "@/lib/stats-helpers";
 
 export default function ProgressPage() {
   const { user } = useAuth();
@@ -19,24 +20,7 @@ export default function ProgressPage() {
   const { data: routineLogs } = useWorkoutLogs(user?.uid);
 
   // Stats calculation
-  const stats = useMemo(() => {
-    const totalWorkouts = routineLogs.length;
-    const lastWorkout = routineLogs[0];
-    const totalVolume = routineLogs.reduce((acc, log) => {
-      log.entries.forEach(e => {
-        e.sets?.forEach(s => {
-          // AHORA s.weight y s.reps SON NUMEROS
-          const w = s.weight || 0;
-          const r = s.reps || 0;
-          // El campo completed fue eliminado, asumimos que si hay log, esta completado.
-          acc += w * r;
-        });
-      });
-      return acc;
-    }, 0);
-
-    return { totalWorkouts, lastWorkoutDate: lastWorkout?.date, totalVolume };
-  }, [routineLogs]);
+  const stats = useMemo(() => calculateStats(routineLogs), [routineLogs]);
 
   return (
     <PageTransition>
