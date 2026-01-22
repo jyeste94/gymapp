@@ -108,7 +108,7 @@ function RoutineCard({ routine }: RoutineCardProps) {
 
   return (
     <Link
-      href={`/routines/${routine.id}`}
+      href={`/routines/detail?id=${routine.id}`}
       className="group relative flex flex-col justify-between gap-4 rounded-3xl border border-[rgba(10,46,92,0.08)] bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5"
     >
       <div>

@@ -6,6 +6,7 @@ import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import type { Measurement } from "@/lib/types";
 import MeasurementChart from "@/components/measurement-chart";
 import StrengthChart from "@/components/progress/strength-chart";
+import VolumeChart from "@/components/progress/volume-chart";
 import { PageTransition, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/motion";
 import { calculateStats } from "@/lib/stats-helpers";
 
@@ -79,6 +80,16 @@ export default function ProgressPage() {
             <h3 className="text-lg font-semibold text-zinc-900">Fuerza: 1RM Estimado</h3>
             <div className="mt-4">
               <StrengthChart logs={routineLogs} />
+            </div>
+          </section>
+        </FadeIn>
+
+        <FadeIn delay={0.4}>
+          <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
+            <h3 className="text-lg font-semibold text-zinc-900">Volumen Semanal</h3>
+            <p className="text-xs text-zinc-500 mb-4">Total de series efectivas por semana</p>
+            <div className="mt-4">
+              <VolumeChart logs={routineLogs} />
             </div>
           </section>
         </FadeIn>

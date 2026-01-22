@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import Providers from "@/app/providers";
 import SidebarNav from "@/app/(app)/_components/sidebar-nav";
-import AppHeader from "@/app/(app)/_components/app-header";
 import SidebarFooter from "@/app/(app)/_components/sidebar-footer";
 import MobileNav from "@/app/(app)/_components/mobile-nav";
 import type { ReactNode } from "react";
@@ -36,7 +35,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </aside>
 
             <div className="flex flex-1 flex-col gap-6 pb-24 lg:gap-8 lg:pb-10">
-              <AppHeader />
               <main className="flex-1">
                 <div className="flex min-h-full flex-col gap-6">
                   {children}

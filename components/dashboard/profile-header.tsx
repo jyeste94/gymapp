@@ -24,8 +24,18 @@ export default function ProfileHeader() {
 
                 <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-5">
-                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold backdrop-blur-md">
-                            {profile?.displayName?.[0]?.toUpperCase() ?? "U"}
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold backdrop-blur-md overflow-hidden">
+                            {profile?.photoURL ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                    src={profile.photoURL}
+                                    alt={profile.displayName || "User"}
+                                    className="h-full w-full object-cover"
+                                    referrerPolicy="no-referrer"
+                                />
+                            ) : (
+                                profile?.displayName?.[0]?.toUpperCase() ?? "U"
+                            )}
                         </div>
                         <div>
                             <p className="text-sm font-medium text-blue-200">Bienvenido de vuelta,</p>

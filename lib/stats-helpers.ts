@@ -31,3 +31,37 @@ export function calculateStats(routineLogs: RoutineLog[]): StatsSummary {
         totalVolume
     };
 }
+
+export function calculateWeeklyVolume(logs: RoutineLog[]) {
+    const weeklyMap = new Map<string, number>();
+
+    // Process logs from oldest to newest for chronological chart
+    const sortedLogs = [...logs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    sortedLogs.forEach(log => {
+        if (!log.date) return;
+        const date = new Date(log.date);
+
+        // Simple week formatter: "Jan 22 (W4)" or just "Week 4"
+        // Let's use start of week date for clearer X-Axis
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+        const startOfWeek = new Date(date.setDate(diff));
+        const weekLabel = startOfWeek.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+
+        const currentSets = weeklyMap.get(weekLabel) || 0;
+
+        // Count sets
+        let setsInLog = 0;
+        log.entries?.forEach(e => {
+            if (e.sets) setsInLog += e.sets.length;
+        });
+
+        weeklyMap.set(weekLabel, currentSets + setsInLog);
+    });
+
+    return Array.from(weeklyMap.entries()).map(([week, sets]) => ({
+        week,
+        sets
+    }));
+}
