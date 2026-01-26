@@ -50,8 +50,8 @@ function RoutineOverviewContent() {
     );
   }
 
-  // El orden de los dias ya viene definido en la rutina, pero por si acaso, lo reordenamos.
-  const sortedDays = [...routine.days].sort((a, b) => a.id.localeCompare(b.id));
+  // Respetamos el orden original del array (definido en el template)
+  const sortedDays = routine.days;
   const totalExercises = sortedDays.reduce((sum, day) => sum + day.exercises.length, 0);
 
   return (

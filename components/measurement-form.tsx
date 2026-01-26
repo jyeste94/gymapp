@@ -7,34 +7,11 @@ import { addMeasurement, updateMeasurement } from "@/lib/firestore/measurements"
 import type { Measurement } from "@/lib/types";
 import { useEffect } from "react";
 import toast from 'react-hot-toast';
+import { measurementFormSchema, type MeasurementFormValues } from "@/lib/validations/measurement";
 
-// Esquemas de validacion con Zod (sin cambios)
-const bodyFatSchema = z.preprocess((val) => {
-  if (val === "" || val === undefined || val === null) return undefined;
-  const num = typeof val === "number" ? val : Number(val);
-  return Number.isFinite(num) ? num : val;
-}, z.number().min(3).max(70).optional());
+// Schemas imported from lib/validations/measurement
 
-const measurementSchema = z.preprocess((val) => {
-  if (val === "" || val === undefined || val === null) return undefined;
-  const num = typeof val === "number" ? val : Number(val);
-  return Number.isFinite(num) ? num : val;
-}, z.number().min(5).max(300).optional());
-
-const schema = z.object({
-  date: z.string().min(1),
-  weightKg: z.coerce.number().min(30).max(300),
-  bodyFatPct: bodyFatSchema,
-  chest: measurementSchema,
-  waist: measurementSchema,
-  hips: measurementSchema,
-  arm: measurementSchema,
-  thigh: measurementSchema,
-  calf: measurementSchema,
-  notes: z.string().max(200).optional(),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = MeasurementFormValues;
 
 type Props = {
   userId: string | null;
@@ -50,7 +27,7 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(measurementFormSchema),
   });
 
   const isEditing = !!editingMeasurement;
@@ -104,16 +81,16 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
       onSubmit={handleSubmit(onSubmit)}
       className="glass-card grid gap-4 border-[rgba(10,46,92,0.16)] bg-white/80 p-6 md:grid-cols-5"
     >
-        <div className="col-span-full flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-zinc-900">
-                {isEditing ? "Editar Medición" : "Registrar Nueva Medición"}
-            </h2>
-            {isEditing && (
-                <button type="button" onClick={onSuccess} className="text-sm font-semibold text-blue-600 hover:underline">
-                    Cancelar
-                </button>
-            )}
-        </div>
+      <div className="col-span-full flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-zinc-900">
+          {isEditing ? "Editar Medición" : "Registrar Nueva Medición"}
+        </h2>
+        {isEditing && (
+          <button type="button" onClick={onSuccess} className="text-sm font-semibold text-blue-600 hover:underline">
+            Cancelar
+          </button>
+        )}
+      </div>
 
       {/* Campos del formulario (sin cambios en el JSX, solo en la logica) */}
       <div className="space-y-2 md:col-span-1">

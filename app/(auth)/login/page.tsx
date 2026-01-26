@@ -57,21 +57,24 @@ function LoginForm() {
       return (error as Error | undefined)?.message ?? "No se pudo completar la accion.";
     }
     switch (fbError.code) {
-      case "auth/invalid-email":
-        return "El correo no es valido.";
+      case "auth/invalid-credential":
       case "auth/user-not-found":
       case "auth/wrong-password":
-        return "Credenciales incorrectas.";
+        return "Correo o contraseña incorrectos.";
       case "auth/popup-closed-by-user":
-        return "El popup se cerro antes de completar el acceso.";
+        return "Has cerrado la ventana antes de terminar.";
       case "auth/account-exists-with-different-credential":
-        return "Ya existe una cuenta con otras credenciales. Usa el proveedor asociado.";
+        return "Ya existe una cuenta con este correo. Usa Google/Facebook.";
       case "auth/email-already-in-use":
-        return "Este correo ya esta registrado. Inicia sesion.";
+        return "Este correo ya está registrado. Prueba a iniciar sesión.";
       case "auth/weak-password":
-        return "La contrasena debe tener al menos 6 caracteres.";
+        return "La contraseña es muy débil (mínimo 6 caracteres).";
+      case "auth/too-many-requests":
+        return "Demasiados intentos fallidos. Espera unos minutos.";
       default:
-        return fbError?.message ?? "No se pudo completar la accion.";
+        // Log the raw error for debugging but show a clean message to user
+        console.error("Auth Error:", fbError.code);
+        return "No se pudo iniciar sesión. Verifica tus datos.";
     }
   };
 
