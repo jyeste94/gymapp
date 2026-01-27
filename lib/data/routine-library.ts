@@ -27,7 +27,7 @@ const RUTINA_PRINCIPAL: RoutineTemplate = {
                 { id: 'press_militar', sets: 3, repRange: '6', rest: '2 min', tip: 'Press Militar' },
                 { id: 'fondos_paralelas', sets: 3, repRange: '8-10', rest: '90 s', tip: 'Fondos Paralelas' },
                 { id: 'elevaciones_laterales', sets: 3, repRange: '12-15', rest: '60 s', tip: 'Elev. Laterales' },
-                { id: 'core_combo', sets: 3, repRange: '10-12', rest: '60 s', tip: 'Ab Wheel / Core' },
+                { id: 'core_combo', sets: 3, repRange: '10-12', rest: '60 s', tip: 'Ab Wheel / Core' },                
             ],
         },
         // MARTES (Tirón A)

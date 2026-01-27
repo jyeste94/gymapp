@@ -226,4 +226,8 @@ export type UserProfile = {
   weightKg?: number | null; // Cached latest weight for quick access
   bodyFatPct?: number | null; // Cached latest body fat
   createdAt: string;
+  // Social
+  username?: string | null;
+  bio?: string | null;
+  isPrivate?: boolean;
 };

@@ -1,20 +1,23 @@
 "use client";
 
-import { useAuth } from "@/lib/firebase/auth-hooks";
+
+import { useFirebase } from "@/lib/firebase/client-context";
+import { logout } from "@/lib/firebase/auth-actions";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function SettingsPage() {
-  const { logout } = useAuth();
+  const { app } = useFirebase();
   const router = useRouter();
 
   const handleLogout = async () => {
+    if (!app) return;
     try {
-      await logout();
+      await logout(app);
       toast.success("Sesión cerrada");
       router.push("/login");
-    } catch (error) {
+    } catch {
       toast.error("Error al cerrar sesión");
     }
   };
@@ -26,7 +29,7 @@ export default function SettingsPage() {
         <p className="mt-2 text-sm text-[#4b5a72]">Personaliza unidades, objetivos y preferencias.</p>
 
         <div className="mt-6 flex flex-col gap-1">
-          <SettingItem label="Perfil y unidades" />
+          <SettingItem label="Perfil y Social" href="/settings/profile" />
           <SettingItem label="Tema claro/oscuro" />
           <SettingItem label="Objetivos calóricos" />
         </div>
@@ -49,9 +52,20 @@ export default function SettingsPage() {
   );
 }
 
-function SettingItem({ label }: { label: string }) {
+import Link from "next/link";
+
+function SettingItem({ label, href }: { label: string; href?: string }) {
+  if (href) {
+    return (
+      <Link href={href} className="flex items-center justify-between rounded-xl p-3 text-sm text-[#4b5a72] transition hover:bg-slate-50 active:bg-slate-100">
+        <span>{label}</span>
+        <span className="text-xs text-slate-400">&gt;</span>
+      </Link>
+    );
+  }
+
   return (
-    <div className="flex items-center justify-between rounded-xl p-3 text-sm text-[#4b5a72] transition hover:bg-slate-50">
+    <div className="flex items-center justify-between rounded-xl p-3 text-sm text-[#4b5a72] opacity-60">
       <span>{label}</span>
       <span className="text-xs text-slate-400">Pronto</span>
     </div>
