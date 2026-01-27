@@ -32,6 +32,7 @@ type WorkoutState = {
         dayId: string;
         dayTitle: string;
         exercises: RoutineExercise[];
+        history?: Record<string, { weight: string, reps: string }[]>;
     }) => void;
     updateSet: (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => void;
     toggleSetComplete: (exerciseId: string, setId: string) => void;
@@ -52,24 +53,33 @@ export const useWorkoutStore = create<WorkoutState>()(
             exercises: [],
             activeExerciseId: null,
 
-            startWorkout: ({ routineId, routineTitle, dayId, dayTitle, exercises }) => {
+            startWorkout: ({ routineId, routineTitle, dayId, dayTitle, exercises, history }) => {
                 set({
                     startTime: Date.now(),
                     routineId,
                     routineTitle,
                     dayId,
                     dayTitle,
-                    exercises: exercises.map((ex) => ({
-                        ...ex,
-                        originalSets: ex.sets,
-                        sets: Array.from({ length: ex.sets || 3 }).map(() => ({
-                            id: crypto.randomUUID(),
-                            weight: "",
-                            reps: "",
-                            rir: "",
-                            completed: false,
-                        })),
-                    })),
+                    exercises: exercises.map((ex) => {
+                        const previousSets = history?.[ex.id] ?? [];
+                        // Find the last valid weight used in previous session to use as fallback
+                        const lastValidWeight = previousSets.length > 0
+                            ? previousSets[previousSets.length - 1].weight
+                            : "";
+
+                        return {
+                            ...ex,
+                            originalSets: ex.sets,
+                            sets: Array.from({ length: ex.sets || 3 }).map((_, idx) => ({
+                                id: crypto.randomUUID(),
+                                // Pre-fill weight from history if available, otherwise use last valid weight, otherwise empty
+                                weight: previousSets[idx]?.weight ?? lastValidWeight,
+                                reps: "", // We don't pre-fill reps to encourage logging actual performance
+                                rir: "",
+                                completed: false,
+                            })),
+                        };
+                    }),
                     activeExerciseId: exercises[0]?.id ?? null,
                 });
             },

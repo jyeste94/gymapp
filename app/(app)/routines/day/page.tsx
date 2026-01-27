@@ -88,6 +88,32 @@ function RoutineDayContent() {
     return map;
   }, [routine, day, routineLogs]);
 
+  /* 
+   * Calculate previous history for pre-filling using the *LAST* time this specific routine day was done.
+   * This allows the user to pick up weights exactly where they left off.
+   */
+  const previousHistory = useMemo(() => {
+    const map: Record<string, { weight: string; reps: string }[]> = {};
+    if (!routine || !day || !routineLogs) return map;
+
+    // Find the most recent log for this specific routine + day
+    const lastLog = routineLogs.find(log =>
+      log.routineId === routine.id && log.dayId === day.id
+    );
+
+    if (!lastLog || !lastLog.entries) return map;
+
+    for (const entry of lastLog.entries) {
+      if (!entry.sets) continue;
+      map[entry.exerciseId] = entry.sets.map(s => ({
+        weight: s.weight?.toString() ?? "",
+        reps: s.reps?.toString() ?? ""
+      }));
+    }
+
+    return map;
+  }, [routine, day, routineLogs]);
+
   if (!routine || !day) {
     return (
       <div className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-6 text-sm text-[#4b5a72]">
@@ -121,6 +147,7 @@ function RoutineDayContent() {
               dayId={day.id}
               dayTitle={day.title}
               exercises={day.exercises}
+              history={previousHistory}
             />
             <div className="flex flex-col items-end gap-1 text-xs text-[#51607c]">
               <span>{day.exercises.length} ejercicios</span>
@@ -245,13 +272,15 @@ function StartWorkoutButton({
   routineTitle,
   dayId,
   dayTitle,
-  exercises
+  exercises,
+  history
 }: {
   routineId: string,
   routineTitle: string,
   dayId: string,
   dayTitle: string,
-  exercises: RoutineExercise[]
+  exercises: RoutineExercise[],
+  history?: Record<string, { weight: string, reps: string }[]>
 }) {
   const router = useRouter();
   const startWorkout = useWorkoutStore((state) => state.startWorkout);
@@ -263,6 +292,7 @@ function StartWorkoutButton({
       dayId,
       dayTitle,
       exercises,
+      history
     });
     router.push("/workout/active");
   };
