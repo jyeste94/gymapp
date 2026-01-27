@@ -89,30 +89,33 @@ function RoutineDayContent() {
   }, [routine, day, routineLogs]);
 
   /* 
-   * Calculate previous history for pre-filling using the *LAST* time this specific routine day was done.
-   * This allows the user to pick up weights exactly where they left off.
+   * Calculate previous history for pre-filling.
+   * IMPROVED: Search GLOBALLY for the last time each exercise was performed, 
+   * regardless of which routine it was part of. 
    */
   const previousHistory = useMemo(() => {
     const map: Record<string, { weight: string; reps: string }[]> = {};
-    if (!routine || !day || !routineLogs) return map;
+    if (!day || !routineLogs) return map;
 
-    // Find the most recent log for this specific routine + day
-    const lastLog = routineLogs.find(log =>
-      log.routineId === routine.id && log.dayId === day.id
-    );
+    day.exercises.forEach(exercise => {
+      // Find the most recent log that contains this exercise
+      const lastLog = routineLogs.find(log =>
+        log.entries?.some(entry => entry.exerciseId === exercise.id)
+      );
 
-    if (!lastLog || !lastLog.entries) return map;
-
-    for (const entry of lastLog.entries) {
-      if (!entry.sets) continue;
-      map[entry.exerciseId] = entry.sets.map(s => ({
-        weight: s.weight?.toString() ?? "",
-        reps: s.reps?.toString() ?? ""
-      }));
-    }
+      if (lastLog && lastLog.entries) {
+        const entry = lastLog.entries.find(e => e.exerciseId === exercise.id);
+        if (entry && entry.sets) {
+          map[exercise.id] = entry.sets.map(s => ({
+            weight: s.weight?.toString() ?? "",
+            reps: s.reps?.toString() ?? ""
+          }));
+        }
+      }
+    });
 
     return map;
-  }, [routine, day, routineLogs]);
+  }, [day, routineLogs]);
 
   if (!routine || !day) {
     return (

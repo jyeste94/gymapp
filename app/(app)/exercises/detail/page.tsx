@@ -116,8 +116,11 @@ function ExerciseDetailContent() {
   useEffect(() => {
     if (fromCreator || !exercise) return;
 
+    // Check if we already have a log for TODAY
     const todaysLog = history.find(log => isToday(log.date));
+
     if (todaysLog) {
+      // If we have a log for today, we are EDITING it.
       setActiveLogId(todaysLog.id);
       setSession({
         sessionDate: new Date(todaysLog.date).toISOString().slice(0, 16),
@@ -127,6 +130,27 @@ function ExerciseDetailContent() {
         mediaVideo: todaysLog.mediaVideo || exercise.video || "",
         sets: todaysLog.sets.length > 0 ? todaysLog.sets.map(logSetToSessionSet) : defaultSets,
       });
+    } else if (history.length > 0) {
+      // If NO log for today, but we have history, PRE-FILL from the last session.
+      // We do NOT set activeLogId, because we want to create a NEW log for today.
+      const lastLog = history[0]; // history is sorted desc based on useExerciseLogs
+
+      const prefillSets = lastLog.sets.map(s => ({
+        weight: s.weight || "",
+        reps: "", // Don't pre-fill reps for new sessions, let them log actuals
+        rir: "",
+        completed: false
+      }));
+
+      // Ensure we match the target set count (if template has 3 sets but history had 4, or vice versa)
+      const mergedSets = defaultSets.map((defSet, i) => {
+        return prefillSets[i] ? { ...prefillSets[i], completed: false } : defSet;
+      });
+
+      setSession(prev => ({
+        ...prev,
+        sets: mergedSets
+      }));
     }
   }, [history, exercise, defaultSets, fromCreator]);
 
