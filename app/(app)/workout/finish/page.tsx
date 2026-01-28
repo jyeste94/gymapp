@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { addWorkoutLog } from "@/lib/firestore/workout-logs";
+import { saveExerciseLog } from "@/lib/firestore/exercise-logs";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -42,7 +43,7 @@ export default function WorkoutFinishPage() {
 
         setSaving(true);
         try {
-            await addWorkoutLog(db, user.uid, {
+            const workoutLogPromise = addWorkoutLog(db, user.uid, {
                 date: new Date().toISOString(),
                 routineId: state.routineId || undefined,
                 routineName: state.routineTitle || undefined,
@@ -50,6 +51,31 @@ export default function WorkoutFinishPage() {
                 dayName: state.dayTitle || undefined,
                 entries: getExercisesToSave(state.exercises)
             });
+
+            // ALSO save individual exercise logs so they appear in Exercise Detail history
+            const exerciseLogPromises = state.exercises.map(exercise => {
+                // Only save if there is at least one meaningful set
+                const validSets = exercise.sets.filter(s => s.completed || s.weight || s.reps);
+                if (validSets.length === 0) return Promise.resolve(null);
+
+                return saveExerciseLog(db, user.uid, {
+                    exerciseId: exercise.id,
+                    exerciseName: exercise.name,
+                    routineId: state.routineId || undefined,
+                    routineName: state.routineTitle || undefined,
+                    dayId: state.dayId || undefined,
+                    dayName: state.dayTitle || undefined,
+                    date: new Date().toISOString(),
+                    sets: validSets.map(s => ({
+                        weight: s.weight,
+                        reps: s.reps,
+                        rir: s.rir,
+                        completed: s.completed
+                    }))
+                });
+            });
+
+            await Promise.all([workoutLogPromise, ...exerciseLogPromises]);
 
             setSaved(true);
             state.finishWorkout();
