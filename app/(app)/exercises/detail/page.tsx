@@ -10,6 +10,7 @@ import { defaultExercises } from "@/lib/data/exercises";
 import { buildRoutine } from "@/lib/routine-builder";
 import { mergeRoutines, buildExerciseIndex } from "@/lib/routine-helpers";
 import type { RoutineExercise, RoutineTemplate } from "@/lib/types";
+import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import {
   useExerciseLogs,
   saveExerciseLog,
@@ -59,6 +60,7 @@ function ExerciseDetailContent() {
 
   const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
   const { data: exerciseLogs } = useExerciseLogs(user?.uid);
+  const { data: workoutLogs } = useWorkoutLogs(user?.uid);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
@@ -96,8 +98,58 @@ function ExerciseDetailContent() {
 
   const history = useMemo(() => {
     if (!exercise) return [] as ExerciseLog[];
-    return (exerciseLogs ?? []).filter((log) => log.exerciseId === exercise.id);
-  }, [exerciseLogs, exercise]);
+
+    // 1. Get direct exercise logs
+    const directLogs = (exerciseLogs ?? []).filter((log) => log.exerciseId === exercise.id);
+
+    // 2. Extract logs from complete workout sessions (legacy/fallback)
+    const extractedLogs: ExerciseLog[] = [];
+    if (workoutLogs) {
+      workoutLogs.forEach(wLog => {
+        // Find entry for this exercise in the workout log
+        const entry = wLog.entries.find(e => e.exerciseId === exercise.id);
+        if (entry && entry.sets && entry.sets.length > 0) {
+          // Create a transient ExerciseLog object
+          extractedLogs.push({
+            id: `extracted-${wLog.id}-${exercise.id}`, // Temporary ID
+            exerciseId: exercise.id,
+            exerciseName: entry.exerciseName,
+            routineId: wLog.routineId,
+            routineName: wLog.routineName,
+            dayId: wLog.dayId,
+            dayName: wLog.dayName,
+            date: wLog.date,
+            perceivedEffort: wLog.effort?.toString() ?? null,
+            notes: entry.notes ?? entry.comment ?? null,
+            mediaImage: null,
+            mediaVideo: null,
+            sets: entry.sets.map(s => ({
+              weight: s.weight?.toString() ?? "",
+              reps: s.reps?.toString() ?? "",
+              rir: s.rir?.toString() ?? "",
+              completed: true // Assume completed if in log
+            }))
+          });
+        }
+      });
+    }
+
+    // 3. Merge and Deduplicate (by date, roughly)
+    // If we have a direct log and an extracted log for the same time, prefer direct log.
+    const combined = [...directLogs];
+    extractedLogs.forEach(exLog => {
+      // Check if we already have a log near this date (within 1 minute)
+      const exists = combined.some(existing =>
+        Math.abs(new Date(existing.date).getTime() - new Date(exLog.date).getTime()) < 60000
+      );
+      if (!exists) {
+        combined.push(exLog);
+      }
+    });
+
+    // 4. Sort descending
+    return combined.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [exerciseLogs, workoutLogs, exercise]);
 
   const defaultSets = useMemo(
     () => (exercise ? createSets(exercise.sets) : []),
