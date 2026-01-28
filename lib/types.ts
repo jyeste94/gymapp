@@ -180,7 +180,7 @@ export type Measurement = {
  */
 export type RoutineLogSet = {
   reps: number;
-  weight: number;
+  weight: string;
   rir?: number; // Reps in Reserve
 };
 

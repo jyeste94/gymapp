@@ -17,6 +17,15 @@ type Props = {
     logs: RoutineLog[];
 };
 
+// Helper to extract numeric weight from string (e.g. "40kg" -> 40, "bw + 10" -> 10? maybe just first number)
+// If purely non-numeric (e.g. "Blue band"), return 0.
+const parseWeight = (val: string | number | undefined): number => {
+    if (!val) return 0;
+    if (typeof val === 'number') return val;
+    const match = val.match(/(\d+(\.\d+)?)/);
+    return match ? parseFloat(match[0]) : 0;
+};
+
 export default function StrengthChart({ logs }: Props) {
     // Extract all exercises found in logs
     const exerciseStats = useMemo(() => {
@@ -29,7 +38,7 @@ export default function StrengthChart({ logs }: Props) {
 
                 let maxW = 0;
                 entry.sets?.forEach(s => {
-                    const w = s.weight || 0;
+                    const w = parseWeight(s.weight);
                     if (w > maxW) maxW = w;
                 });
 
@@ -72,8 +81,8 @@ export default function StrengthChart({ logs }: Props) {
             let bestWeight = 0;
 
             entry.sets.forEach(set => {
-                const weight = set.weight || 0;
-                const reps = set.reps || 0;
+                const weight = parseWeight(set.weight);
+                const reps = Number(set.reps) || 0;
 
                 if (weight > 0 && reps > 0) {
                     const orm = calculateOneRM(weight, reps);

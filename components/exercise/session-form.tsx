@@ -71,13 +71,11 @@ export default function SessionForm({
               </div>
               <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
                 <input
-                  type="number"
-                  placeholder="Kg"
+                  type="text"
+                  placeholder="Kg / Lbs"
                   value={set.weight}
                   onChange={(event) => handleSetField(index, "weight")(event.target.value)}
                   className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
-                  min="0"
-                  step="0.5"
                 />
                 <input
                   type="number"

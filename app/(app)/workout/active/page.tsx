@@ -129,9 +129,9 @@ function SetRow({
                 : "border-transparent bg-zinc-50"
         )}>
             <input
-                type="number"
+                type="text"
                 placeholder="-"
-                className="w-full rounded-lg bg-transparent py-1 text-center text-base font-semibold text-zinc-900 placeholder-zinc-300 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#0a2e5c]/10"
+                className="w-full rounded-lg bg-transparent py-1 text-center text-sm font-semibold text-zinc-900 placeholder-zinc-300 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#0a2e5c]/10"
                 value={set.weight}
                 onChange={(e) => store.updateSet(exerciseId, setId, { weight: e.target.value })}
             />

@@ -1,7 +1,7 @@
 import type { ActiveExercise } from "@/lib/stores/workout-session";
 
 export type SavedSet = {
-    weight: number;
+    weight: string;
     reps: number;
     rir: number;
 };
@@ -16,8 +16,8 @@ export function getExercisesToSave(exercises: ActiveExercise[]): SavedWorkoutEnt
     return exercises.map(ex => ({
         exerciseId: ex.id,
         exerciseName: ex.name,
-        sets: ex.sets.filter(s => s.completed || Number(s.reps) > 0 || Number(s.weight) > 0).map(s => ({
-            weight: Number(s.weight) || 0,
+        sets: ex.sets.filter(s => s.completed || Number(s.reps) > 0 || (s.weight && s.weight.trim() !== "")).map(s => ({
+            weight: s.weight?.toString() || "",
             reps: Number(s.reps) || 0,
             rir: Number(s.rir) || 0,
         }))
