@@ -525,4 +525,60 @@ export const defaultExercises: Exercise[] = [
         image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Farmers_Walk/1.jpg",
         video: "https://www.youtube.com/embed/5yWaCk87YOU", // Placeholder url
     },
+    {
+        id: "ab_wheel",
+        name: "Ab Wheel",
+        muscleGroup: ["Core"],
+        equipment: ["Peso corporal"],
+        description: "Rueda abdominal para anti-extension.",
+        technique: [
+            "Rodillas apoyadas",
+            "Mantiene pelvis neutra (no arquear)",
+            "Extiende hasta donde controles",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Roller/1.jpg",
+        video: "https://www.youtube.com/embed/IODxDxX7oi4",
+    },
+    {
+        id: "plancha_lateral",
+        name: "Plancha lateral",
+        muscleGroup: ["Core", "Oblicuos"],
+        equipment: ["Peso corporal"],
+        description: "Estabilidad lateral para core.",
+        technique: [
+            "Codo bajo el hombro",
+            "Cuerpo en linea recta",
+            "Aguanta isometricamente",
+        ],
+        image: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/1.jpg", // Approximate
+        video: "https://www.youtube.com/embed/_rdfjFSFKMY",
+    },
+    {
+        id: "running_intervalos",
+        name: "Running (Intervalos)",
+        muscleGroup: ["Cardio", "Cuadriceps", "Gemelos"],
+        equipment: ["Ninguno"],
+        description: "Sesion de calidad: 10' suave + 3x8' @ ritmo controlado + enfriamiento.",
+        technique: [
+            "Mantener ritmo 5:50-6:00/km",
+            "FC objetivo 160-168 ppm",
+            "Recuperar 3' suave entre bloques",
+        ],
+        image: "https://images.unsplash.com/photo-1552674605-4695231af84f?auto=format&fit=crop&q=80&w=300",
+        video: "",
+    },
+    {
+        id: "running_tirada_larga",
+        name: "Running (Tirada Larga)",
+        muscleGroup: ["Cardio", "Cuadriceps", "Gemelos"],
+        equipment: ["Ninguno"],
+        description: "Carrera continua suave de 75 minutos.",
+        technique: [
+            "Ritmo 6:30-6:50/km",
+            "FC 145-155 ppm",
+            "Cadencia 165-168 pasos/min",
+        ],
+        image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=300",
+        video: "",
+    },
 ];

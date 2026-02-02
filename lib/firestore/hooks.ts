@@ -1,7 +1,7 @@
 
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useFirebase } from "@/lib/firebase/client-context";
 
 export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc" | "desc" }) {
@@ -34,6 +34,36 @@ export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc
 
     return () => unsub();
   }, [path, orderConstraint, db]);
+
+  return { data, loading };
+}
+
+export function useDoc<T>(path?: string | null) {
+  const { db } = useFirebase();
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!path || !db) {
+      setData(null);
+      setLoading(false);
+      return undefined;
+    }
+
+    setLoading(true);
+    const ref = doc(db, path);
+
+    const unsub = onSnapshot(ref, (snap) => {
+      if (snap.exists()) {
+        setData({ ...snap.data(), id: snap.id } as T);
+      } else {
+        setData(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsub();
+  }, [path, db]);
 
   return { data, loading };
 }

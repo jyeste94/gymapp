@@ -19,7 +19,9 @@ export type MuscleGroup =
   | 'Gemelos'
   | 'Core'
   | 'Trapecio'
-  | 'Antebrazo';
+  | 'Antebrazo'
+  | 'Oblicuos'
+  | 'Cardio';
 
 /**
  * Equipamiento disponible, para consistencia.
@@ -29,7 +31,8 @@ export type Equipment =
   | 'Mancuernas'
   | 'Polea'
   | 'Maquina'
-  | 'Peso corporal';
+  | 'Peso corporal'
+  | 'Ninguno';
 
 /**
  * Niveles de dificultad de las rutinas.
@@ -230,4 +233,61 @@ export type UserProfile = {
   username?: string | null;
   bio?: string | null;
   isPrivate?: boolean;
+};
+
+// ==========================================================================================
+// --- MODELO DE DATOS DE DIETA
+// ==========================================================================================
+
+export type MealType = 'Desayuno' | 'Almuerzo' | 'Comida' | 'Merienda' | 'Cena';
+
+export type DietFoodEntry = {
+  id: string; // NutriFlow Food ID or UUID for custom entry
+  name: string;
+  brand?: string;
+  servingId?: string; // NutriFlow Serving ID
+  servingLabel: string; // e.g., "1 cup" or "100g"
+  metricAmount: number; // calculated metric weight
+  metricUnit: string; // "g" or "ml"
+  calories: number;
+  macros: {
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+};
+
+export type DietMeal = {
+  id: string; // Unique ID for the meal instance (for drag-drop or referencing)
+  type: MealType;
+  foods: DietFoodEntry[];
+  totalCalories: number;
+  macros: {
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+};
+
+export type DietDay = {
+  id: string; // 'lunes', 'tue', etc.
+  name: string; // 'Lunes'
+  meals: DietMeal[];
+  totalCalories: number;
+  macros: {
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+};
+
+export type Diet = {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  days: DietDay[]; // Usually 7 days
+  createdAt: string;
+  updatedAt: string;
 };

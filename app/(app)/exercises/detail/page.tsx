@@ -23,6 +23,7 @@ import ExerciseHeader from "@/components/exercise/exercise-header";
 import TechniqueGuide from "@/components/exercise/technique-guide";
 import SessionForm from "@/components/exercise/session-form";
 import type { SessionState, SessionSet } from "@/components/exercise/types";
+import ExerciseProgressChart from "@/components/exercise/exercise-progress-chart";
 import toast from 'react-hot-toast';
 
 const createSets = (count: number): SessionSet[] =>
@@ -327,6 +328,10 @@ function ExerciseDetailContent() {
       {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
 
       <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
+
+      {!fromCreator && history.length > 0 && (
+        <ExerciseProgressChart data={history} />
+      )}
 
       <TechniqueGuide exercise={exercise as RoutineExercise} />
 
