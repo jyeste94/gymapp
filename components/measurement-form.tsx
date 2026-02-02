@@ -99,11 +99,11 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Peso (kg)</label>
-        <input type="number" step="0.1" {...register("weightKg")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("weightKg")} placeholder="0.0" className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Grasa (%)</label>
-        <input type="number" step="0.1" {...register("bodyFatPct")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("bodyFatPct")} placeholder="0.0" className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
 
       <div className="col-span-full my-2 border-t border-[rgba(10,46,92,0.1)]" />
@@ -111,23 +111,23 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
 
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Pecho</label>
-        <input type="number" step="0.5" {...register("chest")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("chest")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Cintura</label>
-        <input type="number" step="0.5" {...register("waist")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("waist")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Cadera</label>
-        <input type="number" step="0.5" {...register("hips")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("hips")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Brazo</label>
-        <input type="number" step="0.5" {...register("arm")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("arm")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Muslo</label>
-        <input type="number" step="0.5" {...register("thigh")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <input type="text" inputMode="decimal" {...register("thigh")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
       </div>
       <div className="space-y-2 md:col-span-2">
         <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Notas</label>

@@ -11,7 +11,7 @@ export const processNumber = (val: unknown) => {
 
     const str = String(val).replace(",", ".");
     const num = Number(str);
-    return Number.isFinite(num) ? num : undefined;
+    return Number.isFinite(num) ? num : val;
 };
 
 const bodyFatSchema = z.preprocess(
