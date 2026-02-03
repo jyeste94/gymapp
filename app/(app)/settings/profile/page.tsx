@@ -6,11 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { ArrowLeft, Loader2, Check, X } from "lucide-react";
+import { ArrowLeft, Loader2, Check, X, Ruler, LineChart, Settings, Edit2 } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { ensureUserProfile, updateUserProfile, checkUsernameAvailability } from "@/lib/firestore/user";
+import type { UserProfile } from "@/lib/types";
 import Image from "next/image";
+import Link from "next/link";
+import clsx from "clsx";
 
 // Schema de validación
 const profileSchema = z.object({
@@ -26,11 +29,13 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function ProfileSettingsPage() {
+export default function ProfilePage() {
     const { user } = useAuth();
     const { db } = useFirebase();
     const router = useRouter();
     const [loadingConfig, setLoadingConfig] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
     const [checkingUsername, setCheckingUsername] = useState(false);
 
@@ -56,6 +61,7 @@ export default function ProfileSettingsPage() {
             try {
                 // Aseguramos que existe el perfil, si no lo crea
                 const profile = await ensureUserProfile(db, user);
+                setProfileData(profile);
 
                 setValue("displayName", profile.displayName || user.displayName || "");
                 setValue("username", profile.username || "");
@@ -73,7 +79,7 @@ export default function ProfileSettingsPage() {
 
     // Username Availability Debounce Check
     useEffect(() => {
-        if (!db || !watchedUsername || watchedUsername.length < 3) {
+        if (!isEditing || !db || !watchedUsername || watchedUsername.length < 3) {
             setUsernameAvailable(null);
             return;
         }
@@ -92,7 +98,7 @@ export default function ProfileSettingsPage() {
 
         const timeout = setTimeout(check, 500);
         return () => clearTimeout(timeout);
-    }, [watchedUsername, db, user]);
+    }, [watchedUsername, db, user, isEditing]);
 
     const onSubmit = async (data: ProfileFormValues) => {
         if (!user || !db) return;
@@ -105,11 +111,19 @@ export default function ProfileSettingsPage() {
         try {
             await updateUserProfile(db, user.uid, {
                 displayName: data.displayName,
-                username: data.username || null, // Guardar null si está vacío
+                username: data.username || null,
                 bio: data.bio || null,
             });
+
+            setProfileData((prev: UserProfile | null) => prev ? ({
+                ...prev,
+                displayName: data.displayName,
+                username: data.username || null,
+                bio: data.bio || null,
+            }) : null);
+
             toast.success("Perfil actualizado");
-            router.back();
+            setIsEditing(false);
         } catch (error) {
             console.error(error);
             toast.error("Error al actualizar");
@@ -120,18 +134,111 @@ export default function ProfileSettingsPage() {
         return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin text-zinc-400" /></div>;
     }
 
+    // --- VIEW MODE (DASHBOARD) ---
+    if (!isEditing) {
+        return (
+            <div className="min-h-screen bg-zinc-50 pb-24">
+                {/* Header / Profile Card */}
+                <div className="bg-white px-6 pb-6 pt-8 shadow-sm">
+                    <div className="mb-6 flex items-start justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(10,46,92,0.1)]">
+                                {user.photoURL ? (
+                                    <Image
+                                        src={user.photoURL}
+                                        alt={user.displayName || "User"}
+                                        width={80}
+                                        height={80}
+                                        className="h-full w-full object-cover"
+                                        unoptimized
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-zinc-100 text-lg font-bold text-zinc-400">
+                                        {(user.displayName?.[0] || user.email?.[0] || "?").toUpperCase()}
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-[#0a2e5c]">{profileData?.displayName || "Atleta"}</h1>
+                                <p className="text-sm text-zinc-500">@{profileData?.username || "usuario"}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="rounded-full bg-zinc-50 p-2 text-[#0a2e5c] hover:bg-zinc-100"
+                        >
+                            <Edit2 className="h-5 w-5" />
+                        </button>
+                    </div>
+
+                    {/* Bio */}
+                    {profileData?.bio && (
+                        <p className="mb-6 text-sm text-zinc-600">{profileData.bio}</p>
+                    )}
+
+                    {/* Mini Stats (Weight/Height) - Could be dynamic later */}
+                    <div className="flex divide-x divide-zinc-100 rounded-2xl border border-zinc-100 bg-zinc-50 py-3">
+                        <div className="flex-1 text-center">
+                            <p className="text-xs font-bold text-zinc-400 uppercase">Peso</p>
+                            <p className="font-semibold text-[#0a2e5c]">{profileData?.weightKg || "--"} kg</p>
+                        </div>
+                        <div className="flex-1 text-center">
+                            <p className="text-xs font-bold text-zinc-400 uppercase">Altura</p>
+                            <p className="font-semibold text-[#0a2e5c]">{profileData?.heightCm || "--"} cm</p>
+                        </div>
+                        <div className="flex-1 text-center">
+                            <p className="text-xs font-bold text-zinc-400 uppercase">Grasa</p>
+                            <p className="font-semibold text-[#0a2e5c]">{profileData?.bodyFatPct || "--"} %</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Quick Actions Grid */}
+                <div className="p-4 space-y-4">
+                    <h2 className="px-2 text-sm font-bold text-[#0a2e5c]">Accesos Directos</h2>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <Link href="/measurements" className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md">
+                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                                <Ruler className="h-5 w-5" />
+                            </div>
+                            <h3 className="font-bold text-zinc-800">Mediciones</h3>
+                            <p className="text-xs text-zinc-500">Registra y analiza tu cuerpo</p>
+                        </Link>
+
+                        <Link href="/progress" className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md">
+                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                                <LineChart className="h-5 w-5" />
+                            </div>
+                            <h3 className="font-bold text-zinc-800">Progreso</h3>
+                            <p className="text-xs text-zinc-500">Gráficas de fuerza y volumen</p>
+                        </Link>
+
+                        <Link href="/settings" className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md">
+                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 text-zinc-600">
+                                <Settings className="h-5 w-5" />
+                            </div>
+                            <h3 className="font-bold text-zinc-800">Ajustes</h3>
+                            <p className="text-xs text-zinc-500">Configuración de cuenta</p>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // --- EDIT MODE ---
     return (
         <div className="space-y-6 pb-20">
             <header className="sticky top-0 z-20 -mx-4 -mt-6 flex items-center gap-3 border-b border-zinc-200 bg-white/95 px-6 py-4 backdrop-blur-sm sm:mx-0 sm:mt-0 sm:rounded-t-3xl">
-                <button onClick={() => router.back()} className="text-zinc-500 hover:text-zinc-800">
+                <button onClick={() => setIsEditing(false)} className="text-zinc-500 hover:text-zinc-800">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <h1 className="text-base font-bold text-zinc-900">Editar Perfil</h1>
             </header>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 px-2">
-
-                {/* Foto de perfil (Solo visual por ahora, se toma de Google) */}
+                {/* Same Form Content As Before */}
                 <div className="flex flex-col items-center gap-2">
                     <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(10,46,92,0.1)]">
                         {user.photoURL ? (
@@ -152,7 +259,6 @@ export default function ProfileSettingsPage() {
                     <p className="text-xs text-zinc-400">La foto se sincroniza con tu cuenta de Google</p>
                 </div>
 
-                {/* Campos */}
                 <div className="space-y-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Nombre</label>
@@ -172,8 +278,12 @@ export default function ProfileSettingsPage() {
                             <span className="absolute left-4 top-3 text-zinc-400">@</span>
                             <input
                                 {...register("username")}
-                                className={`w-full rounded-xl border bg-white pl-8 pr-10 py-3 text-sm text-zinc-900 outline-none focus:ring-1 
-                    ${usernameAvailable === false ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-zinc-200 focus:border-[#0a2e5c] focus:ring-[#0a2e5c]'}`}
+                                className={clsx(
+                                    "w-full rounded-xl border bg-white pl-8 pr-10 py-3 text-sm text-zinc-900 outline-none focus:ring-1",
+                                    usernameAvailable === false
+                                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                                        : "border-zinc-200 focus:border-[#0a2e5c] focus:ring-[#0a2e5c]"
+                                )}
                                 placeholder="usuario123"
                                 autoCapitalize="none"
                             />

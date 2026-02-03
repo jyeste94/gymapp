@@ -5,6 +5,7 @@ import { NutriFlowClient, type NutriFlowFoodSummary, type NutriFlowFoodDetail, t
 import { Search, Plus, Loader2 } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 import toast from "react-hot-toast";
+import clsx from "clsx";
 
 type FoodSearchProps = {
     onAddFood: (food: NutriFlowFoodDetail, serving: NutriFlowServing, quantity: number) => void;
@@ -46,8 +47,18 @@ export default function FoodSearch({ onAddFood }: FoodSearchProps) {
         setLoadingFoodId(foodId);
         try {
             const details = await NutriFlowClient.getFoodDetails(foodId);
-            setSelectedFood(details);
-            setSelectedServing(details.best_serving || details.servings[0]);
+
+            // Defensive coding: API might return null servings
+            const safeDetails = {
+                ...details,
+                servings: details.servings || []
+            };
+
+            setSelectedFood(safeDetails);
+
+            const initialServing = details.best_serving || safeDetails.servings[0] || null;
+            setSelectedServing(initialServing);
+
             setQuantity(1);
         } catch (error) {
             console.error(error);
@@ -109,11 +120,15 @@ export default function FoodSearch({ onAddFood }: FoodSearchProps) {
                                     if (serving) setSelectedServing(serving);
                                 }}
                             >
-                                {selectedFood.servings.map((s, i) => (
-                                    <option key={i} value={s.description}>
-                                        {s.description} ({s.metric_amount} {s.metric_unit}) - {s.calories} kcal
-                                    </option>
-                                ))}
+                                {selectedFood.servings?.length > 0 ? (
+                                    selectedFood.servings.map((s, i) => (
+                                        <option key={i} value={s.description}>
+                                            {s.description} ({s.metric_amount} {s.metric_unit}) - {s.calories} kcal
+                                        </option>
+                                    ))
+                                ) : (
+                                    <option disabled>Sin información de raciones</option>
+                                )}
                             </select>
                         </div>
 
@@ -145,9 +160,20 @@ export default function FoodSearch({ onAddFood }: FoodSearchProps) {
                             </div>
                         )}
 
+                        {!selectedServing && (
+                            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                                <p className="font-bold">⚠️ Información incompleta</p>
+                                <p>Este alimento no tiene datos de raciones o macros en la base de datos. Intenta buscar otro similar.</p>
+                            </div>
+                        )}
+
                         <button
                             onClick={handleAdd}
-                            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0a2e5c] py-3 text-sm font-semibold text-white shadow-lg transition active:scale-95"
+                            disabled={!selectedServing}
+                            className={clsx(
+                                "flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-white shadow-lg transition active:scale-95",
+                                !selectedServing ? "bg-zinc-300 cursor-not-allowed shadow-none" : "bg-[#0a2e5c]"
+                            )}
                         >
                             <Plus className="h-4 w-4" /> Añadir a la dieta
                         </button>

@@ -3,12 +3,14 @@ import { useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
+import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import { useCol } from "@/lib/firestore/hooks";
 import { defaultRoutines } from "@/lib/data/routine-library";
 import { defaultExercises } from "@/lib/data/exercises";
 import { buildRoutine } from "@/lib/routine-builder";
 import { mergeRoutines } from "@/lib/routine-helpers";
 import type { RoutineTemplate } from "@/lib/types";
+import RoutineHistoryCard from "@/components/routines/routine-history-card";
 
 const formatBadge = (label: string) => (
   <span className="rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5 text-xs text-[#51607c]">
@@ -23,6 +25,7 @@ function RoutineOverviewContent() {
   const { user } = useAuth();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
   const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
+  const { data: routineLogs } = useWorkoutLogs(user?.uid);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
@@ -83,6 +86,10 @@ function RoutineOverviewContent() {
             Equipo sugerido: {routine.equipment.join(", ")}
           </p>
         )}
+
+        <div className="mt-6">
+          <RoutineHistoryCard routineId={routine.id} logs={routineLogs} />
+        </div>
       </header>
 
       <section className="space-y-3">

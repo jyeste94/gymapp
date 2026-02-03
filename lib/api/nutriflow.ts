@@ -21,7 +21,7 @@ export type NutriFlowFoodDetail = NutriFlowFoodSummary & {
     best_serving: NutriFlowServing;
 };
 
-const BASE_URL = "http://localhost:8080/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_NUTRIFLOW_API_URL || "http://localhost:8080/v1";
 const API_KEY = process.env.NEXT_PUBLIC_NUTRIFLOW_API_KEY || "";
 
 export class NutriFlowClient {

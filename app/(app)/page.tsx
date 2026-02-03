@@ -10,6 +10,8 @@ import { buildRoutine } from "@/lib/routine-builder";
 import { mergeRoutines } from "@/lib/routine-helpers";
 import ProfileHeader from "@/components/dashboard/profile-header";
 import StatRow from "@/components/dashboard/stat-row";
+import MuscleHeatmap from "@/components/progress/muscle-heatmap";
+import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 
 type RoutineAccent = "blue" | "amber" | "rose" | "navy";
 const ROUTINE_ACCENTS: RoutineAccent[] = ["blue", "amber", "rose", "navy"];
@@ -28,6 +30,24 @@ export default function Dashboard() {
     by: "title",
     dir: "desc",
   });
+
+  // Fetch routine logs for heatmap
+  const { data: routineLogs } = useWorkoutLogs(user?.uid);
+
+  // Filter logs for the current week (resets on Monday)
+  const weeklyLogs = useMemo(() => {
+    const now = new Date();
+    // Get start of the week (Monday)
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const startOfWeek = new Date(now.setDate(diff));
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    return routineLogs.filter(log => {
+      const logDate = new Date(log.date);
+      return logDate >= startOfWeek;
+    });
+  }, [routineLogs]);
 
   const customRoutines = useMemo(
     () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
@@ -92,6 +112,20 @@ export default function Dashboard() {
             Ver Planes
           </Link>
         </div>
+      </section>
+
+      {/* 5. Weekly Heatmap */}
+      <section className="glass-card border-[rgba(10,46,92,0.1)] bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-[#0a2e5c]">Mapa de Calor (Esta Semana)</h3>
+            <p className="text-sm text-zinc-500">Intensidad de entrenamiento actual</p>
+          </div>
+          <Link href="/progress" className="text-xs font-bold text-blue-600 hover:text-blue-800">
+            Ver Detalles
+          </Link>
+        </div>
+        <MuscleHeatmap logs={weeklyLogs} />
       </section>
     </div>
   );

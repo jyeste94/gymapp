@@ -18,10 +18,14 @@ export const useActiveDiet = (userId?: string | null) => {
     return diets?.find(d => d.isActive) ?? null;
 };
 
+import { sanitizeForFirestore } from "./utils";
+
 export async function createDiet(db: Firestore, userId: string, dietData: Omit<Diet, "id">) {
     // Check if active, if so, deactivate others? Or handle that in UI.
     // For now just add.
-    return add(db, `users/${userId}/diets`, dietData);
+    const cleanData = sanitizeForFirestore(dietData);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return add(db, `users/${userId}/diets`, cleanData as any);
 }
 
 export async function updateDiet(db: Firestore, userId: string, dietId: string, data: Partial<Diet>) {

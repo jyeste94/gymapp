@@ -65,3 +65,35 @@ export function calculateWeeklyVolume(logs: RoutineLog[]) {
         sets
     }));
 }
+
+import { defaultExercises } from "@/lib/data/exercises";
+
+export function calculateMuscleDistribution(logs: RoutineLog[]) {
+    const muscleCounts: Record<string, number> = {};
+
+    // Cache exercise definitions for faster lookup
+    const exerciseMap = new Map(defaultExercises.map(e => [e.name, e]));
+    const exerciseIdMap = new Map(defaultExercises.map(e => [e.id, e]));
+
+    logs.forEach(log => {
+        log.entries.forEach(entry => {
+            // Try to find exercise definition
+            // First by ID (if we stored it correctly), then by Name
+            let exercise = exerciseIdMap.get(entry.exerciseId);
+            if (!exercise) {
+                exercise = exerciseMap.get(entry.exerciseName);
+            }
+
+            if (exercise && exercise.muscleGroup) {
+                const sets = entry.sets.length;
+
+                // Distribute volume across all primary muscles
+                exercise.muscleGroup.forEach(muscle => {
+                    muscleCounts[muscle] = (muscleCounts[muscle] || 0) + sets;
+                });
+            }
+        });
+    });
+
+    return muscleCounts;
+}

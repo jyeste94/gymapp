@@ -9,7 +9,7 @@ function createMockLog(date: string, weight = 100, reps = 10): RoutineLog {
         entries: [{
             exerciseId: 'ex1',
             exerciseName: 'Squat',
-            sets: [{ weight, reps }]
+            sets: [{ weight: weight.toString(), reps }]
         }]
     };
 }

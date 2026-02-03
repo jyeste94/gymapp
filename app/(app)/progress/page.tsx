@@ -7,6 +7,8 @@ import type { Measurement } from "@/lib/types";
 import MeasurementChart from "@/components/measurement-chart";
 import StrengthChart from "@/components/progress/strength-chart";
 import VolumeChart from "@/components/progress/volume-chart";
+import MuscleVolumeChart from "@/components/progress/muscle-volume-chart";
+import MuscleHeatmap from "@/components/progress/muscle-heatmap";
 import { PageTransition, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/motion";
 import { calculateStats } from "@/lib/stats-helpers";
 
@@ -22,6 +24,21 @@ export default function ProgressPage() {
 
   // Stats calculation
   const stats = useMemo(() => calculateStats(routineLogs), [routineLogs]);
+
+  // Filter logs for the current week (resets on Monday)
+  const weeklyLogs = useMemo(() => {
+    const now = new Date();
+    // Get start of the week (Monday)
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const startOfWeek = new Date(now.setDate(diff));
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    return routineLogs.filter(log => {
+      const logDate = new Date(log.date);
+      return logDate >= startOfWeek;
+    });
+  }, [routineLogs]);
 
   return (
     <PageTransition>
@@ -60,7 +77,19 @@ export default function ProgressPage() {
           </StaggerItem>
         </StaggerContainer>
 
+
+
         <FadeIn delay={0.2}>
+          <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
+            <h3 className="text-lg font-semibold text-zinc-900">Mapa de Calor (Esta Semana)</h3>
+            <p className="text-sm text-[#4b5a72] mb-4">Intensidad de entrenamiento actual</p>
+            <div className="mt-4">
+              <MuscleHeatmap logs={weeklyLogs} />
+            </div>
+          </section>
+        </FadeIn>
+
+        <FadeIn delay={0.3}>
           <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
             <h3 className="text-lg font-semibold text-zinc-900">Composicion Corporal</h3>
             <div className="mt-4">
@@ -85,6 +114,15 @@ export default function ProgressPage() {
         </FadeIn>
 
         <FadeIn delay={0.4}>
+          <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
+            <h3 className="text-lg font-semibold text-zinc-900">Balance Muscular (Series Totales)</h3>
+            <div className="mt-4">
+              <MuscleVolumeChart logs={routineLogs} />
+            </div>
+          </section>
+        </FadeIn>
+
+        <FadeIn delay={0.5}>
           <section className="glass-card border-[rgba(10,46,92,0.16)] bg-white/80 p-6">
             <h3 className="text-lg font-semibold text-zinc-900">Volumen Semanal</h3>
             <p className="text-xs text-zinc-500 mb-4">Total de series efectivas por semana</p>
