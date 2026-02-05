@@ -67,7 +67,7 @@ export default function MuscleHeatmap({ logs }: Props) {
             <div className="flex flex-col items-center gap-3">
                 <p className="text-xs font-bold uppercase text-zinc-400 tracking-widest">Frente</p>
                 <Model
-                    data={data as any}
+                    data={data as any} // eslint-disable-line @typescript-eslint/no-explicit-any
                     type="anterior"
                     style={{ width: '12rem', height: '20rem' }}
                     highlightedColors={HIGHLIGHT_COLORS}
@@ -78,7 +78,7 @@ export default function MuscleHeatmap({ logs }: Props) {
             <div className="flex flex-col items-center gap-3">
                 <p className="text-xs font-bold uppercase text-zinc-400 tracking-widest">Espalda</p>
                 <Model
-                    data={data as any}
+                    data={data as any} // eslint-disable-line @typescript-eslint/no-explicit-any
                     type="posterior"
                     style={{ width: '12rem', height: '20rem' }}
                     highlightedColors={HIGHLIGHT_COLORS}

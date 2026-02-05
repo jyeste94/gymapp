@@ -24,9 +24,12 @@ describe("Measurement Validation Logic", () => {
             expect(processNumber(undefined)).toBeUndefined();
         });
 
-        it("should return undefined for invalid numbers (NaN/garbage)", () => {
-            expect(processNumber("abc")).toBeUndefined();
-            expect(processNumber("80kg")).toBeUndefined(); // processNumber is strict about format
+        it("should return original value for invalid strings (to trigger invalid_type_error)", () => {
+            expect(processNumber("abc")).toBe("abc");
+            expect(processNumber("80kg")).toBe("80kg");
+        });
+
+        it("should return undefined for explicit NaN", () => {
             expect(processNumber(NaN)).toBeUndefined();
         });
     });
@@ -74,7 +77,7 @@ describe("Measurement Validation Logic", () => {
             expect(result.success).toBe(false);
             if (!result.success) {
                 // Should trigger invalid_type_error
-                expect(result.error.issues[0].message).toBe("El peso es obligatorio");
+                expect(result.error.issues[0].message).toBe("Introduce un número válido");
             }
         });
 

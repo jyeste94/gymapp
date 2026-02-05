@@ -18,7 +18,8 @@ describe('Data Integrity: Exercise Catalog', () => {
     it('should have valid muscle groups', () => {
         const validMuscles: MuscleGroup[] = [
             'Pecho', 'Espalda', 'Hombro', 'Biceps', 'Triceps',
-            'Cuadriceps', 'Isquios', 'Gluteos', 'Gemelos', 'Core', 'Trapecio'
+            'Cuadriceps', 'Isquios', 'Gluteos', 'Gemelos', 'Core', 'Trapecio',
+            'Antebrazo', 'Oblicuos', 'Cardio'
         ];
 
         defaultExercises.forEach(exercise => {
@@ -30,7 +31,7 @@ describe('Data Integrity: Exercise Catalog', () => {
 
     it('should have valid equipment', () => {
         const validEquipment: Equipment[] = [
-            'Barra', 'Mancuernas', 'Polea', 'Maquina', 'Peso corporal'
+            'Barra', 'Mancuernas', 'Polea', 'Maquina', 'Peso corporal', 'Ninguno'
         ];
 
         defaultExercises.forEach(exercise => {

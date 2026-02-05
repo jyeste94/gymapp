@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+
 import { toast } from "react-hot-toast";
 import { ArrowLeft, Loader2, Check, X, Ruler, LineChart, Settings, Edit2 } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
@@ -32,7 +32,7 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function ProfilePage() {
     const { user } = useAuth();
     const { db } = useFirebase();
-    const router = useRouter();
+
     const [loadingConfig, setLoadingConfig] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
