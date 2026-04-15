@@ -2,9 +2,23 @@
 
 import { useMemo } from "react";
 import Link from 'next/link';
+import { motion } from "framer-motion";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useDiets } from "@/lib/firestore/diets";
-import { Plus, Apple, Utensils } from "lucide-react";
+import { Plus, Apple, Utensils, Flame, Droplets, Wheat, Dumbbell } from "lucide-react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
+};
 
 const DAYS_MAP: Record<string, string> = {
   mon: "Lunes",
@@ -23,9 +37,7 @@ export default function DietDashboardPage() {
   const activeDiet = useMemo(() => diets?.find(d => d.isActive), [diets]);
 
   const todayDayId = useMemo(() => {
-    const day = new Date().getDay(); // 0 = Sunday, 1 = Monday...
-    // Map JS day (0-6) to our IDs
-    // our IDs: mon, tue...
+    const day = new Date().getDay(); 
     const map = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     return map[day];
   }, []);
@@ -35,125 +47,176 @@ export default function DietDashboardPage() {
     [activeDiet, todayDayId]);
 
   return (
-    <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
-      <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="relative min-h-screen pb-32 pt-6 lg:pb-12"
+    >
+      <div className="relative z-10 space-y-8 px-5 lg:px-0">
+        
         <header className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-brand-text-main">Tu nutricion</h1>
-            <p className="text-sm text-brand-text-muted">Gestiona tus dietas y macros</p>
+            <h1 className="font-bebas text-4xl uppercase text-brand-text-main md:text-5xl">
+              Panel de <span className="text-brand-primary text-glow-primary">Nutrición</span>
+            </h1>
+            <p className="text-sm text-brand-text-muted mt-1">El combustible que define tus resultados.</p>
           </div>
           <Link
             href="/diet/editor"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary text-brand-dark shadow-lg shadow-brand-primary/20 transition active:scale-95"
+            className="btn-primary p-3 md:px-6"
           >
             <Plus className="h-5 w-5" />
+            <span className="hidden md:inline">Editar Dieta</span>
           </Link>
         </header>
 
         {!activeDiet ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-brand-border bg-brand-surface p-10 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
-              <Utensils className="h-8 w-8" />
+          <motion.div variants={itemVariants} className="flex flex-col items-center justify-center rounded-4xl border border-dashed border-brand-border bg-brand-dark/30 py-16 text-center">
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 border border-brand-primary/20 shadow-[0_0_20px_rgba(62,224,127,0.15)]">
+              <Utensils className="h-10 w-10 text-brand-primary" />
             </div>
-            <h3 className="text-lg font-bold text-brand-text-main">Sin dieta activa</h3>
-            <p className="mt-2 text-sm text-brand-text-muted">Crea tu primera dieta planificada para empezar a trackear tus macros.</p>
+            <h3 className="text-2xl font-bold text-brand-text-main">Sin plan activo</h3>
+            <p className="mt-2 max-w-sm text-sm text-brand-text-muted">Crea tu primera dieta planificada para empezar a dominar tus macros y calorías.</p>
             <Link
               href="/diet/editor"
-              className="mt-6 rounded-2xl bg-brand-primary px-6 py-2 text-sm font-semibold text-brand-dark shadow-md"
+              className="mt-8 btn-ghost"
             >
-              Crear Dieta
+              Configurar Plan Semanal
             </Link>
-          </div>
+          </motion.div>
         ) : (
-          <>
-            {/* Active Diet Card */}
-            <div className="overflow-hidden rounded-3xl border border-brand-border bg-brand-surface text-brand-text-main shadow-xl">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-brand-primary uppercase tracking-widest">Dieta Activa</p>
-                    <h2 className="mt-1 text-2xl font-bold">{activeDiet.name}</h2>
-                    <p className="text-sm text-brand-text-muted">{activeDiet.description || "Plan semanal personalizado"}</p>
-                  </div>
-                  <div className="rounded-full bg-brand-primary/10 p-2">
-                    <Apple className="h-6 w-6 text-brand-primary" />
-                  </div>
-                </div>
-
-                <div className="mt-6 grid grid-cols-3 gap-2 border-t border-brand-border pt-4">
-                  <div>
-                    <p className="text-xs text-brand-text-muted">Kcal (Promedio)</p>
-                    <p className="text-lg font-bold">
-                      {Math.round(activeDiet.days.reduce((a, b) => a + b.totalCalories, 0) / 7)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-brand-text-muted">Comidas por dia</p>
-                    <p className="text-lg font-bold">5</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-brand-text-muted">Dias</p>
-                    <p className="text-lg font-bold">7</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Today's Plan Preview */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between px-2">
-                <h3 className="font-bold text-brand-text-main">Hoy ({DAYS_MAP[todayDayId]})</h3>
-                <Link href={`/diet/editor`} className="text-xs font-semibold text-brand-primary">
-                  Editar plan
-                </Link>
-              </div>
-
-              {todayPlan ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-4 rounded-2xl bg-brand-surface p-4 border border-brand-border shadow-sm">
-                    <div className="flex-1">
-                      <div className="flex justify-between text-xs font-semibold text-brand-text-muted mb-2">
-                        <span>Progreso Diario</span>
-                        <span>{Math.round(todayPlan.totalCalories)} kcal</span>
+          <div className="grid gap-8 lg:grid-cols-5">
+            {/* Left Column: Weekly Summary */}
+            <div className="lg:col-span-2 space-y-6">
+              <motion.div variants={itemVariants} className="glass-card overflow-hidden rounded-4xl p-6">
+                <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-brand-primary/10 blur-3xl" />
+                
+                <div className="relative">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="inline-flex items-center gap-2 rounded-lg bg-brand-primary/10 border border-brand-primary/20 px-2.5 py-1 text-[10px] font-bold text-brand-primary uppercase tracking-wider">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-primary"></span>
+                        </span>
+                        Plan Activo
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-brand-border">
-                        <div className="h-full bg-brand-primary" style={{ width: '100%' }} />
-                      </div>
-                      <div className="mt-2 flex justify-between text-[10px] font-bold text-brand-text-muted uppercase tracking-wider">
-                        <span className="text-emerald-400">P: {Math.round(todayPlan.macros.protein)}g</span>
-                        <span className="text-amber-400">C: {Math.round(todayPlan.macros.carbs)}g</span>
-                        <span className="text-rose-400">F: {Math.round(todayPlan.macros.fat)}g</span>
-                      </div>
+                      <h2 className="mt-4 text-3xl font-bold text-brand-text-main">{activeDiet.name}</h2>
+                      <p className="mt-1 text-sm text-brand-text-muted">{activeDiet.description || "Plan semanal"}</p>
+                    </div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-dark border border-brand-border text-brand-primary">
+                      <Apple className="h-6 w-6" />
                     </div>
                   </div>
 
-                  <div className="grid gap-3">
+                  <div className="mt-8 grid grid-cols-2 gap-4">
+                    <div className="rounded-2xl bg-brand-dark/50 border border-brand-border p-4 text-center">
+                      <p className="text-xs uppercase tracking-wider text-brand-text-muted">Promedio Kcal</p>
+                      <p className="mt-1 text-2xl font-bold text-brand-text-main">
+                        {Math.round(activeDiet.days.reduce((a, b) => a + b.totalCalories, 0) / 7)}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-brand-dark/50 border border-brand-border p-4 text-center">
+                      <p className="text-xs uppercase tracking-wider text-brand-text-muted">Comidas / Día</p>
+                      <p className="mt-1 text-2xl font-bold text-brand-text-main">5</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Column: Today's Plan */}
+            <div className="lg:col-span-3 space-y-6">
+              <motion.div variants={itemVariants} className="flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-brand-text-main">Hoy <span className="text-brand-primary">{DAYS_MAP[todayDayId]}</span></h3>
+                <Link href={`/diet/editor`} className="text-sm font-bold text-brand-primary hover:text-glow-primary transition-all">
+                  Modificar
+                </Link>
+              </motion.div>
+
+              {todayPlan ? (
+                <div className="space-y-6">
+                  {/* Macros Summary Card */}
+                  <motion.div variants={itemVariants} className="glass-card rounded-4xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400">
+                          <Flame className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs uppercase tracking-wider text-brand-text-muted font-bold">Total Calorías</p>
+                          <p className="text-xl font-bold text-brand-text-main">{Math.round(todayPlan.totalCalories)} kcal</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-brand-dark mb-6">
+                      <div className="flex h-full w-full">
+                        <div className="bg-emerald-400 h-full" style={{ width: '40%' }} title="Proteína" />
+                        <div className="bg-amber-400 h-full" style={{ width: '40%' }} title="Carbohidratos" />
+                        <div className="bg-rose-400 h-full" style={{ width: '20%' }} title="Grasas" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-xl border border-brand-border/50 bg-brand-dark/30 p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Dumbbell className="h-3 w-3 text-emerald-400" />
+                          <span className="text-[10px] font-bold text-brand-text-muted uppercase tracking-wider">Proteína</span>
+                        </div>
+                        <span className="text-lg font-bold text-emerald-400">{Math.round(todayPlan.macros.protein)}g</span>
+                      </div>
+                      <div className="rounded-xl border border-brand-border/50 bg-brand-dark/30 p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Wheat className="h-3 w-3 text-amber-400" />
+                          <span className="text-[10px] font-bold text-brand-text-muted uppercase tracking-wider">Carbos</span>
+                        </div>
+                        <span className="text-lg font-bold text-amber-400">{Math.round(todayPlan.macros.carbs)}g</span>
+                      </div>
+                      <div className="rounded-xl border border-brand-border/50 bg-brand-dark/30 p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Droplets className="h-3 w-3 text-rose-400" />
+                          <span className="text-[10px] font-bold text-brand-text-muted uppercase tracking-wider">Grasas</span>
+                        </div>
+                        <span className="text-lg font-bold text-rose-400">{Math.round(todayPlan.macros.fat)}g</span>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Meals List */}
+                  <motion.div variants={itemVariants} className="grid gap-3">
                     {todayPlan.meals.map(meal => (
-                      <div key={meal.id} className="flex items-center justify-between rounded-xl border border-brand-border bg-brand-surface p-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-border text-xs font-bold text-brand-text-main">
+                      <div key={meal.id} className="group flex items-center justify-between rounded-3xl border border-brand-border bg-brand-surface-light/30 p-4 transition-all hover:bg-brand-surface-light hover:border-brand-primary/30">
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-dark border border-brand-border text-sm font-bold text-brand-text-main group-hover:border-brand-primary/30 group-hover:text-brand-primary transition-all">
                             {meal.type[0]}
                           </div>
                           <div>
-                            <p className="font-semibold text-brand-text-main">{meal.type}</p>
+                            <p className="font-bold text-brand-text-main">{meal.type}</p>
                             <p className="text-xs text-brand-text-muted">{meal.foods.length} alimentos</p>
                           </div>
                         </div>
-                        <span className="text-xs font-bold text-brand-text-muted">{Math.round(meal.totalCalories)} kcal</span>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-lg bg-brand-dark border border-brand-border px-3 py-1.5 text-xs font-bold text-brand-text-muted">
+                            {Math.round(meal.totalCalories)} kcal
+                          </span>
+                        </div>
                       </div>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-brand-border bg-brand-surface p-6 text-center text-sm text-brand-text-muted">
-                  No hay plan configurado para hoy.
-                </div>
+                <motion.div variants={itemVariants} className="rounded-4xl border border-dashed border-brand-border bg-brand-dark/30 p-10 text-center text-sm text-brand-text-muted">
+                  Día de descanso nutricional o no planificado.
+                </motion.div>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
+
 
