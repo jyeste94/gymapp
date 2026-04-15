@@ -35,7 +35,7 @@ export default function RoutineHistoryCard({ routineId, logs, minimal = false }:
             </div>
             <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-amber-600/70">Historial</p>
-                <p className="font-bold text-zinc-900">
+                <p className="font-bold text-brand-text-main">
                     Has completado esta rutina <span className="text-amber-600 text-lg">{completionCount}</span> veces
                 </p>
             </div>

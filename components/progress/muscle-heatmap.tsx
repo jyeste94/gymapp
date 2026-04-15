@@ -3,10 +3,11 @@
 import { useMemo } from "react";
 import Model from "react-body-highlighter";
 import type { RoutineLog } from "@/lib/types";
+import type { ExerciseLog } from "@/lib/firestore/exercise-logs";
 import { calculateMuscleDistribution } from "@/lib/stats-helpers";
 
 type Props = {
-    logs: RoutineLog[];
+    logs: (RoutineLog | ExerciseLog)[];
 };
 
 // Map Spanish app muscles to Library english slugs
@@ -61,47 +62,46 @@ export default function MuscleHeatmap({ logs }: Props) {
 
 
     return (
-        <div className="flex flex-col items-center justify-center gap-8 py-6 md:flex-row md:items-start md:justify-around">
+        <div className="flex flex-col items-center gap-6 py-4">
 
-            {/* Front View */}
-            <div className="flex flex-col items-center gap-3">
-                <p className="text-xs font-bold uppercase text-zinc-400 tracking-widest">Frente</p>
-                <Model
-                    data={data as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-                    type="anterior"
-                    style={{ width: '12rem', height: '20rem' }}
-                    highlightedColors={HIGHLIGHT_COLORS}
-                />
-            </div>
+            {/* Models Row */}
+            <div className="flex flex-row items-start justify-center gap-8 sm:gap-12">
+                {/* Front View */}
+                <div className="flex flex-col items-center gap-3">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Frente</p>
+                    <Model
+                        data={data as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+                        type="anterior"
+                        style={{ width: '8rem', height: '14rem' }}
+                        highlightedColors={HIGHLIGHT_COLORS}
+                    />
+                </div>
 
-            {/* Back View */}
-            <div className="flex flex-col items-center gap-3">
-                <p className="text-xs font-bold uppercase text-zinc-400 tracking-widest">Espalda</p>
-                <Model
-                    data={data as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-                    type="posterior"
-                    style={{ width: '12rem', height: '20rem' }}
-                    highlightedColors={HIGHLIGHT_COLORS}
-                />
+                {/* Back View */}
+                <div className="flex flex-col items-center gap-3">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Espalda</p>
+                    <Model
+                        data={data as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+                        type="posterior"
+                        style={{ width: '8rem', height: '14rem' }}
+                        highlightedColors={HIGHLIGHT_COLORS}
+                    />
+                </div>
             </div>
 
             {/* Legend */}
-            <div className="flex flex-col gap-3 rounded-xl bg-zinc-50 p-4 md:self-center">
-                <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-[#ef4444]" />
-                    <span className="text-xs text-zinc-600">Alta intensidad (12+)</span>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 rounded-xl bg-zinc-50 px-4 py-3">
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
+                    <span className="text-[10px] text-zinc-600">Alta</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-[#fb923c]" />
-                    <span className="text-xs text-zinc-600">Media (5-11)</span>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-[#fb923c]" />
+                    <span className="text-[10px] text-zinc-600">Media</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-[#fde047]" />
-                    <span className="text-xs text-zinc-600">Mantenimiento (1-4)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-[#3f3f46]" />
-                    <span className="text-xs text-zinc-400">Sin entrenar</span>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-[#fde047]" />
+                    <span className="text-[10px] text-zinc-600">Baja</span>
                 </div>
             </div>
 

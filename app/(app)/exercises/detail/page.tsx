@@ -1,9 +1,8 @@
-"use client";
+﻿"use client";
 import { useMemo, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { useFirebase } from "@/lib/firebase/client-context";
 import { useCol } from "@/lib/firestore/hooks";
 import { defaultRoutines } from "@/lib/data/routine-library";
 import { defaultExercises } from "@/lib/data/exercises";
@@ -51,7 +50,6 @@ function ExerciseDetailContent() {
   const searchParams = useSearchParams();
   const exerciseId = searchParams.get("id");
   const { user } = useAuth();
-  const { db } = useFirebase();
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
   const fromCreator = searchParams.get("from") === "creator";
@@ -255,7 +253,7 @@ function ExerciseDetailContent() {
   };
 
   const handleSave = async () => {
-    if (!user || !db || !exerciseEntry) return;
+    if (!user || !exerciseEntry) return;
     setIsSaving(true);
 
     const hasSetData = session.sets.some(set => Boolean(set.weight || set.reps || set.rir));
@@ -288,12 +286,12 @@ function ExerciseDetailContent() {
 
     try {
       if (activeLogId) {
-        await updateExerciseLog(db, user.uid, activeLogId, logData);
-        toast.success("Registro actualizado con éxito!");
+        await updateExerciseLog(null, user.uid, activeLogId, logData);
+        toast.success("Registro actualizado con exito!");
       } else {
-        const newLogId = await saveExerciseLog(db, user.uid, logData);
+        const newLogId = await saveExerciseLog(null, user.uid, logData);
         setActiveLogId(newLogId);
-        toast.success("Registro guardado con éxito!");
+        toast.success("Registro guardado con exito!");
       }
     } catch (e) {
       toast.error("Error al guardar el registro.");
@@ -312,7 +310,11 @@ function ExerciseDetailContent() {
       );
     }
     if (fromCreator) {
-      return null;
+      return (
+        <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
+          {"<- Volver al creador"}
+        </button>
+      );
     }
     return (
       <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
@@ -322,36 +324,38 @@ function ExerciseDetailContent() {
   };
 
   return (
-    <div className="space-y-6">
-      {renderBackButton()}
+    <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
+      <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
+        {renderBackButton()}
 
-      {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
+        {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
 
-      <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
+        <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 
-      {!fromCreator && history.length > 0 && (
-        <ExerciseProgressChart data={history} />
-      )}
+        {!fromCreator && history.length > 0 && (
+          <ExerciseProgressChart data={history} />
+        )}
 
-      <TechniqueGuide exercise={exercise as RoutineExercise} />
+        <TechniqueGuide exercise={exercise as RoutineExercise} />
 
-      {!fromCreator && (
-        <>
-          <SessionForm
-            session={session}
-            setSession={setSession}
-            handleSave={handleSave}
-            isSaving={isSaving}
-            userId={user?.uid}
-            addExtraSet={addExtraSet}
-            removeLastSet={removeLastSet}
-            toggleSetCompleted={toggleSetCompleted}
-            handleSetField={handleSetField}
-          />
-          {/* History removed per user request to avoid clutter */}
-          {/* <ExerciseHistory history={history} /> */}
-        </>
-      )}
+        {!fromCreator && (
+          <>
+            <SessionForm
+              session={session}
+              setSession={setSession}
+              handleSave={handleSave}
+              isSaving={isSaving}
+              userId={user?.uid}
+              addExtraSet={addExtraSet}
+              removeLastSet={removeLastSet}
+              toggleSetCompleted={toggleSetCompleted}
+              handleSetField={handleSetField}
+            />
+            {/* History removed per user request to avoid clutter */}
+            {/* <ExerciseHistory history={history} /> */}
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -363,3 +367,4 @@ export default function ExerciseDetailPage() {
     </Suspense>
   );
 }
+

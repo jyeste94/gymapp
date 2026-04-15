@@ -1,7 +1,5 @@
-
-import { add, update } from "@/lib/firestore/crud";
-import { useCol } from "@/lib/firestore/hooks";
-import { Firestore } from "firebase/firestore";
+import { useMemo } from "react";
+import { NutriFlowClient } from "@/lib/api/nutriflow";
 
 export type ExerciseLogSet = {
   weight?: string;
@@ -28,13 +26,46 @@ export type ExerciseLog = {
 
 export type ExerciseLogInput = Omit<ExerciseLog, "id">;
 
-export const useExerciseLogs = (userId?: string | null) =>
-  useCol<ExerciseLog>(userId ? `users/${userId}/exerciseLogs` : null, { by: "date", dir: "desc" });
+export const useExerciseLogs = (_userId?: string | null) => {
+  void _userId;
+  const data = useMemo<ExerciseLog[]>(() => [], []);
+  return { data, loading: false };
+};
 
-export async function saveExerciseLog(db: Firestore, userId: string, data: ExerciseLogInput) {
-  return add(db, `users/${userId}/exerciseLogs`, data);
+export async function saveExerciseLog(_db: unknown, _userId: string, data: ExerciseLogInput) {
+  const session = await NutriFlowClient.startWorkoutSession(data.routineId);
+
+  for (const set of data.sets) {
+    const hasData = Number(set.reps) > 0 || Number(set.weight) > 0;
+    if (!hasData) continue;
+
+    await NutriFlowClient.logWorkoutSet(session.id, {
+      exercise_id: data.exerciseId,
+      reps: Number(set.reps) || 0,
+      weight: Number(set.weight) || 0,
+    });
+  }
+
+  return session.id;
 }
 
-export async function updateExerciseLog(db: Firestore, userId: string, logId: string, data: Partial<ExerciseLogInput>) {
-  return update(db, `users/${userId}/exerciseLogs`, logId, data);
+export async function updateExerciseLog(_db: unknown, userId: string, _logId: string, data: Partial<ExerciseLogInput>) {
+  if (!data.exerciseId || !data.sets) {
+    throw new Error("exerciseId y sets son requeridos para actualizar en NutriFlow");
+  }
+
+  return saveExerciseLog(null, userId, {
+    exerciseId: data.exerciseId,
+    exerciseName: data.exerciseName ?? "Ejercicio",
+    routineId: data.routineId,
+    routineName: data.routineName,
+    dayId: data.dayId,
+    dayName: data.dayName,
+    date: data.date ?? new Date().toISOString(),
+    perceivedEffort: data.perceivedEffort,
+    notes: data.notes,
+    mediaImage: data.mediaImage,
+    mediaVideo: data.mediaVideo,
+    sets: data.sets,
+  });
 }

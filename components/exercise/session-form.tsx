@@ -26,35 +26,35 @@ export default function SessionForm({
   handleSetField,
 }: SessionFormProps) {
   return (
-    <section className="rounded-2xl border bg-white/70 p-6 shadow-sm">
+    <section className="rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-sm">
       <form className="space-y-5" onSubmit={(event) => event.preventDefault()}>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-xs text-[#51607c]">Fecha y hora</label>
+            <label className="text-xs text-brand-text-muted">Fecha y hora</label>
             <input
               type="datetime-local"
               value={session.sessionDate}
               onChange={(event) => setSession((prev) => ({ ...prev, sessionDate: event.target.value }))}
-              className="w-full rounded border px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-xs text-[#51607c]">Esfuerzo percibido (RPE)</label>
+            <label className="text-xs text-brand-text-muted">Esfuerzo percibido (RPE)</label>
             <input
               type="number"
               min="1"
               max="10"
               value={session.perceivedEffort}
               onChange={(event) => setSession((prev) => ({ ...prev, perceivedEffort: event.target.value }))}
-              className="w-full rounded border px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main"
             />
           </div>
         </div>
 
         <div className="space-y-3">
           {session.sets.map((set, index) => (
-            <div key={index} className="rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 px-4 py-3">
-              <div className="flex items-center justify-between text-xs text-[#51607c]">
+            <div key={index} className="rounded-2xl border border-brand-border bg-brand-dark/50 px-4 py-3">
+              <div className="flex items-center justify-between text-xs text-brand-text-muted">
                 <span>Serie {index + 1}</span>
                 <button
                   type="button"
@@ -62,8 +62,8 @@ export default function SessionForm({
                   className={clsx(
                     "rounded-full px-2 py-0.5",
                     set.completed
-                      ? "bg-[#0a2e5c] text-white"
-                      : "border border-[rgba(10,46,92,0.26)] bg-white/80 text-[#51607c]"
+                      ? "bg-brand-primary/20 text-brand-primary font-medium"
+                      : "border border-brand-border bg-brand-dark text-brand-text-muted"
                   )}
                 >
                   {set.completed ? "Completada" : "Pendiente"}
@@ -75,14 +75,14 @@ export default function SessionForm({
                   placeholder="Kg / Lbs"
                   value={set.weight}
                   onChange={(event) => handleSetField(index, "weight")(event.target.value)}
-                  className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
+                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-3 py-1.5 text-brand-text-main placeholder-brand-text-muted/50"
                 />
                 <input
                   type="number"
                   placeholder="Reps"
                   value={set.reps}
                   onChange={(event) => handleSetField(index, "reps")(event.target.value)}
-                  className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
+                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-3 py-1.5 text-brand-text-main placeholder-brand-text-muted/50"
                   min="0"
                 />
                 <input
@@ -90,7 +90,7 @@ export default function SessionForm({
                   placeholder="RIR"
                   value={set.rir}
                   onChange={(event) => handleSetField(index, "rir")(event.target.value)}
-                  className="w-full rounded-xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-2 py-1"
+                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-3 py-1.5 text-brand-text-main placeholder-brand-text-muted/50"
                   min="0"
                   max="5"
                 />
@@ -99,12 +99,12 @@ export default function SessionForm({
           ))}
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-[#51607c]">
-          <button type="button" onClick={addExtraSet} className="rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-medium text-[#4b5a72]">
-            Anadir serie
+        <div className="flex items-center gap-3 text-xs text-brand-text-muted">
+          <button type="button" onClick={addExtraSet} className="rounded-full border border-brand-border bg-brand-dark px-3 py-1.5 text-xs font-medium text-brand-text-muted hover:text-brand-text-main transition">
+            Añadir serie
           </button>
-          <button type="button" onClick={removeLastSet} className="rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-medium text-[#4b5a72]">
-            Quitar ultima
+          <button type="button" onClick={removeLastSet} className="rounded-full border border-brand-border bg-brand-dark px-3 py-1.5 text-xs font-medium text-brand-text-muted hover:text-brand-text-main transition">
+            Quitar última
           </button>
         </div>
 
@@ -124,21 +124,21 @@ export default function SessionForm({
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs text-[#51607c]">Notas</label>
+          <label className="text-xs text-brand-text-muted">Notas</label>
           <textarea
-            className="w-full rounded border px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder-brand-text-muted/50"
             rows={3}
             value={session.notes}
             onChange={(event) => setSession((prev) => ({ ...prev, notes: event.target.value }))}
-            placeholder="Puntos tecnicos, ajustes o molestias"
+            placeholder="Puntos técnicos, ajustes o molestias"
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-2">
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-lg border border-zinc-900 bg-zinc-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+            className="rounded-xl bg-brand-primary px-6 py-2.5 text-sm font-bold text-brand-dark disabled:opacity-50 transition active:scale-95"
             disabled={!userId || isSaving}
           >
             {isSaving ? "Guardando..." : "Guardar registro"}

@@ -68,7 +68,9 @@ export function calculateWeeklyVolume(logs: RoutineLog[]) {
 
 import { defaultExercises } from "@/lib/data/exercises";
 
-export function calculateMuscleDistribution(logs: RoutineLog[]) {
+import { ExerciseLog } from "@/lib/firestore/exercise-logs";
+
+export function calculateMuscleDistribution(logs: (RoutineLog | ExerciseLog)[]) {
     const muscleCounts: Record<string, number> = {};
 
     // Cache exercise definitions for faster lookup
@@ -76,24 +78,32 @@ export function calculateMuscleDistribution(logs: RoutineLog[]) {
     const exerciseIdMap = new Map(defaultExercises.map(e => [e.id, e]));
 
     logs.forEach(log => {
-        log.entries.forEach(entry => {
-            // Try to find exercise definition
-            // First by ID (if we stored it correctly), then by Name
-            let exercise = exerciseIdMap.get(entry.exerciseId);
-            if (!exercise) {
-                exercise = exerciseMap.get(entry.exerciseName);
-            }
-
-            if (exercise && exercise.muscleGroup) {
-                const sets = entry.sets.length;
-
-                // Distribute volume across all primary muscles
-                exercise.muscleGroup.forEach(muscle => {
-                    muscleCounts[muscle] = (muscleCounts[muscle] || 0) + sets;
-                });
-            }
-        });
+        // Handle RoutineLog (has entries)
+        if ("entries" in log) {
+            log.entries.forEach(entry => {
+                processEntry(entry.exerciseId, entry.exerciseName, entry.sets.length);
+            });
+        }
+        // Handle ExerciseLog (single exercise)
+        else {
+            processEntry(log.exerciseId, log.exerciseName, log.sets.length);
+        }
     });
+
+    function processEntry(id: string, name: string, setCount: number) {
+        // Try to find exercise definition
+        let exercise = exerciseIdMap.get(id);
+        if (!exercise) {
+            exercise = exerciseMap.get(name);
+        }
+
+        if (exercise && exercise.muscleGroup) {
+            // Distribute volume across all primary muscles
+            exercise.muscleGroup.forEach(muscle => {
+                muscleCounts[muscle] = (muscleCounts[muscle] || 0) + setCount;
+            });
+        }
+    }
 
     return muscleCounts;
 }

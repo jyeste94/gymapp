@@ -137,90 +137,92 @@ export default function ProfilePage() {
     // --- VIEW MODE (DASHBOARD) ---
     if (!isEditing) {
         return (
-            <div className="min-h-screen bg-zinc-50 pb-24">
-                {/* Header / Profile Card */}
-                <div className="bg-white px-6 pb-6 pt-8 shadow-sm">
-                    <div className="mb-6 flex items-start justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(10,46,92,0.1)]">
-                                {user.photoURL ? (
-                                    <Image
-                                        src={user.photoURL}
-                                        alt={user.displayName || "User"}
-                                        width={80}
-                                        height={80}
-                                        className="h-full w-full object-cover"
-                                        unoptimized
-                                    />
-                                ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-zinc-100 text-lg font-bold text-zinc-400">
-                                        {(user.displayName?.[0] || user.email?.[0] || "?").toUpperCase()}
-                                    </div>
-                                )}
+            <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
+                <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
+                    {/* Header / Profile Card */}
+                    <div className="rounded-3xl border border-brand-border bg-brand-surface px-6 pb-6 pt-8 shadow-sm">
+                        <div className="mb-6 flex items-start justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(30,30,30,0.5)]">
+                                    {user.photoURL ? (
+                                        <Image
+                                            src={user.photoURL}
+                                            alt={user.displayName || "User"}
+                                            width={80}
+                                            height={80}
+                                            className="h-full w-full object-cover"
+                                            unoptimized
+                                        />
+                                    ) : (
+                                        <div className="flex h-full w-full items-center justify-center bg-brand-dark text-lg font-bold text-brand-text-muted">
+                                            {(user.displayName?.[0] || user.email?.[0] || "?").toUpperCase()}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-brand-text-main">{profileData?.displayName || "Atleta"}</h1>
+                                    <p className="text-sm text-brand-text-muted">@{profileData?.username || "usuario"}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h1 className="text-xl font-bold text-[#0a2e5c]">{profileData?.displayName || "Atleta"}</h1>
-                                <p className="text-sm text-zinc-500">@{profileData?.username || "usuario"}</p>
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="rounded-full bg-brand-dark p-2 text-brand-primary hover:bg-brand-dark/80"
+                            >
+                                <Edit2 className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Bio */}
+                        {profileData?.bio && (
+                            <p className="mb-6 text-sm text-brand-text-muted">{profileData.bio}</p>
+                        )}
+
+                        {/* Mini Stats (Weight/Height) - Could be dynamic later */}
+                        <div className="flex divide-x divide-brand-border rounded-2xl border border-brand-border bg-brand-dark py-3">
+                            <div className="flex-1 text-center">
+                                <p className="text-xs font-bold text-brand-text-muted uppercase">Peso</p>
+                                <p className="font-semibold text-brand-text-main">{profileData?.weightKg || "--"} kg</p>
+                            </div>
+                            <div className="flex-1 text-center">
+                                <p className="text-xs font-bold text-brand-text-muted uppercase">Altura</p>
+                                <p className="font-semibold text-brand-text-main">{profileData?.heightCm || "--"} cm</p>
+                            </div>
+                            <div className="flex-1 text-center">
+                                <p className="text-xs font-bold text-brand-text-muted uppercase">Grasa</p>
+                                <p className="font-semibold text-brand-text-main">{profileData?.bodyFatPct || "--"} %</p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="rounded-full bg-zinc-50 p-2 text-[#0a2e5c] hover:bg-zinc-100"
-                        >
-                            <Edit2 className="h-5 w-5" />
-                        </button>
                     </div>
 
-                    {/* Bio */}
-                    {profileData?.bio && (
-                        <p className="mb-6 text-sm text-zinc-600">{profileData.bio}</p>
-                    )}
+                    {/* Quick Actions Grid */}
+                    <div className="p-4 space-y-4">
+                        <h2 className="px-2 text-sm font-bold text-brand-text-main">Accesos Directos</h2>
 
-                    {/* Mini Stats (Weight/Height) - Could be dynamic later */}
-                    <div className="flex divide-x divide-zinc-100 rounded-2xl border border-zinc-100 bg-zinc-50 py-3">
-                        <div className="flex-1 text-center">
-                            <p className="text-xs font-bold text-zinc-400 uppercase">Peso</p>
-                            <p className="font-semibold text-[#0a2e5c]">{profileData?.weightKg || "--"} kg</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            <Link href="/measurements" className="group relative overflow-hidden rounded-2xl bg-brand-surface p-4 shadow-sm border border-brand-border transition hover:shadow-md hover:border-brand-primary/50">
+                                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
+                                    <Ruler className="h-5 w-5" />
+                                </div>
+                                <h3 className="font-bold text-brand-text-main">Mediciones</h3>
+                                <p className="text-xs text-brand-text-muted">Registra y analiza tu cuerpo</p>
+                            </Link>
+
+                            <Link href="/progress" className="group relative overflow-hidden rounded-2xl bg-brand-surface p-4 shadow-sm border border-brand-border transition hover:shadow-md hover:border-brand-primary/50">
+                                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
+                                    <LineChart className="h-5 w-5" />
+                                </div>
+                                <h3 className="font-bold text-brand-text-main">Progreso</h3>
+                                <p className="text-xs text-brand-text-muted">Gráficas de fuerza y volumen</p>
+                            </Link>
+
+                            <Link href="/settings" className="group relative overflow-hidden rounded-2xl bg-brand-surface p-4 shadow-sm border border-brand-border transition hover:shadow-md hover:border-brand-primary/50">
+                                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-dark text-brand-text-muted">
+                                    <Settings className="h-5 w-5" />
+                                </div>
+                                <h3 className="font-bold text-brand-text-main">Ajustes</h3>
+                                <p className="text-xs text-brand-text-muted">Configuración de cuenta</p>
+                            </Link>
                         </div>
-                        <div className="flex-1 text-center">
-                            <p className="text-xs font-bold text-zinc-400 uppercase">Altura</p>
-                            <p className="font-semibold text-[#0a2e5c]">{profileData?.heightCm || "--"} cm</p>
-                        </div>
-                        <div className="flex-1 text-center">
-                            <p className="text-xs font-bold text-zinc-400 uppercase">Grasa</p>
-                            <p className="font-semibold text-[#0a2e5c]">{profileData?.bodyFatPct || "--"} %</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Quick Actions Grid */}
-                <div className="p-4 space-y-4">
-                    <h2 className="px-2 text-sm font-bold text-[#0a2e5c]">Accesos Directos</h2>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <Link href="/measurements" className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md">
-                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                                <Ruler className="h-5 w-5" />
-                            </div>
-                            <h3 className="font-bold text-zinc-800">Mediciones</h3>
-                            <p className="text-xs text-zinc-500">Registra y analiza tu cuerpo</p>
-                        </Link>
-
-                        <Link href="/progress" className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md">
-                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                                <LineChart className="h-5 w-5" />
-                            </div>
-                            <h3 className="font-bold text-zinc-800">Progreso</h3>
-                            <p className="text-xs text-zinc-500">Gráficas de fuerza y volumen</p>
-                        </Link>
-
-                        <Link href="/settings" className="group relative overflow-hidden rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md">
-                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 text-zinc-600">
-                                <Settings className="h-5 w-5" />
-                            </div>
-                            <h3 className="font-bold text-zinc-800">Ajustes</h3>
-                            <p className="text-xs text-zinc-500">Configuración de cuenta</p>
-                        </Link>
                     </div>
                 </div>
             </div>
@@ -229,98 +231,100 @@ export default function ProfilePage() {
 
     // --- EDIT MODE ---
     return (
-        <div className="space-y-6 pb-20">
-            <header className="sticky top-0 z-20 -mx-4 -mt-6 flex items-center gap-3 border-b border-zinc-200 bg-white/95 px-6 py-4 backdrop-blur-sm sm:mx-0 sm:mt-0 sm:rounded-t-3xl">
-                <button onClick={() => setIsEditing(false)} className="text-zinc-500 hover:text-zinc-800">
-                    <ArrowLeft className="h-5 w-5" />
-                </button>
-                <h1 className="text-base font-bold text-zinc-900">Editar Perfil</h1>
-            </header>
+        <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
+            <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
+                <header className="sticky top-0 z-20 -mx-4 -mt-6 flex items-center gap-3 border-b border-brand-border bg-brand-surface/95 px-6 py-4 backdrop-blur-sm sm:mx-0 sm:mt-0 sm:rounded-t-3xl">
+                    <button onClick={() => setIsEditing(false)} className="text-brand-text-muted hover:text-brand-text-main">
+                        <ArrowLeft className="h-5 w-5" />
+                    </button>
+                    <h1 className="text-base font-bold text-brand-text-main">Editar Perfil</h1>
+                </header>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 px-2">
-                {/* Same Form Content As Before */}
-                <div className="flex flex-col items-center gap-2">
-                    <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(10,46,92,0.1)]">
-                        {user.photoURL ? (
-                            <Image
-                                src={user.photoURL}
-                                alt={user.displayName || "User"}
-                                width={80}
-                                height={80}
-                                className="h-full w-full object-cover"
-                                unoptimized
-                            />
-                        ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-zinc-100 text-lg font-bold text-zinc-400">
-                                {(user.displayName?.[0] || user.email?.[0] || "?").toUpperCase()}
-                            </div>
-                        )}
-                    </div>
-                    <p className="text-xs text-zinc-400">La foto se sincroniza con tu cuenta de Google</p>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Nombre</label>
-                        <input
-                            {...register("displayName")}
-                            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#0a2e5c] focus:ring-1 focus:ring-[#0a2e5c]"
-                            placeholder="Tu nombre completo"
-                        />
-                        {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message}</p>}
-                    </div>
-
-                    <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                            Nombre de usuario
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-3 text-zinc-400">@</span>
-                            <input
-                                {...register("username")}
-                                className={clsx(
-                                    "w-full rounded-xl border bg-white pl-8 pr-10 py-3 text-sm text-zinc-900 outline-none focus:ring-1",
-                                    usernameAvailable === false
-                                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                                        : "border-zinc-200 focus:border-[#0a2e5c] focus:ring-[#0a2e5c]"
-                                )}
-                                placeholder="usuario123"
-                                autoCapitalize="none"
-                            />
-
-                            <div className="absolute right-3 top-3">
-                                {checkingUsername && <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />}
-                                {!checkingUsername && watchedUsername && watchedUsername.length >= 3 && (
-                                    usernameAvailable ?
-                                        <Check className="h-4 w-4 text-emerald-500" /> :
-                                        <X className="h-4 w-4 text-red-500" />
-                                )}
-                            </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 px-2">
+                    {/* Same Form Content As Before */}
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[rgba(30,30,30,0.5)]">
+                            {user.photoURL ? (
+                                <Image
+                                    src={user.photoURL}
+                                    alt={user.displayName || "User"}
+                                    width={80}
+                                    height={80}
+                                    className="h-full w-full object-cover"
+                                    unoptimized
+                                />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-brand-dark text-lg font-bold text-brand-text-muted">
+                                    {(user.displayName?.[0] || user.email?.[0] || "?").toUpperCase()}
+                                </div>
+                            )}
                         </div>
-                        {errors.username && <p className="text-xs text-red-500">{errors.username.message}</p>}
-                        {usernameAvailable === false && <p className="text-xs text-red-500">Este usuario ya está ocupado</p>}
-                        <p className="text-xs text-zinc-400">Único en toda la app. Te servirá para que te encuentren.</p>
+                        <p className="text-xs text-brand-text-muted">La foto se sincroniza con tu cuenta de Google</p>
                     </div>
 
-                    <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Biografía</label>
-                        <textarea
-                            {...register("bio")}
-                            rows={3}
-                            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#0a2e5c] focus:ring-1 focus:ring-[#0a2e5c]"
-                            placeholder="Cuéntanos un poco sobre ti..."
-                        />
-                        {errors.bio && <p className="text-xs text-red-500">{errors.bio.message}</p>}
-                    </div>
-                </div>
+                    <div className="space-y-4">
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-brand-text-muted">Nombre</label>
+                            <input
+                                {...register("displayName")}
+                                className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-brand-text-main outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                                placeholder="Tu nombre completo"
+                            />
+                            {errors.displayName && <p className="text-xs text-red-400">{errors.displayName.message}</p>}
+                        </div>
 
-                <button
-                    disabled={isSubmitting || (usernameAvailable === false)}
-                    className="w-full rounded-xl bg-[#0a2e5c] py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#0a2e5c]/20 transition active:scale-[0.98] disabled:opacity-50"
-                >
-                    {isSubmitting ? "Guardando..." : "Guardar cambios"}
-                </button>
-            </form>
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-brand-text-muted">
+                                Nombre de usuario
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-3 text-brand-text-muted">@</span>
+                                <input
+                                    {...register("username")}
+                                    className={clsx(
+                                        "w-full rounded-xl border bg-brand-surface pl-8 pr-10 py-3 text-sm text-brand-text-main outline-none focus:ring-1",
+                                        usernameAvailable === false
+                                            ? "border-red-400/50 focus:border-red-400 focus:ring-red-400"
+                                            : "border-brand-border focus:border-brand-primary focus:ring-brand-primary"
+                                    )}
+                                    placeholder="usuario123"
+                                    autoCapitalize="none"
+                                />
+
+                                <div className="absolute right-3 top-3">
+                                    {checkingUsername && <Loader2 className="h-4 w-4 animate-spin text-brand-text-muted" />}
+                                    {!checkingUsername && watchedUsername && watchedUsername.length >= 3 && (
+                                        usernameAvailable ?
+                                            <Check className="h-4 w-4 text-emerald-400" /> :
+                                            <X className="h-4 w-4 text-red-400" />
+                                    )}
+                                </div>
+                            </div>
+                            {errors.username && <p className="text-xs text-red-400">{errors.username.message}</p>}
+                            {usernameAvailable === false && <p className="text-xs text-red-400">Este usuario ya está ocupado</p>}
+                            <p className="text-xs text-brand-text-muted/60">Único en toda la app. Te servirá para que te encuentren.</p>
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-brand-text-muted">Biografía</label>
+                            <textarea
+                                {...register("bio")}
+                                rows={3}
+                                className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-sm text-brand-text-main outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                                placeholder="Cuéntanos un poco sobre ti..."
+                            />
+                            {errors.bio && <p className="text-xs text-red-400">{errors.bio.message}</p>}
+                        </div>
+                    </div>
+
+                    <button
+                        disabled={isSubmitting || (usernameAvailable === false)}
+                        className="w-full rounded-xl bg-brand-primary py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-primary/20 transition active:scale-[0.98] disabled:opacity-50"
+                    >
+                        {isSubmitting ? "Guardando..." : "Guardar cambios"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

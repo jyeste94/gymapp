@@ -246,6 +246,7 @@ export type DietFoodEntry = {
   name: string;
   brand?: string;
   servingId?: string; // NutriFlow Serving ID
+  multiplier?: number; // cantidad de racion usada para API diary
   servingLabel: string; // e.g., "1 cup" or "100g"
   metricAmount: number; // calculated metric weight
   metricUnit: string; // "g" or "ml"

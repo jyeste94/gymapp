@@ -1,14 +1,27 @@
-import { useCol } from "@/lib/firestore/hooks";
-import { add } from "@/lib/firestore/crud";
-import { Firestore } from "firebase/firestore";
+import { useMemo } from "react";
 import type { RoutineLog } from "@/lib/types";
+import { NutriFlowClient } from "@/lib/api/nutriflow";
 
-export const useWorkoutLogs = (userId?: string | null) =>
-    useCol<RoutineLog>(userId ? `users/${userId}/workoutLogs` : null, { by: "date", dir: "desc" });
+export const useWorkoutLogs = (_userId?: string | null) => {
+  void _userId;
+  const data = useMemo<RoutineLog[]>(() => [], []);
+  return { data, loading: false };
+};
 
-export const addWorkoutLog = async (db: Firestore, userId: string, log: Omit<RoutineLog, "id">) => {
-    return add(db, `users/${userId}/workoutLogs`, {
-        ...log,
-        id: crypto.randomUUID(),
-    });
+export const addWorkoutLog = async (_db: unknown, _userId: string, log: Omit<RoutineLog, "id">) => {
+  const session = await NutriFlowClient.startWorkoutSession(log.routineId);
+
+  for (const entry of log.entries ?? []) {
+    const validSets = entry.sets.filter((set) => Number(set.reps) > 0 || Number(set.weight) > 0);
+
+    for (const set of validSets) {
+      await NutriFlowClient.logWorkoutSet(session.id, {
+        exercise_id: entry.exerciseId,
+        reps: Number(set.reps) || 0,
+        weight: Number(set.weight) || 0,
+      });
+    }
+  }
+
+  return session.id;
 };

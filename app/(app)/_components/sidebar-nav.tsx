@@ -16,18 +16,18 @@ export default function SidebarNav() {
             key={item.href}
             href={item.href}
             className={clsx(
-              "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition duration-200",
+              "group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition duration-200 border border-transparent",
               isActive
-                ? "bg-[#0a2e5c] text-white shadow-md shadow-[#0a2e5c]/20"
-                : "text-[#51607c] hover:bg-white hover:text-[#0a2e5c] hover:shadow-sm"
+                ? "bg-brand-primary/10 text-brand-primary border-brand-primary/20 shadow-sm shadow-brand-primary/5"
+                : "text-brand-text-muted hover:bg-brand-dark hover:border-brand-border hover:text-brand-text-main hover:shadow-sm"
             )}
           >
             <span
               className={clsx(
                 "flex h-9 w-9 items-center justify-center rounded-xl border text-[0.85rem] transition duration-200",
                 isActive
-                  ? "border-transparent bg-white/20 text-white"
-                  : "border-[rgba(10,46,92,0.1)] bg-white/50 text-[#51607c] group-hover:border-[rgba(10,46,92,0.15)] group-hover:bg-white group-hover:text-[#0a2e5c]"
+                  ? "border-brand-primary/30 bg-brand-primary/20 text-brand-primary"
+                  : "border-brand-border bg-brand-dark/50 text-brand-text-muted group-hover:bg-brand-surface group-hover:text-brand-text-main group-hover:border-brand-border/80"
               )}
             >
               <Icon className="h-4.5 w-4.5" />

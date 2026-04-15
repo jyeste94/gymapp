@@ -11,11 +11,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es">
-      <body>
+    <html lang="es" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
         <SpeedInsights />
-        </body>
+      </body>
     </html>
   );
 }

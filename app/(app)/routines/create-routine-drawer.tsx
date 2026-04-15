@@ -1,14 +1,10 @@
-
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Plus, Search, Trash2, X, Eye } from "lucide-react";
-// import type { RoutineExercise } from "@/lib/types";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
 import { createRoutineTemplate } from "@/lib/firestore/routines";
-import { useFirebase } from "@/lib/firebase/client-context";
-
 import { validateRoutineForm, buildRoutinePayload, type RoutineFormState, type BuilderDay } from "@/lib/routine-helpers";
 
 const normalize = (value: string) =>
@@ -52,15 +48,13 @@ type ViewState =
   | { type: "picker"; dayId: string };
 
 export default function CreateRoutineDrawer({ open, userId, exercises, onClose, onCreated }: Props) {
-  const { db } = useFirebase();
   const [form, setForm] = useState<RoutineFormState>(() => buildDefaultState());
-  // ... state declarations ...
 
   // Safe close handler
   const handleClose = () => {
     const isDirty = form.title.length > 0 || form.days.length > 1 || form.days.some(d => d.exercises.length > 0);
     if (isDirty) {
-      if (confirm("Tienes cambios sin guardar. ¿Seguro que quieres cerrar? Se perderan los datos.")) {
+      if (confirm("Tienes cambios sin guardar. Seguro que quieres cerrar? Se perderan los datos.")) {
         onClose();
       }
     } else {
@@ -187,17 +181,17 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
   const canSave = !validationError && !saving;
 
   const handleSave = async () => {
-    if (!userId || !db || !canSave) return;
+    if (!userId || !canSave) return;
     try {
       setSaving(true);
       setError(null);
       const payload = buildRoutinePayload(form);
-      await createRoutineTemplate(db, userId, payload);
+      await createRoutineTemplate(null, userId, payload);
       onCreated?.();
       onClose();
     } catch (error) {
       console.error("create routine failed", error);
-      setError("Error al guardar: " + (error instanceof Error ? error.message : "Ocurrió un problema desconocido."));
+      setError("Error al guardar: " + (error instanceof Error ? error.message : "Ocurrio un problema desconocido."));
     } finally {
       setSaving(false);
     }
@@ -275,22 +269,22 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
       />
       <aside
         className={clsx(
-          "absolute right-0 top-0 h-full w-full max-w-3xl transform bg-white shadow-2xl transition-transform duration-300",
+          "absolute right-0 top-0 h-full w-full max-w-3xl transform bg-brand-surface shadow-2xl border-l border-brand-border transition-transform duration-300",
           open ? "translate-x-0" : "translate-x-full",
         )}
       >
         <div className="flex h-full flex-col">
-          <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-5">
+          <header className="flex items-center justify-between border-b border-brand-border px-6 py-5">
             <div>
-              <h2 className="text-lg font-semibold text-[#0a2e5c]">Disena tu rutina</h2>
-              <p className="text-sm text-[#51607c]">
+              <h2 className="text-lg font-semibold text-brand-text-main">Crea tu rutina</h2>
+              <p className="text-sm text-brand-text-muted">
                 Define dias, asigna ejercicios y guarda tu plan personalizado.
               </p>
             </div>
             <button
               type="button"
               onClick={handleClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-[#4b5a72] transition hover:border-zinc-300 hover:text-[#0a2e5c]"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border text-brand-text-muted transition hover:border-brand-primary/30 hover:text-brand-text-main"
               aria-label="Cerrar creador"
             >
               <X className="h-5 w-5" />
@@ -300,15 +294,15 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           <div className="flex-1 overflow-y-auto px-6 py-6">{renderContent()}</div>
 
           {view.type === "overview" && (
-            <footer className="border-t border-zinc-200 px-6 py-5">
+            <footer className="border-t border-brand-border px-6 py-5">
               {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#51607c]">
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-brand-text-muted">
                 <p>{footerMessage}</p>
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-2xl border border-zinc-200 px-4 py-2 text-sm font-semibold text-[#4b5a72] transition hover:bg-zinc-50"
+                    className="rounded-2xl border border-brand-border px-4 py-2 text-sm font-semibold text-brand-text-muted transition hover:bg-brand-dark"
                   >
                     Cancelar
                   </button>
@@ -316,7 +310,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
                     type="button"
                     onClick={handleSave}
                     disabled={!canSave}
-                    className="rounded-2xl bg-[#0a2e5c] px-5 py-2 text-sm font-semibold text-white shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:opacity-60"
+                    className="rounded-2xl bg-brand-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:opacity-60"
                   >
                     {saving ? "Guardando..." : "Guardar rutina"}
                   </button>
@@ -348,28 +342,28 @@ function Overview({
   return (
     <section className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2 text-xs text-[#51607c]">
+        <label className="space-y-2 text-xs text-brand-text-muted">
           Nombre de la rutina
           <input
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             value={form.title}
             onChange={(event) => onChange((prev) => ({ ...prev, title: event.target.value }))}
             placeholder="Empuje/Tiron + Pierna"
           />
         </label>
-        <label className="space-y-2 text-xs text-[#51607c]">
+        <label className="space-y-2 text-xs text-brand-text-muted">
           Objetivo o foco
           <input
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             value={form.focus}
             onChange={(event) => onChange((prev) => ({ ...prev, focus: event.target.value }))}
             placeholder="Hipertrofia intermedia"
           />
         </label>
-        <label className="space-y-2 text-xs text-[#51607c]">
+        <label className="space-y-2 text-xs text-brand-text-muted">
           Nivel
           <select
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             value={form.level}
             onChange={(event) => onChange((prev) => ({ ...prev, level: event.target.value }))}
           >
@@ -378,10 +372,10 @@ function Overview({
             <option value="Avanzado">Avanzado</option>
           </select>
         </label>
-        <label className="space-y-2 text-xs text-[#51607c]">
+        <label className="space-y-2 text-xs text-brand-text-muted">
           Frecuencia
           <input
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             value={form.frequency}
             onChange={(event) => onChange((prev) => ({ ...prev, frequency: event.target.value }))}
             placeholder="4 dias"
@@ -389,10 +383,10 @@ function Overview({
         </label>
       </div>
 
-      <label className="block space-y-2 text-xs text-[#51607c]">
+      <label className="block space-y-2 text-xs text-brand-text-muted">
         Descripcion
         <textarea
-          className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
           rows={3}
           value={form.description}
           onChange={(event) => onChange((prev) => ({ ...prev, description: event.target.value }))}
@@ -400,10 +394,10 @@ function Overview({
         />
       </label>
 
-      <label className="block space-y-2 text-xs text-[#51607c]">
+      <label className="block space-y-2 text-xs text-brand-text-muted">
         Material necesario (separado por comas)
         <input
-          className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
           value={form.equipment}
           onChange={(event) => onChange((prev) => ({ ...prev, equipment: event.target.value }))}
           placeholder="Barra, Mancuernas, Polea"
@@ -411,7 +405,7 @@ function Overview({
       </label>
 
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-[#0a2e5c]">Cuantos dias tiene la rutina?</p>
+        <p className="text-xs font-semibold text-brand-text-main">Cuantos dias tiene la rutina?</p>
         <div className="flex flex-wrap gap-2">
           {dayCountOptions.map((option) => (
             <button
@@ -421,8 +415,8 @@ function Overview({
               className={clsx(
                 "rounded-full border px-3 py-1 text-xs font-semibold transition",
                 form.days.length === option
-                  ? "border-[#0a2e5c] bg-[#0a2e5c]/10 text-[#0a2e5c]"
-                  : "border-zinc-200 text-[#51607c] hover:border-[#0a2e5c]/30 hover:text-[#0a2e5c]",
+                  ? "border-brand-primary bg-brand-primary/10 text-brand-text-main"
+                  : "border-brand-border text-brand-text-muted hover:border-brand-primary/30 hover:text-brand-text-main",
               )}
             >
               {option} dias
@@ -432,7 +426,7 @@ function Overview({
       </div>
 
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-[#0a2e5c]">Dias del programa</p>
+        <p className="text-xs font-semibold text-brand-text-main">Dias del programa</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {form.days.map((day) => (
             <button
@@ -440,12 +434,12 @@ function Overview({
               type="button"
               onClick={() => onSelectDay(day.id)}
               className={clsx(
-                "flex flex-col items-start gap-2 rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white px-4 py-3 text-left text-sm transition hover:-translate-y-0.5 hover:shadow",
-                selectedDayId === day.id && "border-[#0a2e5c] bg-[#0a2e5c]/5",
+                "flex flex-col items-start gap-2 rounded-2xl border border-brand-border bg-brand-dark/70 px-4 py-3 text-left text-sm transition hover:-translate-y-0.5 hover:shadow",
+                selectedDayId === day.id && "border-brand-primary bg-brand-primary/5",
               )}
             >
-              <span className="font-semibold text-[#0a2e5c]">{day.title}</span>
-              <span className="text-xs text-[#51607c]">
+              <span className="font-semibold text-brand-text-main">{day.title}</span>
+              <span className="text-xs text-brand-text-muted">
                 {day.exercises.length ? `${day.exercises.length} ejercicios` : "Sin ejercicios aun"}
               </span>
             </button>
@@ -474,34 +468,34 @@ function DayDetail({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-[#0a2e5c]"
+        className="inline-flex items-center gap-2 text-xs font-semibold text-brand-text-main"
       >
         <ArrowLeft className="h-4 w-4" /> Volver a los dias
       </button>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2 text-xs text-[#51607c]">
+        <label className="space-y-2 text-xs text-brand-text-muted">
           Nombre del dia
           <input
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             value={day.title}
             onChange={(event) => onUpdate((prev) => ({ ...prev, title: event.target.value }))}
           />
         </label>
-        <label className="space-y-2 text-xs text-[#51607c]">
+        <label className="space-y-2 text-xs text-brand-text-muted">
           Foco del dia
           <input
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             value={day.focus}
             onChange={(event) => onUpdate((prev) => ({ ...prev, focus: event.target.value }))}
           />
         </label>
       </div>
 
-      <label className="block space-y-2 text-xs text-[#51607c]">
+      <label className="block space-y-2 text-xs text-brand-text-muted">
         Notas
         <textarea
-          className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
           rows={2}
           value={day.notes}
           onChange={(event) => onUpdate((prev) => ({ ...prev, notes: event.target.value }))}
@@ -509,37 +503,37 @@ function DayDetail({
       </label>
 
       <div className="flex justify-between">
-        <h3 className="text-sm font-semibold text-[#0a2e5c]">Ejercicios asignados</h3>
+        <h3 className="text-sm font-semibold text-brand-text-main">Ejercicios asignados</h3>
         <button
           type="button"
           onClick={onAddExercise}
-          className="inline-flex items-center gap-1 rounded-full border border-[rgba(10,46,92,0.24)] px-3 py-1 text-xs font-semibold text-[#0a2e5c] transition hover:-translate-y-0.5 hover:shadow-sm"
+          className="inline-flex items-center gap-1 rounded-full border border-brand-border px-3 py-1 text-xs font-semibold text-brand-text-main transition hover:-translate-y-0.5 hover:shadow-sm"
         >
-          <Plus className="h-3.5 w-3.5" /> Anadir ejercicio
+          <Plus className="h-3.5 w-3.5" /> Agregar ejercicio
         </button>
       </div>
 
       {day.exercises.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-[rgba(10,46,92,0.18)] bg-white/70 px-4 py-3 text-xs text-[#51607c]">
-          Todavia no has anadido ejercicios a este dia.
+        <p className="rounded-2xl border border-dashed border-brand-border bg-brand-dark/60 px-4 py-3 text-xs text-brand-text-muted">
+          Todavia no has agregado ejercicios a este dia.
         </p>
       ) : (
         <ul className="space-y-2">
           {day.exercises.map((exercise) => (
             <li
               key={exercise.id}
-              className="flex items-center justify-between rounded-2xl border border-[rgba(10,46,92,0.16)] bg-white px-4 py-3 text-sm text-[#4b5a72]"
+              className="flex items-center justify-between rounded-2xl border border-brand-border bg-brand-dark/60 px-4 py-3 text-sm text-brand-text-muted"
             >
               <div>
-                <p className="font-semibold text-[#0a2e5c]">{exercise.name}</p>
-                <p className="text-xs text-[#51607c]">
+                <p className="font-semibold text-brand-text-main">{exercise.name}</p>
+                <p className="text-xs text-brand-text-muted">
                   {exercise.sets}x {exercise.repRange} - {exercise.rest} descanso
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => onRemoveExercise(exercise.id)}
-                className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1 text-xs text-[#d54545] transition hover:bg-red-50"
+                className="inline-flex items-center gap-1 rounded-full border border-brand-border bg-brand-dark px-3 py-1 text-xs text-brand-text-muted transition hover:border-brand-primary/30 hover:text-brand-primary"
               >
                 <Trash2 className="h-3.5 w-3.5" /> Quitar
               </button>
@@ -581,30 +575,30 @@ function ExercisePicker({
       <button
         type="button"
         onClick={onClose}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-[#0a2e5c]"
+        className="inline-flex items-center gap-2 text-xs font-semibold text-brand-text-main"
       >
         <ArrowLeft className="h-4 w-4" /> Volver al dia
       </button>
 
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-[#0a2e5c]">Selecciona ejercicios</h3>
-        <p className="text-xs text-[#51607c]">
-          Filtra por nombre, musculo o material, revisa la ficha del ejercicio y anadelo al dia.
+        <h3 className="text-sm font-semibold text-brand-text-main">Selecciona ejercicios</h3>
+        <p className="text-xs text-brand-text-muted">
+          Filtra por nombre, musculo o material, revisa la ficha del ejercicio y agregalo al dia.
         </p>
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-text-muted" />
           <input
-            className="w-full rounded-2xl border border-zinc-200 bg-white px-9 py-2 text-sm"
+            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-9 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
             placeholder="Press banca, espalda, superseries..."
             value={searchTerm}
             onChange={(event) => onSearch(event.target.value)}
           />
         </div>
         <select
-          className="rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+          className="rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
           value={muscleFilter}
           onChange={(event) => onMuscleFilter(event.target.value)}
         >
@@ -616,7 +610,7 @@ function ExercisePicker({
           ))}
         </select>
         <select
-          className="rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+          className="rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
           value={equipmentFilter}
           onChange={(event) => onEquipmentFilter(event.target.value)}
         >
@@ -629,41 +623,39 @@ function ExercisePicker({
         </select>
       </div>
 
-      <div className="grid max-h-80 gap-3 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-4">
+      <div className="grid max-h-80 gap-3 overflow-y-auto rounded-2xl border border-brand-border bg-brand-dark/55 p-4">
         {exercises.length === 0 ? (
-          <p className="text-xs text-[#51607c]">No se encontraron ejercicios con los filtros actuales.</p>
+          <p className="text-xs text-brand-text-muted">No se encontraron ejercicios con los filtros actuales.</p>
         ) : (
           exercises.map((exercise) => (
             <div
               key={exercise.id}
-              className="flex flex-col gap-2 rounded-2xl border border-zinc-100 bg-white/80 px-4 py-3 text-sm text-[#4b5a72] shadow-sm"
+              className="flex flex-col gap-2 rounded-2xl border border-brand-border/70 bg-brand-surface px-4 py-3 text-sm text-brand-text-muted shadow-sm"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-col">
-                  <p className="font-semibold text-[#0a2e5c]">{exercise.name}</p>
+                  <p className="font-semibold text-brand-text-main">{exercise.name}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/exercises/detail?id=${exercise.id}&from=creator`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full border border-[rgba(10,46,92,0.2)] px-2 py-0.5 text-xs font-semibold text-[#0a2e5c] transition hover:-translate-y-0.5 hover:shadow"
+                    className="inline-flex items-center gap-1 rounded-full border border-brand-border px-2 py-0.5 text-xs font-semibold text-brand-text-main transition hover:-translate-y-0.5 hover:shadow"
                   >
                     <Eye className="h-3.5 w-3.5" /> Ver ficha
                   </Link>
                   <button
                     type="button"
                     onClick={() => onSelect(exercise)}
-                    className="rounded-full border border-[rgba(10,46,92,0.28)] px-3 py-1 text-xs font-semibold text-[#0a2e5c] transition hover:-translate-y-0.5 hover:shadow"
+                    className="rounded-full border border-brand-border px-3 py-1 text-xs font-semibold text-brand-text-main transition hover:-translate-y-0.5 hover:shadow"
                   >
-                    Anadir
+                    Agregar
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-[#51607c]">{exercise.description}</p>
-              <div className="flex flex-wrap gap-2 text-[0.65rem] text-[#51607c]">
+              <p className="text-xs text-brand-text-muted">{exercise.description}</p>
+              <div className="flex flex-wrap gap-2 text-[0.65rem] text-brand-text-muted">
                 {exercise.tags.map((tag) => (
-                  <span key={tag} className="rounded-full border border-zinc-200 px-2 py-0.5">
+                  <span key={tag} className="rounded-full border border-brand-border px-2 py-0.5">
                     {tag}
                   </span>
                 ))}

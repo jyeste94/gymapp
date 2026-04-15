@@ -1,181 +1,169 @@
 "use client";
+
 import { useMemo } from "react";
 import Link from "next/link";
+import { Activity, ChevronRight, Flame, Scale } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import type { Measurement, Routine, RoutineTemplate } from "@/lib/types";
-import { defaultRoutines } from "@/lib/data/routine-library";
+import { useDiets } from "@/lib/firestore/diets";
 import { defaultExercises } from "@/lib/data/exercises";
+import { defaultRoutines } from "@/lib/data/routine-library";
 import { buildRoutine } from "@/lib/routine-builder";
 import { mergeRoutines } from "@/lib/routine-helpers";
-import ProfileHeader from "@/components/dashboard/profile-header";
-import StatRow from "@/components/dashboard/stat-row";
-import MuscleHeatmap from "@/components/progress/muscle-heatmap";
-import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
+import type { Measurement, Routine, RoutineTemplate } from "@/lib/types";
 
-type RoutineAccent = "blue" | "amber" | "rose" | "navy";
-const ROUTINE_ACCENTS: RoutineAccent[] = ["blue", "amber", "rose", "navy"];
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
 
-export default function Dashboard() {
+const toDayId = (date = new Date()) => {
+  const map = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  return map[date.getDay()];
+};
+
+const formatTrend = (current?: number | null, previous?: number | null, suffix = "") => {
+  if (current == null || previous == null) return "Sin referencia";
+  const delta = current - previous;
+  if (Math.abs(delta) < 0.05) return "Sin cambios";
+  return `${delta > 0 ? "+" : ""}${delta.toFixed(1)}${suffix}`;
+};
+
+export default function DashboardPage() {
   const { user } = useAuth();
   const measurementPath = user?.uid ? `users/${user.uid}/measurements` : null;
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
 
-  const { data: measurements, loading: measurementsLoading } = useCol<Measurement>(measurementPath, {
-    by: "date",
-    dir: "desc",
-  });
+  const { data: measurements } = useCol<Measurement>(measurementPath, { by: "date", dir: "desc", limit: 4 });
+  const { data: templates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
+  const { data: diets } = useDiets(user?.uid);
 
-  const { data: routineTemplates, loading: templatesLoading } = useCol<RoutineTemplate>(templatesPath, {
-    by: "title",
-    dir: "desc",
-  });
+  const routines = useMemo<Routine[]>(() => {
+    const custom = (templates ?? []).map((template) => buildRoutine(template, defaultExercises));
+    return mergeRoutines(custom, defaultRoutines);
+  }, [templates]);
 
-  // Fetch routine logs for heatmap
-  const { data: routineLogs } = useWorkoutLogs(user?.uid);
+  const recentRoutines = routines.slice(0, 4);
+  const latestMeasurement = measurements[0];
+  const previousMeasurement = measurements[1];
 
-  // Filter logs for the current week (resets on Monday)
-  const weeklyLogs = useMemo(() => {
-    const now = new Date();
-    // Get start of the week (Monday)
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-    const startOfWeek = new Date(now.setDate(diff));
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    return routineLogs.filter(log => {
-      const logDate = new Date(log.date);
-      return logDate >= startOfWeek;
-    });
-  }, [routineLogs]);
-
-  const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
-    [routineTemplates],
-  );
-
-  const routines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
-  const featuredRoutines = routines.slice(0, 4);
+  const activeDiet = useMemo(() => diets.find((diet) => diet.isActive), [diets]);
+  const todayCalories = useMemo(() => {
+    if (!activeDiet) return null;
+    const day = activeDiet.days.find((item) => item.id === toDayId());
+    return day?.totalCalories ?? null;
+  }, [activeDiet]);
 
   return (
-    <div className="space-y-8 pb-10">
-      {/* 1. Header Profile Section */}
-      <section>
-        <ProfileHeader />
-      </section>
+    <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
+      <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
+        <section className="grid gap-3 sm:grid-cols-3">
+          <article className="rounded-2xl border border-brand-border bg-brand-surface p-4 shadow-sm">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+              <Flame className="h-5 w-5" />
+            </div>
+            <p className="text-xs text-brand-text-muted">Calorias de hoy</p>
+            <p className="mt-1 text-2xl font-semibold text-brand-text-main">
+              {todayCalories != null ? Math.round(todayCalories) : "--"}
+            </p>
+            <p className="text-xs text-brand-text-muted">kcal ingeridas</p>
+          </article>
 
-      {/* 2. Key Metrics Row */}
-      <section>
-        <div className="mb-4 flex items-center justify-between px-1">
-          <h2 className="text-lg font-bold text-[#0a2e5c]">Metricas Rapidas</h2>
-          <Link href="/measurements" className="text-xs font-bold text-blue-600 hover:text-blue-800">
-            Ver Historial
-          </Link>
-        </div>
-        <StatRow measurements={measurements} loading={measurementsLoading} />
-      </section>
+          <article className="rounded-2xl border border-brand-border bg-brand-surface p-4 shadow-sm">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+              <Scale className="h-5 w-5" />
+            </div>
+            <p className="text-xs text-brand-text-muted">Ultimo peso</p>
+            <p className="mt-1 text-2xl font-semibold text-brand-text-main">
+              {latestMeasurement?.weightKg != null ? `${latestMeasurement.weightKg} kg` : "--"}
+            </p>
+            <p className="text-xs text-brand-text-muted">
+              {formatTrend(latestMeasurement?.weightKg, previousMeasurement?.weightKg, " kg")}
+            </p>
+          </article>
 
-      {/* 3. Routines Grid */}
-      <section>
-        <div className="mb-4 flex items-center justify-between px-1">
-          <h2 className="text-lg font-bold text-[#0a2e5c]">Tu Entrenamiento</h2>
-          <Link href="/routines" className="text-xs font-bold text-blue-600 hover:text-blue-800">
-            Explorar Todo
-          </Link>
-        </div>
+          <article className="rounded-2xl border border-brand-border bg-brand-surface p-4 shadow-sm">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+              <Activity className="h-5 w-5" />
+            </div>
+            <p className="text-xs text-brand-text-muted">Ultima grasa corporal</p>
+            <p className="mt-1 text-2xl font-semibold text-brand-text-main">
+              {latestMeasurement?.bodyFatPct != null ? `${latestMeasurement.bodyFatPct}%` : "--"}
+            </p>
+            <p className="text-xs text-brand-text-muted">
+              {formatTrend(latestMeasurement?.bodyFatPct, previousMeasurement?.bodyFatPct, "%")}
+            </p>
+          </article>
+        </section>
 
-        {templatesLoading && routines.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-blue-200 bg-blue-50/50 p-8 text-center text-sm text-blue-400">
-            Cargando tus rutinas...
+        <section className="rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-brand-text-main">Ultimas rutinas</h2>
+            <Link href="/routines" className="text-xs font-semibold text-brand-primary">
+              Ver todas
+            </Link>
           </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {featuredRoutines.map((routine, index) => (
-              <RoutineCard
-                key={routine.id}
-                routine={routine}
-                accent={ROUTINE_ACCENTS[index % ROUTINE_ACCENTS.length]}
-              />
-            ))}
-          </div>
-        )}
-      </section>
 
-      {/* 4. Quick Actions / Promo */}
-      <section className="glass-card overflow-hidden rounded-3xl border border-[rgba(10,46,92,0.1)] bg-gradient-to-r from-white to-blue-50 p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-bold text-[#0a2e5c]">¿Toca Entrenar?</h3>
-            <p className="text-sm text-zinc-500">Selecciona una rutina arriba o inicia una rápida.</p>
-          </div>
-          <Link href="/routines" className="rounded-xl bg-[#0a2e5c] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-900/10 transition-transform active:scale-95">
-            Ver Planes
-          </Link>
-        </div>
-      </section>
+          {recentRoutines.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-brand-border bg-brand-dark p-5 text-sm text-brand-text-muted">
+              Aun no tienes rutinas. Crea una rutina personalizada para empezar.
+            </div>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {recentRoutines.map((routine) => (
+                <Link
+                  key={routine.id}
+                  href={`/routines/detail?id=${routine.id}`}
+                  className="group flex items-center justify-between rounded-2xl border border-brand-border bg-brand-dark px-4 py-3 transition hover:border-brand-primary/50"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-brand-text-main">{routine.title}</p>
+                    <p className="text-xs text-brand-text-muted">
+                      {routine.days.length} dias ·{" "}
+                      {routine.days.reduce((total, day) => total + day.exercises.length, 0)} ejercicios
+                    </p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-brand-text-muted transition group-hover:text-brand-primary" />
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
 
-      {/* 5. Weekly Heatmap */}
-      <section className="glass-card border-[rgba(10,46,92,0.1)] bg-white p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-[#0a2e5c]">Mapa de Calor (Esta Semana)</h3>
-            <p className="text-sm text-zinc-500">Intensidad de entrenamiento actual</p>
+        <section className="rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-brand-text-main">Ultimas mediciones</h2>
+            <Link href="/measurements" className="text-xs font-semibold text-brand-primary">
+              Ver historial
+            </Link>
           </div>
-          <Link href="/progress" className="text-xs font-bold text-blue-600 hover:text-blue-800">
-            Ver Detalles
-          </Link>
-        </div>
-        <MuscleHeatmap logs={weeklyLogs} />
-      </section>
+
+          {measurements.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-brand-border bg-brand-dark p-5 text-sm text-brand-text-muted">
+              Todavia no hay mediciones. Registra peso y grasa para empezar tu seguimiento.
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {measurements.slice(0, 3).map((measurement) => (
+                <li
+                  key={measurement.id}
+                  className="flex items-center justify-between rounded-2xl border border-brand-border bg-brand-dark px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-brand-text-main">{formatDate(measurement.date)}</p>
+                    <p className="text-xs text-brand-text-muted">
+                      Peso: {measurement.weightKg} kg
+                      {measurement.bodyFatPct != null ? ` · Grasa: ${measurement.bodyFatPct}%` : ""}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
-
-type RoutineCardProps = {
-  routine: Routine;
-  accent?: RoutineAccent;
-};
-
-function RoutineCard({ routine }: RoutineCardProps) {
-  const dayCount = routine.days.length;
-  const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
-
-  return (
-    <Link
-      href={`/routines/detail?id=${routine.id}`}
-      className="group relative flex flex-col justify-between gap-4 rounded-3xl border border-[rgba(10,46,92,0.08)] bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5"
-    >
-      <div>
-        <div className="mb-3 flex items-start justify-between">
-          <span className="rounded-lg bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-600">
-            {routine.level}
-          </span>
-          {/* Icon or simplified graphic could go here */}
-        </div>
-        <h3 className="text-lg font-bold leading-tight text-[#0a2e5c] group-hover:text-blue-700">
-          {routine.title}
-        </h3>
-        {routine.description && (
-          <p className="mt-2 text-xs leading-relaxed text-zinc-500 line-clamp-2">
-            {routine.description}
-          </p>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between border-t border-zinc-100 pt-4">
-        <div className="flex gap-3 text-xs font-medium text-zinc-400">
-          <span className="flex items-center gap-1">
-            📅 {dayCount}d
-          </span>
-          <span className="flex items-center gap-1">
-            ⚡ {exerciseCount} ej
-          </span>
-        </div>
-        <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white">
-          →
-        </div>
-      </div>
-    </Link>
-  );
-}
-

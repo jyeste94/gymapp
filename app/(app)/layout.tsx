@@ -3,6 +3,7 @@ import Providers from "@/app/providers";
 import SidebarNav from "@/app/(app)/_components/sidebar-nav";
 import SidebarFooter from "@/app/(app)/_components/sidebar-footer";
 import MobileNav from "@/app/(app)/_components/mobile-nav";
+import MobileProfileLink from "@/app/(app)/_components/mobile-profile-link";
 import type { ReactNode } from "react";
 import { Dumbbell, Leaf } from "lucide-react";
 import { Toaster } from 'react-hot-toast';
@@ -13,17 +14,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <Providers>
       <ClientAuthGuard>
         <Toaster />
-        <div className="min-h-dvh bg-transparent">
+        <div className="min-h-dvh bg-brand-dark">
           <div className="mx-auto flex min-h-dvh max-w-[1400px] flex-col gap-6 px-5 py-8 lg:flex-row lg:px-10">
-            <aside className="glass-card hidden w-full max-w-[280px] flex-shrink-0 flex-col border-[rgba(10,46,92,0.15)] bg-white/80 p-6 lg:flex">
+            <aside className="hidden w-full max-w-[280px] flex-shrink-0 flex-col rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-2xl lg:flex">
               <div className="flex items-center gap-3">
-                <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0a2e5c] shadow-sm">
-                  <Dumbbell className="h-6 w-6 text-[#ffae00]" />
-                  <Leaf className="absolute -top-1 -right-1 h-4 w-4 text-[#ff1910]" />
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-dark shadow-sm border border-brand-border">
+                  <Dumbbell className="h-6 w-6 text-brand-primary" />
+                  <Leaf className="absolute -top-1 -right-1 h-4 w-4 text-emerald-300" />
                 </span>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-[#0a2e5c]/60">Athlos</p>
-                  <h2 className="text-lg font-semibold text-[#0a2e5c]">Athlos Fit</h2>
+                  <p className="text-xs uppercase tracking-[0.28em] text-brand-text-muted">Athlos</p>
+                  <h2 className="text-lg font-bold text-brand-text-main">Athlos Fit</h2>
                 </div>
               </div>
 
@@ -43,6 +44,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
         </div>
+        <MobileProfileLink />
         <MobileNav />
       </ClientAuthGuard>
     </Providers>

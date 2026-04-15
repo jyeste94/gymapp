@@ -9,8 +9,8 @@ export default function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(10,46,92,0.12)] bg-white/95 pb-safe shadow-[0_-8px_24px_-18px_rgba(10,46,92,0.4)] backdrop-blur-md lg:hidden">
-      <ul className="flex items-center justify-between gap-1 px-4 py-2 pb-5">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-brand-border bg-brand-surface/90 pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl lg:hidden">
+      <ul className="flex items-center justify-around px-2 py-3 pb-6">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -37,15 +37,16 @@ function LinkButton({ icon: Icon, label, href, active }: LinkButtonProps) {
     <Link
       href={href}
       className={clsx(
-        "flex flex-col items-center gap-1 rounded-2xl px-3 py-2 text-xs font-semibold transition",
-        active
-          ? "bg-[#0a2e5c]/10 text-[#0a2e5c]"
-          : "text-[#51607c] hover:bg-[#0a2e5c]/5"
+        "relative flex flex-col items-center gap-1 transition-all duration-300",
+        active ? "text-brand-primary" : "text-brand-text-muted hover:text-brand-text-main"
       )}
       aria-current={active ? "page" : undefined}
     >
-      <Icon className={clsx("h-5 w-5", active ? "text-[#0a2e5c]" : "text-[#51607c]")} />
-      {label}
+      {active && (
+        <span className="absolute -top-2 h-1 w-1 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
+      )}
+      <Icon className={clsx("h-6 w-6 transition-transform", active && "scale-110")} />
+      <span className="text-[10px] font-medium">{label}</span>
     </Link>
   );
 }

@@ -9,7 +9,12 @@ export const processNumber = (val: unknown) => {
         return Number.isFinite(val) ? val : undefined;
     }
 
-    const str = String(val).replace(",", ".");
+    // Convert to string, trim whitespace
+    let str = String(val).trim();
+
+    // Replace all commas with dots
+    str = str.replace(/,/g, ".");
+
     const num = Number(str);
     return Number.isFinite(num) ? num : val;
 };
@@ -34,7 +39,7 @@ export const measurementFormSchema = z.object({
     date: z.string().min(1, "La fecha es obligatoria"),
     weightKg: z.preprocess(
         processNumber,
-        z.number({ required_error: "El peso es obligatorio", invalid_type_error: "Introduce un número válido" })
+        z.number({ required_error: "El peso es obligatorio (Requerido)", invalid_type_error: "Formato de peso inválido (Tipo)" })
             .min(30, "Mínimo 30 kg")
             .max(300, "Máximo 300 kg")
     ),
