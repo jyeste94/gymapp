@@ -2,123 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Bebas+Neue&family=JetBrains+Mono:wght@500;700&display=swap");
 
 :root {
-  --brand-dark: #0b0d12;
-  --brand-surface: #141720;
-  --brand-surface-light: #1c1f2a;
-  --brand-border: #252833;
-  --brand-primary: #3ee07f;
-  --brand-primary-glow: rgba(62, 224, 127, 0.45);
-  --brand-secondary: #10b981;
-  --brand-accent: #f472b6;
-  --brand-text-main: #f8fafc;
-  --brand-text-muted: #94a3b8;
+  --brand-dark: #080808;
+  --brand-surface: #121212;
+  --brand-surface-light: #1a1a1a;
+  --brand-border: #282828;
+  --brand-primary: #facc15; /* Amarillo Voltio */
+  --brand-primary-glow: rgba(250, 204, 21, 0.3);
+  --brand-accent: #ff4d00; /* Naranja Alerta */
+  --brand-text-main: #ffffff;
+  --brand-text-muted: #888888;
 }
 
 @layer base {
   body {
     @apply bg-brand-dark text-brand-text-main selection:bg-brand-primary selection:text-brand-dark;
-    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-    letter-spacing: -0.01em;
+    font-family: "Plus Jakarta Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
-  }
-
-  h1, h2, h3, h4 {
-    @apply font-bold tracking-tight text-brand-text-main;
   }
 
   .font-bebas {
     font-family: "Bebas Neue", sans-serif;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
+  }
+
+  .font-mono-data {
+    font-family: "JetBrains Mono", monospace;
+    letter-spacing: -0.05em;
   }
 }
 
 @layer components {
-  /* Glassmorphism & Depth */
+  /* Estética Industrial */
   .glass-card {
-    @apply relative overflow-hidden bg-brand-surface/80 backdrop-blur-xl border border-white/5 shadow-2xl;
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+    @apply relative bg-brand-surface border-2 border-brand-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
+    transition: all 0.2s ease;
   }
 
-  .glass-card::before {
-    content: "";
-    @apply absolute inset-0 opacity-10 pointer-events-none;
-    background-image: radial-gradient(circle at top left, var(--brand-primary), transparent 70%);
+  .glass-card:hover {
+    @apply border-brand-primary/50 -translate-x-0.5 -translate-y-0.5 shadow-[6px_6px_0px_0px_rgba(250,204,21,0.2)];
   }
 
-  .glass-card-hover {
-    @apply hover:bg-brand-surface/90 hover:border-brand-primary/20 transition-all duration-500 ease-out;
-  }
-
-  /* Buttons */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-primary px-6 py-3 font-bold text-brand-dark transition-all duration-300;
-    box-shadow: 0 8px 24px -12px var(--brand-primary-glow);
+    @apply relative inline-flex items-center justify-center gap-2 rounded-none border-2 border-brand-dark bg-brand-primary px-6 py-3 font-black uppercase text-brand-dark transition-all;
+    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.1);
   }
 
   .btn-primary:hover {
-    @apply -translate-y-0.5 scale-[1.02];
-    box-shadow: 0 12px 32px -8px var(--brand-primary-glow);
+    @apply -translate-x-0.5 -translate-y-0.5 shadow-[6px_6px_0px_0px_var(--brand-primary-glow)];
   }
 
   .btn-primary:active {
-    @apply translate-y-0 scale-[0.98];
+    @apply translate-x-0 translate-y-0 shadow-none;
   }
 
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-brand-border bg-brand-surface px-6 py-3 font-semibold text-brand-text-main transition-all duration-300;
+  /* Etiquetas Técnicas */
+  .tag-industrial {
+    @apply inline-flex items-center rounded-none border border-brand-border bg-brand-dark px-2 py-0.5 font-mono-data text-[10px] uppercase text-brand-text-muted;
   }
 
-  .btn-ghost:hover {
-    @apply border-brand-primary/30 bg-brand-surface-light;
-  }
-
-  /* Visual Accents */
-  .text-glow-primary {
-    text-shadow: 0 0 20px var(--brand-primary-glow);
+  /* Textura de Fondo - Scanlines sutiles */
+  .bg-mesh {
+    background-color: var(--brand-dark);
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   .noise-overlay {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
     pointer-events: none;
   }
-
-  .bg-mesh {
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(62, 224, 127, 0.08) 0, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(244, 114, 182, 0.04) 0, transparent 50%);
-  }
 }
 
-/* Scrollbar customization */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--brand-border) transparent;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-brand-border rounded-full hover:bg-brand-text-muted/30 transition-colors;
-}
-
-/* Input Styles */
+/* Inputs como terminal */
 input, textarea, select {
-  @apply rounded-2xl border border-brand-border bg-brand-dark/50 px-4 py-3 text-brand-text-main outline-none transition-all duration-300 focus:border-brand-primary/50 focus:bg-brand-dark/80 focus:ring-4 focus:ring-brand-primary/10;
+  @apply rounded-none border-2 border-brand-border bg-brand-dark px-4 py-3 font-mono-data text-brand-text-main outline-none transition-all focus:border-brand-primary;
 }
 
-/* Custom Utilities */
-.mask-radial {
-  mask-image: radial-gradient(circle, black, transparent 80%);
-}
+/* Scrollbar Cruda */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { @apply bg-brand-dark; }
+::-webkit-scrollbar-thumb { @apply bg-brand-border border-2 border-brand-dark hover:bg-brand-primary transition-colors; }

@@ -71,7 +71,7 @@ export type NutriFlowCreateRoutineInput = {
   }>;
 };
 
-const RAW_BASE_URL = process.env.NEXT_PUBLIC_NUTRIFLOW_API_URL || "http://localhost:8080";
+const RAW_BASE_URL = process.env.NEXT_PUBLIC_NUTRIFLOW_API_URL || "https://nutriflow.joseyeste.com";
 const BASE_URL = RAW_BASE_URL.replace(/\/$/, "").endsWith("/v1")
   ? RAW_BASE_URL.replace(/\/$/, "")
   : `${RAW_BASE_URL.replace(/\/$/, "")}/v1`;

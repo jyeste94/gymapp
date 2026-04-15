@@ -101,7 +101,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-xs font-medium uppercase tracking-wider text-brand-text-muted">Energía Hoy</p>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-brand-text-main">
+              <span className="font-mono-data text-3xl font-bold text-brand-text-main">
                 {todayCalories != null ? Math.round(todayCalories) : "0"}
               </span>
               <span className="text-xs text-brand-text-muted">kcal</span>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-xs font-medium uppercase tracking-wider text-brand-text-muted">Peso Actual</p>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-brand-text-main">
+              <span className="font-mono-data text-3xl font-bold text-brand-text-main">
                 {latestMeasurement?.weightKg != null ? latestMeasurement.weightKg : "--"}
               </span>
               <span className="text-xs text-brand-text-muted">kg</span>
@@ -133,7 +133,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-xs font-medium uppercase tracking-wider text-brand-text-muted">Estado Físico</p>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-brand-text-main">
+              <span className="font-mono-data text-3xl font-bold text-brand-text-main">
                 {latestMeasurement?.bodyFatPct != null ? `${latestMeasurement.bodyFatPct}%` : "--"}
               </span>
               <span className="text-xs text-brand-text-muted">grasa</span>
