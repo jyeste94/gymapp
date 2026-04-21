@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
-
-import { useFirebase } from "@/lib/firebase/client-context";
-import { logout } from "@/lib/firebase/auth-actions";
-import { LogOut } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { ChevronRight } from "lucide-react";
+import { logout } from "@/lib/firebase/auth-actions";
+import { useFirebase } from "@/lib/firebase/client-context";
 
 export default function SettingsPage() {
   const { app } = useFirebase();
@@ -15,63 +15,68 @@ export default function SettingsPage() {
     if (!app) return;
     try {
       await logout(app);
-      toast.success("Sesión cerrada");
+      toast.success("Sesion cerrada");
       router.push("/login");
     } catch {
-      toast.error("Error al cerrar sesión");
+      toast.error("Error al cerrar sesion");
     }
   };
 
   return (
-    <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
-      <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
-        <div className="rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-brand-text-main">Ajustes</h2>
-          <p className="mt-2 text-sm text-brand-text-muted">Personaliza unidades, objetivos y preferencias.</p>
+    <div className="apple-page-shell max-w-3xl space-y-8">
+      <header>
+        <p className="apple-kicker">Ajustes</p>
+        <h1 className="sf-display-section text-apple-near-black dark:text-white">Cuenta y preferencias</h1>
+      </header>
 
-          <div className="mt-6 flex flex-col gap-1">
-            <SettingItem label="Perfil y Social" href="/settings/profile" />
-            <SettingItem label="Tema claro/oscuro" />
-            <SettingItem label="Objetivos calóricos" />
+      <div className="space-y-8">
+        <section className="apple-panel overflow-hidden rounded-2xl p-0">
+          <div className="border-b border-apple-near-black/5 px-5 py-4 dark:border-white/5">
+            <h2 className="sf-text-body-strong text-apple-near-black dark:text-white">Cuenta</h2>
+            <p className="mt-1 sf-text-caption text-apple-near-black/60 dark:text-white/60">Personaliza perfil, unidades y objetivos.</p>
           </div>
-        </div>
+          <div className="flex flex-col px-5">
+            <SettingItem label="Perfil y social" href="/settings/profile" />
+            <SettingItem label="Tema claro/oscuro" />
+            <SettingItem label="Objetivos caloricos" />
+          </div>
+        </section>
 
-        <div className="rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-sm">
-          <h3 className="text-sm font-semibold text-brand-primary">Sesión</h3>
-          <button
-            onClick={handleLogout}
-            className="mt-4 flex w-full items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-500 transition hover:bg-red-500/20 active:scale-[0.98]"
-          >
-            <span className="flex items-center gap-2">
-              <LogOut className="h-4 w-4" />
-              Cerrar sesión
-            </span>
-            <span>&gt;</span>
-          </button>
-        </div>
+        <section className="apple-panel overflow-hidden rounded-2xl p-0">
+          <div className="border-b border-apple-near-black/5 px-5 py-4 dark:border-white/5">
+            <h2 className="sf-text-body-strong text-apple-near-black dark:text-white">Sesion</h2>
+          </div>
+          <div className="px-5 py-2">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center justify-between rounded bg-transparent py-3 sf-text-body text-[#ff3b30] outline-none transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-apple-blue"
+            >
+              <span>Cerrar sesion</span>
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   );
 }
 
-import Link from "next/link";
-
 function SettingItem({ label, href }: { label: string; href?: string }) {
   if (href) {
     return (
-      <Link href={href} className="flex items-center justify-between rounded-xl p-3 text-sm text-brand-text-main transition hover:bg-brand-dark active:bg-brand-dark/80">
+      <Link
+        href={href}
+        className="group flex items-center justify-between border-b border-apple-near-black/5 py-3.5 sf-text-body text-apple-near-black outline-none last:border-0 focus-visible:bg-apple-blue/5 dark:border-white/5 dark:text-white"
+      >
         <span>{label}</span>
-        <span className="text-xs text-brand-text-muted">&gt;</span>
+        <ChevronRight className="h-5 w-5 text-apple-near-black/30 transition-colors group-hover:text-apple-blue dark:text-white/30" />
       </Link>
     );
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl p-3 text-sm text-brand-text-muted opacity-60">
+    <div className="flex items-center justify-between border-b border-apple-near-black/5 py-3.5 sf-text-body text-apple-near-black/50 last:border-0 dark:border-white/5 dark:text-white/50">
       <span>{label}</span>
-      <span className="text-xs text-brand-text-muted/60">Pronto</span>
+      <span className="sf-text-micro text-apple-near-black/40 dark:text-white/40">Pronto</span>
     </div>
   );
 }
-
-

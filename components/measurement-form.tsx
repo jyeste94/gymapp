@@ -6,10 +6,8 @@ import { useFirebase } from "@/lib/firebase/client-context";
 import { addMeasurement, updateMeasurement } from "@/lib/firestore/measurements";
 import type { Measurement } from "@/lib/types";
 import { useEffect } from "react";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import { measurementFormSchema, type MeasurementFormValues } from "@/lib/validations/measurement";
-
-// Schemas imported from lib/validations/measurement
 
 type FormValues = MeasurementFormValues;
 
@@ -47,7 +45,18 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
         notes: editingMeasurement.notes ?? undefined,
       });
     } else {
-      reset({ date: new Date().toISOString().slice(0, 10), weightKg: undefined, bodyFatPct: undefined, notes: '', chest: undefined, waist: undefined, hips: undefined, arm: undefined, thigh: undefined, calf: undefined });
+      reset({
+        date: new Date().toISOString().slice(0, 10),
+        weightKg: undefined,
+        bodyFatPct: undefined,
+        notes: "",
+        chest: undefined,
+        waist: undefined,
+        hips: undefined,
+        arm: undefined,
+        thigh: undefined,
+        calf: undefined,
+      });
     }
   }, [editingMeasurement, isEditing, reset]);
 
@@ -62,14 +71,14 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
     try {
       if (isEditing) {
         await updateMeasurement(db, userId, editingMeasurement.id, dataToSave);
-        toast.success("Medición actualizada con éxito");
+        toast.success("Medicion actualizada");
       } else {
         await addMeasurement(db, userId, dataToSave);
-        toast.success("Medición guardada con éxito");
+        toast.success("Medicion guardada");
       }
       onSuccess();
     } catch (error) {
-      toast.error("Error al guardar la medición.");
+      toast.error("Error al guardar la medicion.");
       console.error(error);
     }
   };
@@ -77,67 +86,64 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
   const firstError = errors[Object.keys(errors)[0] as keyof typeof errors]?.message;
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="glass-card grid gap-4 border-[rgba(10,46,92,0.16)] bg-white/80 p-6 md:grid-cols-5"
-    >
-      <div className="col-span-full flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-zinc-900">
-          {isEditing ? "Editar Medición" : "Registrar Nueva Medición"}
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 md:grid-cols-5">
+      <div className="col-span-full flex items-center justify-between">
+        <h2 className="sf-display-card-title text-apple-near-black dark:text-white">
+          {isEditing ? "Editar medicion" : "Registrar medicion"}
         </h2>
         {isEditing && (
-          <button type="button" onClick={onSuccess} className="text-sm font-semibold text-blue-600 hover:underline">
+          <button type="button" onClick={onSuccess} className="apple-link">
             Cancelar
           </button>
         )}
       </div>
 
-      {/* Campos del formulario (sin cambios en el JSX, solo en la logica) */}
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Fecha</label>
-        <input type="date" {...register("date")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Fecha</label>
+        <input type="date" {...register("date")} className="w-full" />
       </div>
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Peso (kg)</label>
-        <input type="text" inputMode="decimal" {...register("weightKg")} placeholder="0.0" className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Peso (kg)</label>
+        <input type="text" inputMode="decimal" {...register("weightKg")} placeholder="0.0" className="w-full" />
       </div>
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Grasa (%)</label>
-        <input type="text" inputMode="decimal" {...register("bodyFatPct")} placeholder="0.0" className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Grasa (%)</label>
+        <input type="text" inputMode="decimal" {...register("bodyFatPct")} placeholder="0.0" className="w-full" />
       </div>
 
-      <div className="col-span-full my-2 border-t border-[rgba(10,46,92,0.1)]" />
-      <p className="col-span-full text-xs font-semibold text-[#0a2e5c]">Medidas (cm)</p>
+      <div className="col-span-full apple-divider my-2" />
+      <p className="col-span-full sf-text-caption-strong text-apple-near-black dark:text-white">Medidas (cm)</p>
 
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Pecho</label>
-        <input type="text" inputMode="decimal" {...register("chest")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Pecho</label>
+        <input type="text" inputMode="decimal" {...register("chest")} className="w-full" />
       </div>
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Cintura</label>
-        <input type="text" inputMode="decimal" {...register("waist")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Cintura</label>
+        <input type="text" inputMode="decimal" {...register("waist")} className="w-full" />
       </div>
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Cadera</label>
-        <input type="text" inputMode="decimal" {...register("hips")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Cadera</label>
+        <input type="text" inputMode="decimal" {...register("hips")} className="w-full" />
       </div>
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Brazo</label>
-        <input type="text" inputMode="decimal" {...register("arm")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Brazo</label>
+        <input type="text" inputMode="decimal" {...register("arm")} className="w-full" />
       </div>
       <div className="space-y-2 md:col-span-1">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Muslo</label>
-        <input type="text" inputMode="decimal" {...register("thigh")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" />
+        <label className="apple-kicker">Muslo</label>
+        <input type="text" inputMode="decimal" {...register("thigh")} className="w-full" />
       </div>
-      <div className="space-y-2 md:col-span-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-zinc-400">Notas</label>
-        <input {...register("notes")} className="w-full rounded-2xl border border-[rgba(10,46,92,0.26)] bg-white/90 px-3 py-2 text-sm" placeholder="Sueño, alimentación, biorritmo..." />
+      <div className="space-y-2 md:col-span-5">
+        <label className="apple-kicker">Notas</label>
+        <input {...register("notes")} className="w-full" placeholder="Sueno, alimentacion, biorritmo..." />
       </div>
-      <div className="md:col-span-5 flex flex-wrap items-center gap-3">
-        <button className="primary-button" disabled={!userId || isSubmitting}>
-          {isSubmitting ? "Guardando..." : (isEditing ? "Actualizar Medición" : "Guardar Medición")}
+
+      <div className="md:col-span-5 flex flex-wrap items-center gap-3 pt-2">
+        <button className="btn-apple-primary" disabled={!userId || isSubmitting}>
+          {isSubmitting ? "Guardando..." : isEditing ? "Actualizar medicion" : "Guardar medicion"}
         </button>
-        {firstError && <span className="text-xs text-red-500">{String(firstError)}</span>}
+        {firstError && <span className="sf-text-caption text-[#ff3b30]">{String(firstError)}</span>}
       </div>
     </form>
   );

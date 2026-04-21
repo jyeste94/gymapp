@@ -1,11 +1,16 @@
-"use client";
+﻿"use client";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
-import { ArrowLeft, Plus, Search, Trash2, X, Eye } from "lucide-react";
+import { ArrowLeft, Check, Circle, Eye, Plus, Search, Trash2, X } from "lucide-react";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
 import { createRoutineTemplate } from "@/lib/firestore/routines";
-import { validateRoutineForm, buildRoutinePayload, type RoutineFormState, type BuilderDay } from "@/lib/routine-helpers";
+import {
+  buildRoutinePayload,
+  type BuilderDay,
+  type RoutineFormState,
+  validateRoutineForm,
+} from "@/lib/routine-helpers";
 
 const normalize = (value: string) =>
   value
@@ -47,20 +52,15 @@ type ViewState =
   | { type: "day"; dayId: string }
   | { type: "picker"; dayId: string };
 
+type CreatorStep = {
+  id: number;
+  label: string;
+  active: boolean;
+  done: boolean;
+};
+
 export default function CreateRoutineDrawer({ open, userId, exercises, onClose, onCreated }: Props) {
   const [form, setForm] = useState<RoutineFormState>(() => buildDefaultState());
-
-  // Safe close handler
-  const handleClose = () => {
-    const isDirty = form.title.length > 0 || form.days.length > 1 || form.days.some(d => d.exercises.length > 0);
-    if (isDirty) {
-      if (confirm("Tienes cambios sin guardar. Seguro que quieres cerrar? Se perderan los datos.")) {
-        onClose();
-      }
-    } else {
-      onClose();
-    }
-  };
   const [view, setView] = useState<ViewState>({ type: "overview" });
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -82,49 +82,45 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     setEquipmentFilter("");
   }, [open]);
 
-  const selectedDay = form.days.find((day) => day.id === selectedDayId) ?? form.days[0] ?? null;
+  const dayById = (dayId: string | null) => (dayId ? form.days.find((day) => day.id === dayId) ?? null : null);
+  const selectedDay = dayById(selectedDayId) ?? form.days[0] ?? null;
 
   const availableMuscles = useMemo(() => {
-    const set = new Set<string>();
+    const tags = new Set<string>();
     exercises.forEach((exercise) => {
-      exercise.muscleGroup.forEach((tag) => set.add(tag));
+      exercise.muscleGroup.forEach((tag) => tags.add(tag));
     });
-    return Array.from(set.values()).sort((a, b) => a.localeCompare(b));
+    return Array.from(tags.values()).sort((a, b) => a.localeCompare(b));
   }, [exercises]);
 
   const availableEquipment = useMemo(() => {
-    const set = new Set<string>();
+    const tags = new Set<string>();
     exercises.forEach((exercise) => {
-      exercise.equipment.forEach((tag) => set.add(tag));
+      exercise.equipment.forEach((tag) => tags.add(tag));
     });
-    return Array.from(set.values()).sort((a, b) => a.localeCompare(b));
+    return Array.from(tags.values()).sort((a, b) => a.localeCompare(b));
   }, [exercises]);
 
   const filteredExercises = useMemo(() => {
     const term = normalize(searchTerm);
     return exercises.filter((exercise) => {
       if (term) {
-        const base = exercise.keywords;
-        const nameMatch = normalize(exercise.name).includes(term);
-        if (!nameMatch && !base.includes(term)) {
+        const matchesName = normalize(exercise.name).includes(term);
+        if (!matchesName && !exercise.keywords.includes(term)) {
           return false;
         }
       }
       if (muscleFilter) {
-        const matchesMuscle = exercise.muscleGroup.some(
-          (tag) => normalize(tag) === normalize(muscleFilter),
-        );
-        if (!matchesMuscle) return false;
+        const hasMuscle = exercise.muscleGroup.some((tag) => normalize(tag) === normalize(muscleFilter));
+        if (!hasMuscle) return false;
       }
       if (equipmentFilter) {
-        const matchesEquipment = exercise.equipment.some(
-          (tag) => normalize(tag) === normalize(equipmentFilter),
-        );
-        if (!matchesEquipment) return false;
+        const hasEquipment = exercise.equipment.some((tag) => normalize(tag) === normalize(equipmentFilter));
+        if (!hasEquipment) return false;
       }
       return true;
     });
-  }, [exercises, searchTerm, muscleFilter, equipmentFilter]);
+  }, [equipmentFilter, exercises, muscleFilter, searchTerm]);
 
   const updateDay = (dayId: string, updater: (day: BuilderDay) => BuilderDay) => {
     setForm((prev) => ({
@@ -140,13 +136,16 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
       }
       return {
         ...day,
-        exercises: [...day.exercises, {
-          ...exercise,
-          sets: 3,
-          repRange: "10-12",
-          rest: "90 s",
-          tip: "",
-        }],
+        exercises: [
+          ...day.exercises,
+          {
+            ...exercise,
+            sets: 3,
+            repRange: "10-12",
+            rest: "90 s",
+            tip: "",
+          },
+        ],
       };
     });
   };
@@ -158,16 +157,29 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     }));
   };
 
+  const handleClose = () => {
+    const isDirty = form.title.trim().length > 0 || form.days.length > 1 || form.days.some((day) => day.exercises.length > 0);
+    if (!isDirty) {
+      onClose();
+      return;
+    }
+    if (window.confirm("Tienes cambios sin guardar. Si cierras, se perderan.")) {
+      onClose();
+    }
+  };
+
   const handleDayCountChange = (count: number) => {
     setForm((prev) => {
       const current = prev.days.length;
       let days = prev.days;
+
       if (count > current) {
         const extras = Array.from({ length: count - current }, (_, index) => createDay(current + index));
         days = [...prev.days, ...extras];
       } else if (count < current) {
         days = prev.days.slice(0, count);
       }
+
       const nextSelected = days.find((day) => day.id === selectedDayId)?.id ?? days[0]?.id ?? null;
       setSelectedDayId(nextSelected);
       if (view.type !== "overview") {
@@ -185,19 +197,18 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     try {
       setSaving(true);
       setError(null);
-      const payload = buildRoutinePayload(form);
-      await createRoutineTemplate(null, userId, payload);
+      await createRoutineTemplate(null, userId, buildRoutinePayload(form));
       onCreated?.();
       onClose();
-    } catch (error) {
-      console.error("create routine failed", error);
-      setError("Error al guardar: " + (error instanceof Error ? error.message : "Ocurrio un problema desconocido."));
+    } catch (caughtError) {
+      console.error("create routine failed", caughtError);
+      setError(
+        `Error al guardar: ${caughtError instanceof Error ? caughtError.message : "No se pudo completar la accion."}`,
+      );
     } finally {
       setSaving(false);
     }
   };
-
-  const footerMessage = validationError || "Revisa los datos antes de guardar.";
 
   const openDay = (dayId: string) => {
     setSelectedDayId(dayId);
@@ -205,22 +216,47 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
   };
 
   const renderContent = () => {
-    if (view.type === "day" && selectedDay) {
+    if (view.type === "day") {
+      const day = dayById(view.dayId);
+      if (!day) {
+        return (
+          <Overview
+            form={form}
+            selectedDayId={selectedDay?.id ?? null}
+            onSelectDay={openDay}
+            onChange={(updater) => setForm((prev) => updater(prev))}
+            onDayCountChange={handleDayCountChange}
+          />
+        );
+      }
       return (
         <DayDetail
-          day={selectedDay}
+          day={day}
           onBack={() => setView({ type: "overview" })}
           onAddExercise={() => {
-            setView({ type: "picker", dayId: selectedDay.id });
+            setSelectedDayId(day.id);
+            setView({ type: "picker", dayId: day.id });
             setSearchTerm("");
           }}
-          onUpdate={(updater) => updateDay(selectedDay.id, updater)}
-          onRemoveExercise={(exerciseId) => removeExerciseFromDay(selectedDay.id, exerciseId)}
+          onUpdate={(updater) => updateDay(day.id, updater)}
+          onRemoveExercise={(exerciseId) => removeExerciseFromDay(day.id, exerciseId)}
         />
       );
     }
 
-    if (view.type === "picker" && selectedDay) {
+    if (view.type === "picker") {
+      const day = dayById(view.dayId);
+      if (!day) {
+        return (
+          <Overview
+            form={form}
+            selectedDayId={selectedDay?.id ?? null}
+            onSelectDay={openDay}
+            onChange={(updater) => setForm((prev) => updater(prev))}
+            onDayCountChange={handleDayCountChange}
+          />
+        );
+      }
       return (
         <ExercisePicker
           exercises={filteredExercises}
@@ -232,10 +268,10 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           onSearch={setSearchTerm}
           onMuscleFilter={setMuscleFilter}
           onEquipmentFilter={setEquipmentFilter}
-          onClose={() => setView({ type: "day", dayId: selectedDay.id })}
+          onClose={() => setView({ type: "day", dayId: day.id })}
           onSelect={(exercise) => {
-            addExerciseToDay(selectedDay.id, exercise);
-            setView({ type: "day", dayId: selectedDay.id });
+            addExerciseToDay(day.id, exercise);
+            setView({ type: "day", dayId: day.id });
           }}
         />
       );
@@ -244,7 +280,7 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     return (
       <Overview
         form={form}
-        selectedDayId={selectedDayId}
+        selectedDayId={selectedDay?.id ?? null}
         onSelectDay={openDay}
         onChange={(updater) => setForm((prev) => updater(prev))}
         onDayCountChange={handleDayCountChange}
@@ -252,66 +288,59 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     );
   };
 
+  const footerMessage = validationError || "Completa los datos para guardar la rutina.";
+  const step = view.type === "overview" ? 1 : view.type === "day" ? 2 : 3;
+  const stepItems: CreatorStep[] = [
+    { id: 1, label: "Estructura", active: step === 1, done: step > 1 },
+    { id: 2, label: "Dia", active: step === 2, done: step > 2 },
+    { id: 3, label: "Ejercicios", active: step === 3, done: false },
+  ];
+
   return (
     <div
-      className={clsx(
-        "fixed inset-0 z-[140] transition",
-        open ? "pointer-events-auto" : "pointer-events-none",
-      )}
+      className={clsx("fixed inset-0 z-[150] transition", open ? "pointer-events-auto" : "pointer-events-none")}
       aria-hidden={!open}
     >
       <div
-        className={clsx(
-          "absolute inset-0 bg-black/40 backdrop-blur-sm transition opacity-0",
-          open && "opacity-100",
-        )}
+        className={clsx("absolute inset-0 bg-black/45 transition", open ? "opacity-100" : "opacity-0")}
         onClick={handleClose}
       />
+
       <aside
         className={clsx(
-          "absolute right-0 top-0 h-full w-full max-w-3xl transform bg-brand-surface shadow-2xl border-l border-brand-border transition-transform duration-300",
+          "absolute right-0 top-0 h-full w-full transform border-l border-apple-near-black/10 bg-white shadow-[0_24px_60px_rgba(0,0,0,0.22)] transition-transform duration-300 sm:max-w-3xl dark:border-white/10 dark:bg-apple-surface-1",
           open ? "translate-x-0" : "translate-x-full",
         )}
       >
         <div className="flex h-full flex-col">
-          <header className="flex items-center justify-between border-b border-brand-border px-6 py-5">
-            <div>
-              <h2 className="text-lg font-semibold text-brand-text-main">Crea tu rutina</h2>
-              <p className="text-sm text-brand-text-muted">
-                Define dias, asigna ejercicios y guarda tu plan personalizado.
-              </p>
+          <header className="apple-divider flex items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5">
+            <div className="space-y-1">
+              <p className="apple-kicker">Rutinas</p>
+              <h2 className="sf-text-title text-apple-near-black dark:text-white">Crear rutina personalizada</h2>
+              <RoutineCreatorSteps items={stepItems} />
             </div>
             <button
               type="button"
               onClick={handleClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border text-brand-text-muted transition hover:border-brand-primary/30 hover:text-brand-text-main"
+              className="btn-apple-ghost inline-flex h-10 w-10 items-center justify-center rounded-full p-0"
               aria-label="Cerrar creador"
             >
               <X className="h-5 w-5" />
             </button>
           </header>
 
-          <div className="flex-1 overflow-y-auto px-6 py-6">{renderContent()}</div>
+          <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">{renderContent()}</div>
 
           {view.type === "overview" && (
-            <footer className="border-t border-brand-border px-6 py-5">
-              {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-brand-text-muted">
-                <p>{footerMessage}</p>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="rounded-2xl border border-brand-border px-4 py-2 text-sm font-semibold text-brand-text-muted transition hover:bg-brand-dark"
-                  >
+            <footer className="apple-divider px-4 py-4 sm:px-6 sm:py-5">
+              {error && <p className="mb-3 sf-text-caption text-[#ff3b30]">{error}</p>}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">{footerMessage}</p>
+                <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
+                  <button type="button" onClick={handleClose} className="btn-apple-ghost w-full sm:w-auto">
                     Cancelar
                   </button>
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={!canSave}
-                    className="rounded-2xl bg-brand-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:opacity-60"
-                  >
+                  <button type="button" onClick={handleSave} disabled={!canSave} className="btn-apple-primary w-full sm:w-auto">
                     {saving ? "Guardando..." : "Guardar rutina"}
                   </button>
                 </div>
@@ -338,74 +367,20 @@ function Overview({
   onDayCountChange: (count: number) => void;
 }) {
   const dayCountOptions = [1, 2, 3, 4, 5, 6];
+  const totalExercises = form.days.reduce((sum, day) => sum + day.exercises.length, 0);
+  const completedDays = form.days.filter((day) => day.exercises.length > 0).length;
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2 text-xs text-brand-text-muted">
-          Nombre de la rutina
-          <input
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-            value={form.title}
-            onChange={(event) => onChange((prev) => ({ ...prev, title: event.target.value }))}
-            placeholder="Empuje/Tiron + Pierna"
-          />
-        </label>
-        <label className="space-y-2 text-xs text-brand-text-muted">
-          Objetivo o foco
-          <input
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-            value={form.focus}
-            onChange={(event) => onChange((prev) => ({ ...prev, focus: event.target.value }))}
-            placeholder="Hipertrofia intermedia"
-          />
-        </label>
-        <label className="space-y-2 text-xs text-brand-text-muted">
-          Nivel
-          <select
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-            value={form.level}
-            onChange={(event) => onChange((prev) => ({ ...prev, level: event.target.value }))}
-          >
-            <option value="Principiante">Principiante</option>
-            <option value="Intermedio">Intermedio</option>
-            <option value="Avanzado">Avanzado</option>
-          </select>
-        </label>
-        <label className="space-y-2 text-xs text-brand-text-muted">
-          Frecuencia
-          <input
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-            value={form.frequency}
-            onChange={(event) => onChange((prev) => ({ ...prev, frequency: event.target.value }))}
-            placeholder="4 dias"
-          />
-        </label>
+      <div className="apple-panel-muted rounded-2xl p-4">
+        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">Resumen actual</p>
+        <p className="mt-1 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          {form.days.length} dias, {completedDays} con ejercicios, {totalExercises} ejercicios totales.
+        </p>
       </div>
 
-      <label className="block space-y-2 text-xs text-brand-text-muted">
-        Descripcion
-        <textarea
-          className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-          rows={3}
-          value={form.description}
-          onChange={(event) => onChange((prev) => ({ ...prev, description: event.target.value }))}
-          placeholder="Describe el objetivo general y recomendaciones."
-        />
-      </label>
-
-      <label className="block space-y-2 text-xs text-brand-text-muted">
-        Material necesario (separado por comas)
-        <input
-          className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-          value={form.equipment}
-          onChange={(event) => onChange((prev) => ({ ...prev, equipment: event.target.value }))}
-          placeholder="Barra, Mancuernas, Polea"
-        />
-      </label>
-
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-brand-text-main">Cuantos dias tiene la rutina?</p>
+        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">Paso 1. Cuantos dias tendra la rutina</p>
         <div className="flex flex-wrap gap-2">
           {dayCountOptions.map((option) => (
             <button
@@ -413,10 +388,10 @@ function Overview({
               type="button"
               onClick={() => onDayCountChange(option)}
               className={clsx(
-                "rounded-full border px-3 py-1 text-xs font-semibold transition",
+                "rounded-full border px-3 py-1.5 sf-text-caption transition",
                 form.days.length === option
-                  ? "border-brand-primary bg-brand-primary/10 text-brand-text-main"
-                  : "border-brand-border text-brand-text-muted hover:border-brand-primary/30 hover:text-brand-text-main",
+                  ? "border-apple-blue bg-apple-blue text-white"
+                  : "border-apple-near-black/10 bg-white text-apple-near-black/80 hover:border-apple-blue hover:text-apple-blue dark:border-white/15 dark:bg-apple-surface-2 dark:text-white/75",
               )}
             >
               {option} dias
@@ -425,8 +400,65 @@ function Overview({
         </div>
       </div>
 
+      <div className="apple-panel-muted grid gap-4 p-5 md:grid-cols-2">
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Nombre de la rutina
+          <input
+            value={form.title}
+            onChange={(event) => onChange((prev) => ({ ...prev, title: event.target.value }))}
+            placeholder="Empuje - Tiron - Pierna"
+          />
+        </label>
+
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Objetivo
+          <input
+            value={form.focus}
+            onChange={(event) => onChange((prev) => ({ ...prev, focus: event.target.value }))}
+            placeholder="Hipertrofia"
+          />
+        </label>
+
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Nivel
+          <select value={form.level} onChange={(event) => onChange((prev) => ({ ...prev, level: event.target.value }))}>
+            <option value="Principiante">Principiante</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzado">Avanzado</option>
+          </select>
+        </label>
+
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Frecuencia
+          <input
+            value={form.frequency}
+            onChange={(event) => onChange((prev) => ({ ...prev, frequency: event.target.value }))}
+            placeholder="4 dias por semana"
+          />
+        </label>
+      </div>
+
+      <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+        Descripcion
+        <textarea
+          rows={3}
+          value={form.description}
+          onChange={(event) => onChange((prev) => ({ ...prev, description: event.target.value }))}
+          placeholder="Describe estructura y notas generales de la rutina."
+        />
+      </label>
+
+      <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+        Material necesario
+        <input
+          value={form.equipment}
+          onChange={(event) => onChange((prev) => ({ ...prev, equipment: event.target.value }))}
+          placeholder="Barra, mancuernas, polea"
+        />
+      </label>
+
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-brand-text-main">Dias del programa</p>
+        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">Paso 2. Configura cada dia</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {form.days.map((day) => (
             <button
@@ -434,14 +466,15 @@ function Overview({
               type="button"
               onClick={() => onSelectDay(day.id)}
               className={clsx(
-                "flex flex-col items-start gap-2 rounded-2xl border border-brand-border bg-brand-dark/70 px-4 py-3 text-left text-sm transition hover:-translate-y-0.5 hover:shadow",
-                selectedDayId === day.id && "border-brand-primary bg-brand-primary/5",
+                "apple-panel-muted flex flex-col items-start gap-1.5 p-4 text-left transition",
+                selectedDayId === day.id ? "border-apple-blue/60" : "hover:-translate-y-0.5",
               )}
             >
-              <span className="font-semibold text-brand-text-main">{day.title}</span>
-              <span className="text-xs text-brand-text-muted">
-                {day.exercises.length ? `${day.exercises.length} ejercicios` : "Sin ejercicios aun"}
+              <span className="sf-text-caption-strong text-apple-near-black dark:text-white">{day.title}</span>
+              <span className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
+                {day.exercises.length > 0 ? `${day.exercises.length} ejercicios` : "Sin ejercicios"}
               </span>
+              <span className="mt-1 sf-text-nano uppercase tracking-widest text-apple-blue">Editar dia</span>
             </button>
           ))}
         </div>
@@ -464,84 +497,92 @@ function DayDetail({
   onRemoveExercise: (exerciseId: string) => void;
 }) {
   return (
-    <section className="space-y-4">
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-brand-text-main"
-      >
-        <ArrowLeft className="h-4 w-4" /> Volver a los dias
+    <section className="space-y-5">
+      <button type="button" onClick={onBack} className="apple-link inline-flex items-center gap-2 sf-text-caption-strong">
+        <ArrowLeft className="h-4 w-4" /> Volver a la rutina
       </button>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2 text-xs text-brand-text-muted">
+      <div className="apple-panel-muted rounded-2xl p-4">
+        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">{day.title}</p>
+        <p className="mt-1 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          {day.exercises.length > 0 ? `${day.exercises.length} ejercicios configurados` : "Aun no hay ejercicios en este dia"}
+        </p>
+      </div>
+
+      <div className="apple-panel-muted grid gap-4 p-5 md:grid-cols-2">
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
           Nombre del dia
-          <input
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-            value={day.title}
-            onChange={(event) => onUpdate((prev) => ({ ...prev, title: event.target.value }))}
-          />
+          <input value={day.title} onChange={(event) => onUpdate((prev) => ({ ...prev, title: event.target.value }))} />
         </label>
-        <label className="space-y-2 text-xs text-brand-text-muted">
+
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
           Foco del dia
-          <input
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-            value={day.focus}
-            onChange={(event) => onUpdate((prev) => ({ ...prev, focus: event.target.value }))}
-          />
+          <input value={day.focus} onChange={(event) => onUpdate((prev) => ({ ...prev, focus: event.target.value }))} />
         </label>
       </div>
 
-      <label className="block space-y-2 text-xs text-brand-text-muted">
+      <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
         Notas
-        <textarea
-          className="w-full rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-          rows={2}
-          value={day.notes}
-          onChange={(event) => onUpdate((prev) => ({ ...prev, notes: event.target.value }))}
-        />
+        <textarea rows={2} value={day.notes} onChange={(event) => onUpdate((prev) => ({ ...prev, notes: event.target.value }))} />
       </label>
 
-      <div className="flex justify-between">
-        <h3 className="text-sm font-semibold text-brand-text-main">Ejercicios asignados</h3>
-        <button
-          type="button"
-          onClick={onAddExercise}
-          className="inline-flex items-center gap-1 rounded-full border border-brand-border px-3 py-1 text-xs font-semibold text-brand-text-main transition hover:-translate-y-0.5 hover:shadow-sm"
-        >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="sf-text-body-emphasis text-apple-near-black dark:text-white">Ejercicios del dia</h3>
+        <button type="button" onClick={onAddExercise} className="btn-apple-pill inline-flex items-center gap-1.5">
           <Plus className="h-3.5 w-3.5" /> Agregar ejercicio
         </button>
       </div>
 
       {day.exercises.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-brand-border bg-brand-dark/60 px-4 py-3 text-xs text-brand-text-muted">
-          Todavia no has agregado ejercicios a este dia.
+        <p className="apple-panel-muted sf-text-caption p-4 text-apple-near-black/60 dark:text-white/60">
+          No hay ejercicios aun. Usa Agregar ejercicio para empezar.
         </p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-2.5">
           {day.exercises.map((exercise) => (
-            <li
-              key={exercise.id}
-              className="flex items-center justify-between rounded-2xl border border-brand-border bg-brand-dark/60 px-4 py-3 text-sm text-brand-text-muted"
-            >
+            <li key={exercise.id} className="apple-panel-muted flex items-center justify-between gap-3 px-4 py-3">
               <div>
-                <p className="font-semibold text-brand-text-main">{exercise.name}</p>
-                <p className="text-xs text-brand-text-muted">
-                  {exercise.sets}x {exercise.repRange} - {exercise.rest} descanso
+                <p className="sf-text-caption-strong text-apple-near-black dark:text-white">{exercise.name}</p>
+                <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
+                  {exercise.sets} x {exercise.repRange} - descanso {exercise.rest}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onRemoveExercise(exercise.id)}
-                className="inline-flex items-center gap-1 rounded-full border border-brand-border bg-brand-dark px-3 py-1 text-xs text-brand-text-muted transition hover:border-brand-primary/30 hover:text-brand-primary"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Quitar
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <Link href={`/exercises/detail?id=${exercise.id}&from=creator`} className="btn-apple-ghost inline-flex items-center gap-1.5">
+                  <Eye className="h-3.5 w-3.5" /> Ver
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => onRemoveExercise(exercise.id)}
+                  className="btn-apple-ghost inline-flex items-center gap-1.5 text-[#ff3b30] hover:text-[#ff3b30]"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Quitar
+                </button>
+              </div>
             </li>
           ))}
         </ul>
       )}
     </section>
+  );
+}
+
+function RoutineCreatorSteps({ items }: { items: CreatorStep[] }) {
+  return (
+    <ol className="mt-2 flex flex-wrap items-center gap-3">
+      {items.map((item) => (
+        <li key={item.id} className="inline-flex items-center gap-1.5">
+          {item.done ? (
+            <Check className="h-3.5 w-3.5 text-apple-blue" />
+          ) : (
+            <Circle className={clsx("h-3.5 w-3.5", item.active ? "text-apple-blue" : "text-apple-near-black/35 dark:text-white/35")} />
+          )}
+          <span className={clsx("sf-text-micro", item.active ? "font-semibold text-apple-near-black dark:text-white" : "text-apple-near-black/55 dark:text-white/55")}>
+            {item.label}
+          </span>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -572,36 +613,29 @@ function ExercisePicker({
 }) {
   return (
     <section className="space-y-4">
-      <button
-        type="button"
-        onClick={onClose}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-brand-text-main"
-      >
+      <button type="button" onClick={onClose} className="apple-link inline-flex items-center gap-2 sf-text-caption-strong">
         <ArrowLeft className="h-4 w-4" /> Volver al dia
       </button>
 
-      <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-brand-text-main">Selecciona ejercicios</h3>
-        <p className="text-xs text-brand-text-muted">
-          Filtra por nombre, musculo o material, revisa la ficha del ejercicio y agregalo al dia.
+      <div className="space-y-1">
+        <h3 className="sf-text-subheading text-apple-near-black dark:text-white">Selecciona ejercicios</h3>
+        <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
+          Filtra por nombre, grupo muscular o material y agrega directamente al dia.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 md:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-text-muted" />
+      <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-apple-near-black/35 dark:text-white/35" />
           <input
-            className="w-full rounded-2xl border border-brand-border bg-brand-dark px-9 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
+            className="pl-9"
             placeholder="Press banca, espalda, superseries..."
             value={searchTerm}
             onChange={(event) => onSearch(event.target.value)}
           />
         </div>
-        <select
-          className="rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-          value={muscleFilter}
-          onChange={(event) => onMuscleFilter(event.target.value)}
-        >
+
+        <select value={muscleFilter} onChange={(event) => onMuscleFilter(event.target.value)}>
           <option value="">Musculo</option>
           {availableMuscles.map((tag) => (
             <option key={tag} value={tag}>
@@ -609,11 +643,8 @@ function ExercisePicker({
             </option>
           ))}
         </select>
-        <select
-          className="rounded-2xl border border-brand-border bg-brand-dark px-3 py-2 text-sm text-brand-text-main placeholder:text-brand-text-muted/70"
-          value={equipmentFilter}
-          onChange={(event) => onEquipmentFilter(event.target.value)}
-        >
+
+        <select value={equipmentFilter} onChange={(event) => onEquipmentFilter(event.target.value)}>
           <option value="">Material</option>
           {availableEquipment.map((tag) => (
             <option key={tag} value={tag}>
@@ -623,44 +654,42 @@ function ExercisePicker({
         </select>
       </div>
 
-      <div className="grid max-h-80 gap-3 overflow-y-auto rounded-2xl border border-brand-border bg-brand-dark/55 p-4">
+      <div className="max-h-[24rem] space-y-3 overflow-y-auto pr-1">
         {exercises.length === 0 ? (
-          <p className="text-xs text-brand-text-muted">No se encontraron ejercicios con los filtros actuales.</p>
+          <p className="apple-panel-muted sf-text-caption p-4 text-apple-near-black/60 dark:text-white/60">
+            No se encontraron ejercicios para esos filtros.
+          </p>
         ) : (
           exercises.map((exercise) => (
-            <div
-              key={exercise.id}
-              className="flex flex-col gap-2 rounded-2xl border border-brand-border/70 bg-brand-surface px-4 py-3 text-sm text-brand-text-muted shadow-sm"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-col">
-                  <p className="font-semibold text-brand-text-main">{exercise.name}</p>
-                </div>
+            <article key={exercise.id} className="apple-panel-muted space-y-2 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <p className="sf-text-body-emphasis text-apple-near-black dark:text-white">{exercise.name}</p>
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/exercises/detail?id=${exercise.id}&from=creator`}
-                    className="inline-flex items-center gap-1 rounded-full border border-brand-border px-2 py-0.5 text-xs font-semibold text-brand-text-main transition hover:-translate-y-0.5 hover:shadow"
+                    className="btn-apple-ghost inline-flex items-center gap-1.5"
                   >
                     <Eye className="h-3.5 w-3.5" /> Ver ficha
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => onSelect(exercise)}
-                    className="rounded-full border border-brand-border px-3 py-1 text-xs font-semibold text-brand-text-main transition hover:-translate-y-0.5 hover:shadow"
-                  >
+                  <button type="button" onClick={() => onSelect(exercise)} className="btn-apple-pill-dark">
                     Agregar
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-brand-text-muted">{exercise.description}</p>
-              <div className="flex flex-wrap gap-2 text-[0.65rem] text-brand-text-muted">
+
+              <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">{exercise.description}</p>
+
+              <div className="flex flex-wrap gap-2">
                 {exercise.tags.map((tag) => (
-                  <span key={tag} className="rounded-full border border-brand-border px-2 py-0.5">
+                  <span
+                    key={tag}
+                    className="rounded-full border border-apple-near-black/10 bg-white px-2.5 py-0.5 sf-text-nano text-apple-near-black/65 dark:border-white/15 dark:bg-apple-surface-2 dark:text-white/70"
+                  >
                     {tag}
                   </span>
                 ))}
               </div>
-            </div>
+            </article>
           ))
         )}
       </div>

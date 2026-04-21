@@ -49,24 +49,24 @@ export default function MediaShowcase({ image, video }: MediaShowcaseProps) {
   return (
     <section className="grid gap-4 md:grid-cols-2">
       {hasImage && image && (
-        <figure className="overflow-hidden rounded-2xl border">
+        <figure className="overflow-hidden rounded-3xl border-none shadow-apple-card">
           <Image src={image} alt="Referencia del ejercicio" className="h-full w-full object-cover" loading="lazy" width={500} height={500} />
         </figure>
       )}
       {hasVideo && videoSrc && (
-        <div className="rounded-2xl border bg-black/90 p-2">
+        <div className="rounded-3xl border-none shadow-apple-card bg-apple-gray dark:bg-apple-surface-2 p-2">
           {isYouTube ? (
-            <div className="aspect-video w-full overflow-hidden rounded-xl">
+            <div className="aspect-video w-full overflow-hidden rounded-2xl">
               <iframe
                 src={videoSrc}
-                title="Video de demostracion"
+                title="Video de demostración"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="h-full w-full"
               />
             </div>
           ) : (
-            <video controls preload="metadata" className="w-full rounded-xl">
+            <video controls preload="metadata" className="w-full rounded-2xl">
               <source src={videoSrc} type="video/mp4" />
               Tu navegador no soporta video embebido.
             </video>

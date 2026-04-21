@@ -1,0 +1,100 @@
+{
+  "cookies": [
+    {
+      "name": "uid",
+      "value": "UA8GresCmKS4TaGUDUdMRHdNJaF2",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "YSC",
+      "value": "yE9bujQXu4k",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "VISITOR_INFO1_LIVE",
+      "value": "G6K9AYjbGoA",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1792307302.366488,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "VISITOR_PRIVACY_METADATA",
+      "value": "CgJFUxIiEh4SHAsMDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicgHQ%3D%3D",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1792307302.366515,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__Secure-ROLLOUT_TOKEN",
+      "value": "CP_CsL6s9L-AwwEQ64CYpbH-kwMY64CYpbH-kwM%3D",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1792307302.366548,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "http://localhost",
+      "_crHasCrossSiteAncestor": true
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3100",
+      "localStorage": [
+        {
+          "name": "firestore_targets_firestore/[DEFAULT]/gymapp-401c0/_4",
+          "value": "{\"state\":\"current\",\"updateTimeMs\":1776755308626}"
+        },
+        {
+          "name": "firestore_online_state_firestore/[DEFAULT]/gymapp-401c0/",
+          "value": "{\"clientId\":\"bDUB2rG8qiuDuZzw6KeP\",\"onlineState\":\"Online\"}"
+        },
+        {
+          "name": "firestore_sequence_number_firestore/[DEFAULT]/gymapp-401c0/",
+          "value": "55"
+        },
+        {
+          "name": "firestore_zombie_firestore/[DEFAULT]/gymapp-401c0/_bDUB2rG8qiuDuZzw6KeP",
+          "value": "1776755328488"
+        },
+        {
+          "name": "firestore_zombie_firestore/[DEFAULT]/gymapp-401c0/_1mPvjmDaISWmbxFQWqc9",
+          "value": "1776755312862"
+        },
+        {
+          "name": "firestore_targets_firestore/[DEFAULT]/gymapp-401c0/_2",
+          "value": "{\"state\":\"current\",\"updateTimeMs\":1776755265936}"
+        }
+      ]
+    },
+    {
+      "origin": "https://www.youtube.com",
+      "localStorage": [
+        {
+          "name": "ytidb::LAST_RESULT_ENTRY_KEY",
+          "value": "{\"data\":{\"hasSucceededOnce\":true},\"expiration\":1779347302796,\"creation\":1776755302797}"
+        },
+        {
+          "name": "yt-icons-last-purged",
+          "value": "1770624502727"
+        }
+      ]
+    }
+  ]
+}

@@ -12,48 +12,72 @@ export default {
   theme: {
     container: { center: true, padding: "2rem" },
     extend: {
+      fontFamily: {
+        sans: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"SF Pro Display"',
+          '"SF Pro Text"',
+          '"Segoe UI"',
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+      },
       borderRadius: {
+        "pill": "980px",
         "2xl": "1rem",
         "3xl": "1.5rem",
         "4xl": "2rem",
       },
       colors: {
-        brand: {
-          dark: "#0b0d12",
-          surface: "#141720",
-          "surface-light": "#1c1f2a",
-          border: "#252833",
-          primary: {
-            DEFAULT: "#3ee07f",
-            glow: "rgba(62, 224, 127, 0.45)",
+        apple: {
+          blue: "#0071e3",
+          "link-blue": "#0066cc",
+          "link-dark": "#2997ff",
+          black: "#000000",
+          gray: "#f5f5f7",
+          "near-black": "#1d1d1f",
+          surface: {
+            "1": "#272729",
+            "2": "#262628",
+            "3": "#28282a",
+            "4": "#2a2a2d",
+            "5": "#242426"
           },
-          secondary: "#10b981",
-          accent: "#f472b6",
           text: {
-            main: "#f8fafc",
-            muted: "#94a3b8",
+            white: "#ffffff",
+            "near-black": "#1d1d1f",
+            "black-80": "rgba(0, 0, 0, 0.8)",
+            "black-48": "rgba(0, 0, 0, 0.48)"
+          },
+          btn: {
+            "active": "#ededf2",
+            "default-light": "#fafafc",
+            "overlay": "rgba(210, 210, 215, 0.64)",
+            "dark-hover": "rgba(255, 255, 255, 0.32)"
+          }
+        },
+        // Legacy fallbacks mapped temporarily during transition, we will migrate everything.
+        brand: {
+          dark: "#f5f5f7",
+          surface: "#ffffff",
+          border: "rgba(0, 0, 0, 0.1)",
+          primary: {
+            DEFAULT: "#0071e3",
+            glow: "rgba(0, 113, 227, 0.4)",
+          },
+          secondary: "#0066cc",
+          text: {
+            main: "#1d1d1f",
+            muted: "rgba(0, 0, 0, 0.48)",
           },
         },
       },
-      backgroundImage: {
-        "gradient-brand": "linear-gradient(135deg, #3ee07f 0%, #10b981 100%)",
-        "gradient-glass": "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%)",
-        "glow-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
       boxShadow: {
-        "glow-primary": "0 0 20px 0 rgba(62, 224, 127, 0.25)",
-        "glass-inner": "inset 0 1px 1px 0 rgba(255, 255, 255, 0.05)",
+        "apple-card": "rgba(0, 0, 0, 0.22) 3px 5px 30px 0px",
       },
-      animation: {
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "float": "float 6s ease-in-out infinite",
-      },
-      keyframes: {
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        }
-      }
     }
   },
   plugins: [addVariablesForColors]

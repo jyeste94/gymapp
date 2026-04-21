@@ -1,169 +1,146 @@
 ﻿"use client";
+
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Plus, ArrowLeft } from "lucide-react";
-import { useWorkoutStore } from "@/lib/stores/workout-session";
+import { ArrowLeft, Check, Plus } from "lucide-react";
 import { WorkoutTimer } from "@/components/workout/workout-timer";
-import clsx from "clsx";
+import { useWorkoutStore } from "@/lib/stores/workout-session";
 
-/* 
- * Active Workout Page
- * - Displays list of exercises
- * - Allows logging sets
- * - Handles finishing the workout
- */
 export default function ActiveWorkoutPage() {
-    const router = useRouter();
-    const state = useWorkoutStore();
+  const router = useRouter();
+  const state = useWorkoutStore();
 
-    // Hydration check
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-    if (!mounted) return null;
+  if (!mounted) return null;
 
-    if (!state.startTime) {
-        return (
-            <div className="flex h-full flex-col items-center justify-center p-6 text-center">
-                <h2 className="text-lg font-semibold text-zinc-900">No hay entrenamiento activo</h2>
-                <button
-                    onClick={() => router.push("/routines")}
-                    className="mt-4 rounded-2xl bg-[#0a2e5c] px-6 py-2 text-sm font-semibold text-white"
-                >
-                    Ir a rutinas
-                </button>
-            </div>
-        );
-    }
-
-    const handleFinish = () => {
-        // Navigate to summary which will handle the saving logic
-        router.push("/workout/finish");
-    };
-
+  if (!state.startTime) {
     return (
-        <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
-            <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
-                <header className="sticky top-0 z-20 -mx-4 -mt-6 flex items-center justify-between border-b border-brand-border bg-brand-surface/95 px-6 py-4 backdrop-blur-sm sm:mx-0 sm:mt-0 sm:rounded-t-3xl">
-                    <div className="flex items-center gap-3">
-                        <button onClick={() => router.back()} className="text-brand-text-muted hover:text-brand-text-main">
-                            <ArrowLeft className="h-5 w-5" />
-                        </button>
-                        <div>
-                            <h1 className="text-sm font-bold text-brand-text-main">{state.dayTitle}</h1>
-                            <p className="text-xs text-brand-text-muted">{state.exercises.length} Ejercicios</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <WorkoutTimer />
-                        <button
-                            onClick={handleFinish}
-                            className="rounded-full bg-brand-primary px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-primary/90"
-                        >
-                            Terminar
-                        </button>
-                    </div>
-                </header>
-
-                <div className="space-y-6 px-1">
-                    {state.exercises.map((exercise) => (
-                        <div
-                            key={exercise.id}
-                            className="overflow-hidden rounded-3xl border border-brand-border bg-brand-surface shadow-sm"
-                        >
-                            <div className="border-b border-brand-border bg-brand-dark/50 px-5 py-3">
-                                <h3 className="font-semibold text-brand-text-main">{exercise.name}</h3>
-                                <p className="text-xs text-brand-text-muted">{exercise.sets.length} series est. | {exercise.rest} descanso</p>
-                            </div>
-
-                            <div className="p-4">
-                                <div className="grid grid-cols-[1fr_1fr_1fr_40px] gap-2 pb-2 text-center text-[10px] font-bold uppercase tracking-wider text-brand-text-muted">
-                                    <div>KG</div>
-                                    <div>Reps</div>
-                                    <div>RIR</div>
-                                    <div></div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    {exercise.sets.map((set, index) => (
-                                        <SetRow
-                                            key={set.id}
-                                            setIndex={index}
-                                            setId={set.id}
-                                            exerciseId={exercise.id}
-                                            set={set}
-                                        />
-                                    ))}
-                                </div>
-
-                                <button
-                                    onClick={() => state.addSet(exercise.id)}
-                                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-brand-border py-2 text-xs font-medium text-brand-text-muted hover:bg-brand-dark"
-                                >
-                                    <Plus className="h-3.5 w-3.5" /> Anadir serie
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+      <div className="apple-page-shell max-w-3xl">
+        <div className="apple-panel mt-12 flex flex-col items-center justify-center p-8 text-center">
+          <h2 className="sf-text-body-strong text-apple-near-black dark:text-white">No hay entrenamiento activo</h2>
+          <button onClick={() => router.push("/routines")} className="btn-apple-primary mt-6">
+            Ir a rutinas
+          </button>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="apple-page-shell max-w-3xl pt-4">
+      <header className="sticky top-0 z-20 -mx-4 -mt-4 mb-6 flex items-center justify-between border-b border-apple-near-black/5 bg-white/85 px-4 py-4 backdrop-blur-xl dark:border-white/5 dark:bg-apple-surface-1/85 sm:mx-0 sm:mt-0 sm:rounded-t-3xl">
+        <div className="flex items-center gap-3">
+          <button onClick={() => router.back()} className="text-apple-blue transition-opacity hover:opacity-80">
+            <ArrowLeft className="h-6 w-6" />
+          </button>
+          <div>
+            <h1 className="line-clamp-1 max-w-[150px] sf-text-body-strong text-apple-near-black dark:text-white sm:max-w-xs">{state.dayTitle}</h1>
+            <p className="sf-text-nano text-apple-near-black/50 dark:text-white/50">{state.exercises.length} ejercicios</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <WorkoutTimer />
+          <button onClick={() => router.push("/workout/finish")} className="rounded-full bg-apple-blue px-4 py-[6px] sf-text-caption font-semibold text-white shadow-sm transition hover:bg-opacity-90">
+            Terminar
+          </button>
+        </div>
+      </header>
+
+      <div className="space-y-6">
+        {state.exercises.map((exercise) => (
+          <div key={exercise.id} className="apple-panel overflow-hidden rounded-3xl border-none p-0">
+            <div className="border-b border-apple-near-black/5 bg-apple-gray px-5 py-4 dark:border-white/5 dark:bg-apple-surface-2">
+              <h3 className="sf-text-body-strong text-apple-near-black dark:text-white">{exercise.name}</h3>
+              <p className="mt-1 sf-text-caption text-apple-near-black/50 dark:text-white/50">
+                {exercise.sets.length} series est. - {exercise.rest} descanso
+              </p>
+            </div>
+
+            <div className="p-2 sm:p-5">
+              <div className="mb-1 grid grid-cols-[1fr_1fr_1fr_48px] gap-2 px-1 pb-2 text-center sf-text-nano uppercase tracking-widest text-apple-near-black/40 dark:text-white/40">
+                <div>KG</div>
+                <div>Reps</div>
+                <div>RIR</div>
+                <div />
+              </div>
+
+              <div className="space-y-2">
+                {exercise.sets.map((set, index) => (
+                  <SetRow key={set.id} setId={set.id} setIndex={index} exerciseId={exercise.id} set={set} />
+                ))}
+              </div>
+
+              <button
+                onClick={() => state.addSet(exercise.id)}
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-apple-blue/30 py-3 sf-text-body font-medium text-apple-blue transition-colors hover:bg-apple-blue/10 active:bg-apple-blue/20"
+              >
+                <Plus className="h-4 w-4" /> Anadir serie
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function SetRow({
-    set,
-    exerciseId,
-    setId,
+  set,
+  exerciseId,
+  setId,
 }: {
-    set: import("@/lib/stores/workout-session").WorkoutSet,
-    exerciseId: string,
-    setId: string,
-    setIndex: number
+  set: import("@/lib/stores/workout-session").WorkoutSet;
+  exerciseId: string;
+  setId: string;
+  setIndex: number;
 }) {
-    const store = useWorkoutStore();
+  const store = useWorkoutStore();
 
-    return (
-        <div className={clsx(
-            "grid grid-cols-[1fr_1fr_1fr_40px] items-center gap-2 rounded-xl border p-1.5 transition-colors",
-            set.completed
-                ? "border-emerald-500/50 bg-emerald-500/10"
-                : "border-brand-border bg-brand-dark"
-        )}>
-            <input
-                type="text"
-                placeholder="-"
-                className="w-full rounded-lg bg-transparent py-1 text-center text-sm font-semibold text-brand-text-main placeholder-brand-text-muted/50 outline-none transition focus:bg-brand-surface focus:ring-2 focus:ring-brand-primary"
-                value={set.weight}
-                onChange={(e) => store.updateSet(exerciseId, setId, { weight: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="-"
-                className="w-full rounded-lg bg-transparent py-1 text-center text-base font-semibold text-brand-text-main placeholder-brand-text-muted/50 outline-none transition focus:bg-brand-surface focus:ring-2 focus:ring-brand-primary"
-                value={set.reps}
-                onChange={(e) => store.updateSet(exerciseId, setId, { reps: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="-"
-                className="w-full rounded-lg bg-transparent py-1 text-center text-base font-semibold text-brand-text-main placeholder-brand-text-muted/50 outline-none transition focus:bg-brand-surface focus:ring-2 focus:ring-brand-primary"
-                value={set.rir}
-                onChange={(e) => store.updateSet(exerciseId, setId, { rir: e.target.value })}
-            />
+  return (
+    <div
+      className={clsx(
+        "grid grid-cols-[1fr_1fr_1fr_48px] items-center gap-2 rounded-2xl p-1.5 transition-colors sm:px-2",
+        set.completed
+          ? "bg-[#34C759]/10"
+          : "bg-apple-gray shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] dark:bg-apple-surface-2",
+      )}
+    >
+      <input
+        type="text"
+        placeholder="-"
+        className="w-full rounded-xl bg-transparent py-2.5 text-center sf-text-body font-semibold text-apple-near-black shadow-sm outline-none transition placeholder:text-apple-near-black/20 focus:bg-white focus:ring-2 focus:ring-apple-blue dark:text-white dark:placeholder:text-white/20 dark:focus:bg-apple-surface-1"
+        value={set.weight}
+        onChange={(event) => store.updateSet(exerciseId, setId, { weight: event.target.value })}
+      />
+      <input
+        type="number"
+        placeholder="-"
+        className="w-full rounded-xl bg-transparent py-2.5 text-center sf-text-body font-semibold text-apple-near-black shadow-sm outline-none transition placeholder:text-apple-near-black/20 focus:bg-white focus:ring-2 focus:ring-apple-blue dark:text-white dark:placeholder:text-white/20 dark:focus:bg-apple-surface-1"
+        value={set.reps}
+        onChange={(event) => store.updateSet(exerciseId, setId, { reps: event.target.value })}
+      />
+      <input
+        type="number"
+        placeholder="-"
+        className="w-full rounded-xl bg-transparent py-2.5 text-center sf-text-body font-semibold text-apple-near-black shadow-sm outline-none transition placeholder:text-apple-near-black/20 focus:bg-white focus:ring-2 focus:ring-apple-blue dark:text-white dark:placeholder:text-white/20 dark:focus:bg-apple-surface-1"
+        value={set.rir}
+        onChange={(event) => store.updateSet(exerciseId, setId, { rir: event.target.value })}
+      />
 
-            <button
-                onClick={() => store.toggleSetComplete(exerciseId, setId)}
-                className={clsx(
-                    "flex h-10 w-10 items-center justify-center rounded-xl transition-all active:scale-95",
-                    set.completed
-                        ? "bg-emerald-500 text-white shadow-sm shadow-emerald-500/20"
-                        : "bg-brand-surface text-brand-text-muted hover:bg-brand-primary/20 hover:text-brand-primary border border-brand-border"
-                )}
-            >
-                <Check className="h-5 w-5" />
-            </button>
-        </div>
-    )
+      <button
+        onClick={() => store.toggleSetComplete(exerciseId, setId)}
+        className={clsx(
+          "mx-auto flex h-[42px] w-[42px] items-center justify-center rounded-xl shadow-sm transition-all active:scale-95",
+          set.completed
+            ? "bg-[#34C759] text-white"
+            : "border border-apple-near-black/5 bg-white text-apple-near-black/40 hover:text-apple-blue dark:border-white/5 dark:bg-apple-surface-1 dark:text-white/40",
+        )}
+      >
+        <Check className="h-5 w-5 stroke-[2.5]" />
+      </button>
+    </div>
+  );
 }
-

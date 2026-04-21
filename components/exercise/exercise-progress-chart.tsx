@@ -22,17 +22,14 @@ export default function ExerciseProgressChart({ data }: Props) {
     const chartData = useMemo(() => {
         if (!data || data.length === 0) return [];
 
-        // Sort logs chronologically (oldest to newest) for the chart
         const sortedLogs = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         return sortedLogs.map((log) => {
-            // Find the max weight lifted in this session
             const maxWeight = log.sets.reduce((max, set) => {
                 const weight = parseFloat(set.weight || "0");
                 return weight > max ? weight : max;
             }, 0);
 
-            // Only include if there was actual weight lifted
             if (maxWeight <= 0) return null;
 
             return {
@@ -40,7 +37,7 @@ export default function ExerciseProgressChart({ data }: Props) {
                 weight: maxWeight,
                 formattedDate: format(new Date(log.date), "d MMM", { locale: es }),
             };
-        }).filter(Boolean); // Remove nulls
+        }).filter(Boolean);
     }, [data]);
 
     if (chartData.length === 0) {
@@ -48,50 +45,51 @@ export default function ExerciseProgressChart({ data }: Props) {
     }
 
     return (
-        <div className="w-full space-y-2 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-zinc-900">Progresión de Carga (kg)</h3>
+        <div className="w-full space-y-4 rounded-3xl border-none bg-apple-gray dark:bg-apple-surface-2 p-6 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
+            <h3 className="sf-text-body-strong text-apple-near-black dark:text-white">Progresión de Carga (kg)</h3>
 
             {chartData.length === 1 && chartData[0] ? (
-                <div className="flex h-[200px] w-full flex-col items-center justify-center space-y-2 text-[#71717a]">
-                    <div className="text-3xl font-bold text-[#0a2e5c]">{chartData[0].weight} <span className="text-sm font-normal">kg</span></div>
-                    <div className="text-xs">Récord actual ({chartData[0].formattedDate})</div>
-                    <div className="text-[10px] opacity-70">¡Registra más sesiones para ver tu progreso!</div>
+                <div className="flex h-[200px] w-full flex-col items-center justify-center space-y-2 text-apple-near-black/60 dark:text-white/60">
+                    <div className="sf-display-hero text-apple-near-black dark:text-white">{chartData[0].weight} <span className="sf-text-body font-normal text-apple-near-black/60 dark:text-white/60">kg</span></div>
+                    <div className="sf-text-caption">Récord actual ({chartData[0].formattedDate})</div>
+                    <div className="sf-text-nano opacity-70">¡Registra más sesiones para ver tu progreso!</div>
                 </div>
             ) : (
-                <div className="h-[200px] w-full">
+                <div className="h-[200px] w-full mt-4">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E5EA" />
                             <XAxis
                                 dataKey="formattedDate"
-                                tick={{ fontSize: 10, fill: "#71717a" }}
+                                tick={{ fontSize: 10, fill: "#8E8E93", fontWeight: 500 }}
                                 axisLine={false}
                                 tickLine={false}
                                 minTickGap={30}
                             />
                             <YAxis
-                                tick={{ fontSize: 10, fill: "#71717a" }}
+                                tick={{ fontSize: 10, fill: "#8E8E93", fontWeight: 500 }}
                                 axisLine={false}
                                 tickLine={false}
                                 width={35}
                             />
                             <Tooltip
                                 contentStyle={{
-                                    backgroundColor: "#fff",
-                                    borderRadius: "8px",
-                                    border: "1px solid #e4e4e7",
-                                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
+                                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                    borderRadius: "16px",
+                                    border: "none",
+                                    boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)",
+                                    backdropFilter: "blur(20px)"
                                 }}
-                                labelStyle={{ fontSize: "12px", color: "#71717a", marginBottom: "4px" }}
-                                itemStyle={{ fontSize: "14px", fontWeight: 600, color: "#0a2e5c" }}
+                                labelStyle={{ fontSize: "12px", color: "#8E8E93", marginBottom: "4px", fontWeight: 500 }}
+                                itemStyle={{ fontSize: "16px", fontWeight: 600, color: "#1D1D1F" }}
                             />
                             <Line
                                 type="monotone"
                                 dataKey="weight"
-                                stroke="#2563eb"
-                                strokeWidth={2}
-                                activeDot={{ r: 6, strokeWidth: 0 }}
-                                dot={{ r: 3, fill: "#2563eb", strokeWidth: 0 }}
+                                stroke="#0071E3"
+                                strokeWidth={3}
+                                activeDot={{ r: 6, strokeWidth: 0, fill: "#0071E3" }}
+                                dot={{ r: 4, fill: "#0071E3", strokeWidth: 0 }}
                             />
                         </LineChart>
                     </ResponsiveContainer>

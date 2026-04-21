@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useMemo, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,6 +24,7 @@ import SessionForm from "@/components/exercise/session-form";
 import type { SessionState, SessionSet } from "@/components/exercise/types";
 import ExerciseProgressChart from "@/components/exercise/exercise-progress-chart";
 import toast from 'react-hot-toast';
+import { ArrowLeft } from "lucide-react";
 
 const createSets = (count: number): SessionSet[] =>
   Array.from({ length: count }, () => ({ weight: "", reps: "", rir: "", completed: false }));
@@ -134,10 +135,8 @@ function ExerciseDetailContent() {
     }
 
     // 3. Merge and Deduplicate (by date, roughly)
-    // If we have a direct log and an extracted log for the same time, prefer direct log.
     const combined = [...directLogs];
     extractedLogs.forEach(exLog => {
-      // Check if we already have a log near this date (within 1 minute)
       const exists = combined.some(existing =>
         Math.abs(new Date(existing.date).getTime() - new Date(exLog.date).getTime()) < 60000
       );
@@ -183,7 +182,6 @@ function ExerciseDetailContent() {
       });
     } else if (history.length > 0) {
       // If NO log for today, but we have history, PRE-FILL from the last session.
-      // We do NOT set activeLogId, because we want to create a NEW log for today.
       const lastLog = history[0]; // history is sorted desc based on useExerciseLogs
 
       const prefillSets = lastLog.sets.map(s => ({
@@ -216,14 +214,16 @@ function ExerciseDetailContent() {
 
   if (!exercise) {
     return (
-      <div className="space-y-4 rounded-2xl border border-[rgba(10,46,92,0.18)] bg-white/80 p-6">
-        <h1 className="text-xl font-semibold text-zinc-900">Ejercicio no encontrado</h1>
-        <p className="text-sm text-[#4b5a72]">
-          Revisa tus rutinas desde la seccion principal para seleccionar un ejercicio valido.
-        </p>
-        <Link href="/routines" className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-          Volver a rutinas
-        </Link>
+      <div className="pb-32 pt-6 lg:pb-12 max-w-4xl mx-auto w-full space-y-8 px-5 lg:px-0 mt-4 md:mt-0">
+        <div className="space-y-4 rounded-3xl bg-white dark:bg-apple-surface-1 shadow-apple-card p-6 text-center border-none">
+          <h1 className="sf-text-body-strong text-apple-near-black dark:text-white">Ejercicio no encontrado</h1>
+          <p className="sf-text-body text-apple-near-black/60 dark:text-white/60">
+            Revisa tus rutinas desde la sección principal para seleccionar un ejercicio válido.
+          </p>
+          <Link href="/routines" className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity">
+            Volver a rutinas
+          </Link>
+        </div>
       </div>
     );
   }
@@ -287,11 +287,11 @@ function ExerciseDetailContent() {
     try {
       if (activeLogId) {
         await updateExerciseLog(null, user.uid, activeLogId, logData);
-        toast.success("Registro actualizado con exito!");
+        toast.success("Registro actualizado con éxito!");
       } else {
         const newLogId = await saveExerciseLog(null, user.uid, logData);
         setActiveLogId(newLogId);
-        toast.success("Registro guardado con exito!");
+        toast.success("Registro guardado con éxito!");
       }
     } catch (e) {
       toast.error("Error al guardar el registro.");
@@ -304,67 +304,65 @@ function ExerciseDetailContent() {
   const renderBackButton = () => {
     if (backHref) {
       return (
-        <Link href={backHref} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-          {"<- Volver"}
+        <Link href={backHref} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+          <ArrowLeft className="h-5 w-5" />
+          <span>Volver</span>
         </Link>
       );
     }
     if (fromCreator) {
       return (
-        <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-          {"<- Volver al creador"}
+        <button onClick={() => router.back()} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+           <ArrowLeft className="h-5 w-5" />
+           <span>Volver al creador</span>
         </button>
       );
     }
     return (
-      <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-xs font-semibold text-[#4b5a72]">
-        {"<- Volver"}
+      <button onClick={() => router.back()} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+         <ArrowLeft className="h-5 w-5" />
+         <span>Volver</span>
       </button>
     );
   };
 
   return (
-    <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
-      <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
-        {renderBackButton()}
+    <div className="pb-32 pt-6 lg:pb-12 max-w-4xl mx-auto w-full space-y-6 px-5 lg:px-0 mt-4 md:mt-0">
+      {renderBackButton()}
 
-        {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
+      {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
 
-        <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
+      <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 
-        {!fromCreator && history.length > 0 && (
-          <ExerciseProgressChart data={history} />
-        )}
+      {!fromCreator && history.length > 0 && (
+        <ExerciseProgressChart data={history} />
+      )}
 
-        <TechniqueGuide exercise={exercise as RoutineExercise} />
+      <TechniqueGuide exercise={exercise as RoutineExercise} />
 
-        {!fromCreator && (
-          <>
-            <SessionForm
-              session={session}
-              setSession={setSession}
-              handleSave={handleSave}
-              isSaving={isSaving}
-              userId={user?.uid}
-              addExtraSet={addExtraSet}
-              removeLastSet={removeLastSet}
-              toggleSetCompleted={toggleSetCompleted}
-              handleSetField={handleSetField}
-            />
-            {/* History removed per user request to avoid clutter */}
-            {/* <ExerciseHistory history={history} /> */}
-          </>
-        )}
-      </div>
+      {!fromCreator && (
+        <>
+          <SessionForm
+            session={session}
+            setSession={setSession}
+            handleSave={handleSave}
+            isSaving={isSaving}
+            userId={user?.uid}
+            addExtraSet={addExtraSet}
+            removeLastSet={removeLastSet}
+            toggleSetCompleted={toggleSetCompleted}
+            handleSetField={handleSetField}
+          />
+        </>
+      )}
     </div>
   );
 }
 
 export default function ExerciseDetailPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-center text-sm text-[#51607c]">Cargando ejercicio...</div>}>
+    <Suspense fallback={<div className="p-6 text-center sf-text-body text-apple-near-black/60 dark:text-white/60 mt-12">Cargando ejercicio...</div>}>
       <ExerciseDetailContent />
     </Suspense>
   );
 }
-

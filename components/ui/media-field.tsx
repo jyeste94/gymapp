@@ -1,4 +1,3 @@
-
 type MediaFieldProps = {
   label: string;
   value: string;
@@ -9,14 +8,8 @@ type MediaFieldProps = {
 export default function MediaField({ label, value, placeholder, onChange }: MediaFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="text-xs text-[#51607c]">{label}</label>
-      <input
-        type="url"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded border px-3 py-2 text-sm"
-      />
+      <label className="sf-text-micro text-apple-near-black/56 dark:text-white/56">{label}</label>
+      <input type="url" value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="w-full" />
     </div>
   );
 }

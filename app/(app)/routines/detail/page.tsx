@@ -1,19 +1,21 @@
 ﻿"use client";
-import { useMemo, Suspense } from "react";
+
+import { Suspense, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import RoutineHistoryCard from "@/components/routines/routine-history-card";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
-import { useCol } from "@/lib/firestore/hooks";
-import { defaultRoutines } from "@/lib/data/routine-library";
 import { defaultExercises } from "@/lib/data/exercises";
+import { defaultRoutines } from "@/lib/data/routine-library";
+import { useCol } from "@/lib/firestore/hooks";
+import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import { buildRoutine } from "@/lib/routine-builder";
 import { mergeRoutines } from "@/lib/routine-helpers";
 import type { RoutineTemplate } from "@/lib/types";
-import RoutineHistoryCard from "@/components/routines/routine-history-card";
 
-const formatBadge = (label: string) => (
-  <span className="rounded-full border border-brand-border bg-brand-dark px-2 py-0.5 text-xs text-brand-text-muted">
+const renderBadge = (label: string) => (
+  <span className="rounded-full border border-apple-near-black/10 bg-apple-gray px-2.5 py-1 sf-text-nano uppercase tracking-widest text-apple-near-black/70 dark:border-white/10 dark:bg-apple-surface-2 dark:text-white/70">
     {label}
   </span>
 );
@@ -28,14 +30,11 @@ function RoutineOverviewContent() {
   const { data: routineLogs } = useWorkoutLogs(user?.uid);
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
+    () => (routineTemplates ?? []).map((template) => buildRoutine(template, defaultExercises)),
     [routineTemplates],
   );
 
-  const routines = useMemo(
-    () => mergeRoutines(customRoutines, defaultRoutines),
-    [customRoutines],
-  );
+  const routines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
 
   const routine = useMemo(
     () => routines.find((entry) => entry.id === routineId) ?? null,
@@ -44,93 +43,96 @@ function RoutineOverviewContent() {
 
   if (!routine) {
     return (
-      <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
-        <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
-          <div className="rounded-2xl border border-brand-border bg-brand-surface p-6 text-sm text-brand-text-muted">
-            <p>No encontramos esa rutina. Vuelve al listado y selecciona una disponible.</p>
-            <Link className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-brand-primary" href="/routines">
-              Volver a rutinas
-            </Link>
-          </div>
+      <div className="apple-page-shell">
+        <div className="apple-panel mt-8 space-y-3 text-center">
+          <p className="sf-text-body text-apple-near-black/60 dark:text-white/60">Rutina no encontrada.</p>
+          <Link className="apple-link inline-flex items-center gap-1" href="/routines">
+            <ArrowLeft className="h-4 w-4" /> Volver a rutinas
+          </Link>
         </div>
       </div>
     );
   }
 
-  // Respetamos el orden original del array (definido en el template)
   const sortedDays = routine.days;
   const totalExercises = sortedDays.reduce((sum, day) => sum + day.exercises.length, 0);
 
   return (
-    <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-0 md:mt-0 md:min-h-0 md:h-full md:w-full md:max-w-4xl md:bg-transparent md:pb-8 md:pt-0">
-      <div className="flex-1 space-y-6 px-5 pb-24 h-[100dvh] overflow-y-auto md:px-0">
-        <header className="rounded-3xl border border-brand-border bg-brand-surface p-6 shadow-sm">
-          <div className="flex flex-col gap-4">
-            <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.35em] text-brand-primary/80">Rutina</p>
-              <h1 className="text-2xl font-semibold text-brand-text-main">{routine.title}</h1>
-              {routine.description && <p className="text-sm text-brand-text-muted">{routine.description}</p>}
-            </div>
-            <div className="flex flex-wrap justify-start gap-2">
-              {routine.level && formatBadge(routine.level)}
-              {routine.durationWeeks && formatBadge(`${routine.durationWeeks} semanas`)}
-              {routine.frequency && formatBadge(routine.frequency)}
-              {formatBadge(`${sortedDays.length} dias`)}
-              {formatBadge(`${totalExercises} ejercicios`)}
-            </div>
+    <div className="apple-page-shell space-y-8">
+      <header className="flex items-center gap-3">
+        <Link href="/routines" className="text-apple-blue transition-opacity hover:opacity-80">
+          <ArrowLeft className="h-6 w-6" />
+        </Link>
+        <span className="sf-text-subnav text-apple-near-black/60 dark:text-white/60">Volver</span>
+      </header>
+
+      <section className="apple-panel space-y-5">
+        <div>
+          <p className="apple-kicker">Resumen</p>
+          <h1 className="sf-display-card-title text-apple-near-black dark:text-white">{routine.title}</h1>
+          {routine.description && <p className="mt-2 sf-text-body text-apple-near-black/60 dark:text-white/60">{routine.description}</p>}
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {routine.level && renderBadge(routine.level)}
+          {routine.durationWeeks && renderBadge(`${routine.durationWeeks} semanas`)}
+          {routine.frequency && renderBadge(routine.frequency)}
+          {renderBadge(`${sortedDays.length} dias`)}
+          {renderBadge(`${totalExercises} ejercicios`)}
+        </div>
+
+        {routine.goal && (
+          <div className="rounded-2xl border border-apple-blue/10 bg-apple-blue/5 p-4 sf-text-body">
+            <span className="font-semibold text-apple-blue">Objetivo:</span>{" "}
+            <span className="text-apple-near-black/80 dark:text-white/80">{routine.goal}</span>
           </div>
+        )}
 
-          {routine.goal && (
-            <div className="mt-4 rounded-xl bg-brand-primary/10 p-3 text-sm text-brand-text-main border border-brand-primary/20">
-              <span className="font-semibold text-brand-primary">Objetivo:</span> {routine.goal}
-            </div>
-          )}
+        {routine.equipment.length > 0 && (
+          <p className="sf-text-caption text-apple-near-black/55 dark:text-white/55">Equipo sugerido: {routine.equipment.join(", ")}</p>
+        )}
 
-          {routine.equipment.length > 0 && (
-            <p className="mt-4 text-xs text-brand-text-muted">
-              Equipo sugerido: {routine.equipment.join(", ")}
-            </p>
-          )}
+        <RoutineHistoryCard routineId={routine.id} logs={routineLogs} />
+      </section>
 
-          <div className="mt-6">
-            <RoutineHistoryCard routineId={routine.id} logs={routineLogs} />
-          </div>
-        </header>
-
-        <section className="space-y-3">
+      <section className="space-y-4">
+        <h2 className="sf-text-body-strong px-2 text-apple-near-black dark:text-white">Dias de entrenamiento</h2>
+        <div className="space-y-3">
           {sortedDays.map((day) => (
             <Link
               key={day.id}
               href={`/routines/day?routineId=${routine.id}&dayId=${day.id}`}
-              className="flex items-center justify-between rounded-2xl border border-brand-border bg-brand-surface px-5 py-4 text-sm text-brand-text-muted shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:border-brand-primary/50"
+              className="apple-panel group rounded-2xl p-5 transition-colors hover:bg-apple-gray dark:hover:bg-apple-surface-2"
             >
-              <div className="flex items-center gap-4">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border bg-brand-dark text-base font-semibold text-brand-primary">
-                  {/* El campo 'order' ya no existe. Mostramos el foco del dia o un numero. */}
-                  {day.focus?.charAt(0) || '#'}
+              <div className="mb-4 flex items-center gap-4 border-b border-apple-near-black/5 pb-4 dark:border-white/5">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-apple-gray text-base font-semibold text-apple-blue dark:bg-apple-surface-2">
+                  {day.focus?.charAt(0) || "#"}
                 </span>
-                <div>
-                  <p className="text-sm font-semibold text-brand-text-main">{day.title}</p>
-                  <p className="text-xs text-brand-text-muted">
-                    {day.exercises.length} ejercicios
-                    {day.focus ? ` | ${day.focus}` : ""}
+                <div className="flex-1">
+                  <p className="sf-text-body-strong text-apple-near-black dark:text-white">{day.title}</p>
+                  <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
+                    {day.exercises.length} ejercicios{day.focus ? ` - ${day.focus}` : ""}
                   </p>
                 </div>
+                <ChevronRight className="h-5 w-5 text-apple-near-black/30 transition-colors group-hover:text-apple-blue dark:text-white/30" />
               </div>
-              <span className="text-xs font-semibold text-brand-primary">Ver dia &gt;</span>
+
+              <div className="flex items-center justify-between">
+                <span className="sf-text-nano uppercase tracking-widest text-apple-blue">{day.focus || "General"}</span>
+                <span className="sf-text-link text-apple-blue">Ver dia en detalle</span>
+              </div>
             </Link>
           ))}
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
 
 export default function RoutineOverviewPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-center text-sm text-brand-text-muted">Cargando rutina...</div>}>
+    <Suspense fallback={<div className="apple-page-shell text-center sf-text-body text-apple-near-black/60 dark:text-white/60">Cargando rutina...</div>}>
       <RoutineOverviewContent />
     </Suspense>
   );
 }
-

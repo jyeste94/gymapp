@@ -8,220 +8,205 @@ import toast from "react-hot-toast";
 import clsx from "clsx";
 
 type FoodSearchProps = {
-    onAddFood: (food: NutriFlowFoodDetail, serving: NutriFlowServing, quantity: number) => void;
-    onClose?: () => void;
+  onAddFood: (food: NutriFlowFoodDetail, serving: NutriFlowServing, quantity: number) => void;
+  onClose?: () => void;
 };
 
 export default function FoodSearch({ onAddFood }: FoodSearchProps) {
-    const [query, setQuery] = useState("");
-    const [results, setResults] = useState<NutriFlowFoodSummary[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [selectedFood, setSelectedFood] = useState<NutriFlowFoodDetail | null>(null);
-    const [selectedServing, setSelectedServing] = useState<NutriFlowServing | null>(null);
-    const [quantity, setQuantity] = useState(1);
-    const [loadingFoodId, setLoadingFoodId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<NutriFlowFoodSummary[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<NutriFlowFoodDetail | null>(null);
+  const [selectedServing, setSelectedServing] = useState<NutriFlowServing | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [loadingFoodId, setLoadingFoodId] = useState<string | null>(null);
 
-    const search = useDebouncedCallback(async (q: string) => {
-        if (!q.trim()) {
-            setResults([]);
-            return;
-        }
-        setLoading(true);
-        try {
-            const foods = await NutriFlowClient.searchFoods(q);
-            setResults(foods);
-        } catch (error) {
-            console.error(error);
-            toast.error("Error buscando alimentos");
-        } finally {
-            setLoading(false);
-        }
-    }, 500);
+  const search = useDebouncedCallback(async (q: string) => {
+    if (!q.trim()) {
+      setResults([]);
+      return;
+    }
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value);
-        search(e.target.value);
-    };
+    setLoading(true);
+    try {
+      const foods = await NutriFlowClient.searchFoods(q);
+      setResults(foods);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error buscando alimentos");
+    } finally {
+      setLoading(false);
+    }
+  }, 500);
 
-    const handleSelectFood = async (foodId: string) => {
-        setLoadingFoodId(foodId);
-        try {
-            const details = await NutriFlowClient.getFoodDetails(foodId);
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    search(e.target.value);
+  };
 
-            // Defensive coding: API might return null servings
-            const safeDetails = {
-                ...details,
-                servings: details.servings || []
-            };
+  const handleSelectFood = async (foodId: string) => {
+    setLoadingFoodId(foodId);
+    try {
+      const details = await NutriFlowClient.getFoodDetails(foodId);
+      const safeDetails = {
+        ...details,
+        servings: details.servings || [],
+      };
 
-            setSelectedFood(safeDetails);
+      setSelectedFood(safeDetails);
+      const initialServing = details.best_serving || safeDetails.servings[0] || null;
+      setSelectedServing(initialServing);
+      setQuantity(1);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error cargando detalles");
+    } finally {
+      setLoadingFoodId(null);
+    }
+  };
 
-            const initialServing = details.best_serving || safeDetails.servings[0] || null;
-            setSelectedServing(initialServing);
+  const handleAdd = () => {
+    if (selectedFood && selectedServing) {
+      onAddFood(selectedFood, selectedServing, quantity);
+      setSelectedFood(null);
+      setSelectedServing(null);
+      setQuantity(1);
+      toast.success("Alimento anadido");
+    }
+  };
 
-            setQuantity(1);
-        } catch (error) {
-            console.error(error);
-            toast.error("Error cargando detalles");
-        } finally {
-            setLoadingFoodId(null);
-        }
-    };
-
-    const handleAdd = () => {
-        if (selectedFood && selectedServing) {
-            onAddFood(selectedFood, selectedServing, quantity);
-            // Reset selection to allow adding more
-            setSelectedFood(null);
-            setSelectedServing(null);
-            setQuantity(1);
-            toast.success("Alimento añadido");
-        }
-    };
-
-    return (
-        <div className="flex h-full flex-col bg-white">
-            <header className="border-b border-zinc-100 p-4">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                    <input
-                        type="text"
-                        placeholder="Buscar alimento (ej: Manzana, Pollo...)"
-                        value={query}
-                        onChange={handleSearch}
-                        className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 py-3 pl-10 pr-4 text-sm outline-none focus:border-[#0a2e5c] focus:bg-white focus:ring-1 focus:ring-[#0a2e5c]"
-                        autoFocus
-                    />
-                </div>
-            </header>
-
-            <div className="flex-1 overflow-y-auto p-4">
-                {selectedFood ? (
-                    <div className="space-y-6">
-                        <button
-                            onClick={() => setSelectedFood(null)}
-                            className="mb-2 text-xs font-semibold text-[#4b5a72] hover:underline"
-                        >
-                            {"<- Volver a resultados"}
-                        </button>
-
-                        <div>
-                            <h3 className="text-lg font-bold text-[#0a2e5c]">{selectedFood.name}</h3>
-                            <p className="text-sm text-[#4b5a72]">{selectedFood.brand}</p>
-                        </div>
-
-                        <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
-                            <label className="mb-2 block text-xs font-semibold text-[#4b5a72]">Ración</label>
-                            <select
-                                className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-                                value={selectedServing?.description} // Simple match mechanism, ideally use ID if available
-                                onChange={(e) => {
-                                    const serving = selectedFood.servings.find(s => s.description === e.target.value);
-                                    if (serving) setSelectedServing(serving);
-                                }}
-                            >
-                                {selectedFood.servings?.length > 0 ? (
-                                    selectedFood.servings.map((s, i) => (
-                                        <option key={i} value={s.description}>
-                                            {s.description} ({s.metric_amount} {s.metric_unit}) - {s.calories} kcal
-                                        </option>
-                                    ))
-                                ) : (
-                                    <option disabled>Sin información de raciones</option>
-                                )}
-                            </select>
-                        </div>
-
-                        <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
-                            <label className="mb-2 block text-xs font-semibold text-[#4b5a72]">Cantidad</label>
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => setQuantity(Math.max(0.1, quantity - 0.5))}
-                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600"
-                                >
-                                    -
-                                </button>
-                                <span className="text-lg font-bold text-[#0a2e5c]">{quantity}</span>
-                                <button
-                                    onClick={() => setQuantity(quantity + 0.5)}
-                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-
-                        {selectedServing && (
-                            <div className="grid grid-cols-4 gap-2 text-center">
-                                <MacroBox label="Kcal" value={Math.round(selectedServing.calories * quantity)} />
-                                <MacroBox label="Prot" value={Math.round(selectedServing.protein_g * quantity)} suffix="g" />
-                                <MacroBox label="Carbs" value={Math.round(selectedServing.carbs_g * quantity)} suffix="g" />
-                                <MacroBox label="Grasa" value={Math.round(selectedServing.fat_g * quantity)} suffix="g" />
-                            </div>
-                        )}
-
-                        {!selectedServing && (
-                            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-                                <p className="font-bold">⚠️ Información incompleta</p>
-                                <p>Este alimento no tiene datos de raciones o macros en la base de datos. Intenta buscar otro similar.</p>
-                            </div>
-                        )}
-
-                        <button
-                            onClick={handleAdd}
-                            disabled={!selectedServing}
-                            className={clsx(
-                                "flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-white shadow-lg transition active:scale-95",
-                                !selectedServing ? "bg-zinc-300 cursor-not-allowed shadow-none" : "bg-[#0a2e5c]"
-                            )}
-                        >
-                            <Plus className="h-4 w-4" /> Añadir a la dieta
-                        </button>
-
-                    </div>
-                ) : (
-                    <div className="space-y-2">
-                        {loading ? (
-                            <div className="flex justify-center py-8">
-                                <Loader2 className="h-6 w-6 animate-spin text-[#0a2e5c]" />
-                            </div>
-                        ) : results.length > 0 ? (
-                            results.map((food) => (
-                                <button
-                                    key={food.id}
-                                    onClick={() => handleSelectFood(food.id)}
-                                    className="flex w-full items-center justify-between rounded-2xl border border-transparent bg-white p-3 text-left transition hover:border-zinc-200 hover:bg-zinc-50"
-                                >
-                                    <div>
-                                        <p className="font-semibold text-[#0a2e5c]">{food.name}</p>
-                                        <p className="text-xs text-[#4b5a72]">{food.brand}</p>
-                                    </div>
-                                    {loadingFoodId === food.id ? (
-                                        <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
-                                    ) : (
-                                        <Plus className="h-4 w-4 text-zinc-300" />
-                                    )}
-                                </button>
-                            ))
-                        ) : query ? (
-                            <p className="py-8 text-center text-sm text-[#4b5a72]">No se encontraron resultados.</p>
-                        ) : (
-                            <div className="py-8 text-center text-sm text-[#4b5a72]">
-                                <p>Escribe para buscar en la base de datos.</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
+  return (
+    <div className="flex h-full flex-col bg-apple-gray dark:bg-apple-surface-2">
+      <header className="apple-divider px-4 py-4">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-apple-near-black/40 dark:text-white/40" />
+          <input
+            type="text"
+            placeholder="Buscar alimento (manzana, pollo, arroz...)"
+            value={query}
+            onChange={handleSearch}
+            className="w-full py-3 pl-10 pr-4"
+            autoFocus
+          />
         </div>
-    );
+      </header>
+
+      <div className="flex-1 overflow-y-auto p-4">
+        {selectedFood ? (
+          <div className="space-y-6">
+            <button onClick={() => setSelectedFood(null)} className="apple-link sf-text-caption">
+              {"<- Volver a resultados"}
+            </button>
+
+            <div>
+              <h3 className="sf-display-card-title text-apple-near-black dark:text-white">{selectedFood.name}</h3>
+              <p className="sf-text-caption text-apple-near-black/58 dark:text-white/58">{selectedFood.brand || "Marca no disponible"}</p>
+            </div>
+
+            <div className="apple-panel-muted p-4">
+              <label className="sf-text-micro text-apple-near-black/60 dark:text-white/60">Racion</label>
+              <select
+                className="mt-2 w-full"
+                value={selectedServing?.description}
+                onChange={(e) => {
+                  const serving = selectedFood.servings.find((s) => s.description === e.target.value);
+                  if (serving) setSelectedServing(serving);
+                }}
+              >
+                {selectedFood.servings?.length > 0 ? (
+                  selectedFood.servings.map((s, i) => (
+                    <option key={i} value={s.description}>
+                      {s.description} ({s.metric_amount} {s.metric_unit}) - {s.calories} kcal
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Sin informacion de raciones</option>
+                )}
+              </select>
+            </div>
+
+            <div className="apple-panel-muted p-4">
+              <label className="sf-text-micro text-apple-near-black/60 dark:text-white/60">Cantidad</label>
+              <div className="mt-2 flex items-center gap-4">
+                <button onClick={() => setQuantity(Math.max(0.1, quantity - 0.5))} className="btn-apple-ghost h-9 w-9 rounded-full p-0">
+                  -
+                </button>
+                <span className="sf-display-card-title text-apple-near-black dark:text-white">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 0.5)} className="btn-apple-ghost h-9 w-9 rounded-full p-0">
+                  +
+                </button>
+              </div>
+            </div>
+
+            {selectedServing && (
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <MacroBox label="Kcal" value={Math.round(selectedServing.calories * quantity)} />
+                <MacroBox label="Prot" value={Math.round(selectedServing.protein_g * quantity)} suffix="g" />
+                <MacroBox label="Carb" value={Math.round(selectedServing.carbs_g * quantity)} suffix="g" />
+                <MacroBox label="Grasa" value={Math.round(selectedServing.fat_g * quantity)} suffix="g" />
+              </div>
+            )}
+
+            {!selectedServing && (
+              <div className="rounded-xl border border-[#ff9500]/25 bg-[#ff9500]/10 p-3 sf-text-caption text-[#b35b00]">
+                Este alimento no tiene datos suficientes de raciones o macros.
+              </div>
+            )}
+
+            <button
+              onClick={handleAdd}
+              disabled={!selectedServing}
+              className={clsx("btn-apple-primary w-full", !selectedServing && "cursor-not-allowed opacity-55")}
+            >
+              <Plus className="h-4 w-4" /> Anadir a la dieta
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-apple-blue" />
+              </div>
+            ) : results.length > 0 ? (
+              results.map((food) => (
+                <button
+                  key={food.id}
+                  onClick={() => handleSelectFood(food.id)}
+                  className="apple-panel flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-apple-gray dark:hover:bg-apple-surface-2"
+                >
+                  <div>
+                    <p className="sf-text-body-strong text-apple-near-black dark:text-white">{food.name}</p>
+                    <p className="sf-text-caption text-apple-near-black/56 dark:text-white/56">{food.brand || "Marca sin dato"}</p>
+                  </div>
+                  {loadingFoodId === food.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-apple-near-black/35 dark:text-white/35" />
+                  ) : (
+                    <Plus className="h-4 w-4 text-apple-blue" />
+                  )}
+                </button>
+              ))
+            ) : query ? (
+              <p className="py-8 text-center sf-text-body text-apple-near-black/58 dark:text-white/58">No se encontraron resultados.</p>
+            ) : (
+              <p className="py-8 text-center sf-text-body text-apple-near-black/58 dark:text-white/58">
+                Escribe para buscar en la base de datos.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function MacroBox({ label, value, suffix = "" }: { label: string; value: number; suffix?: string }) {
-    return (
-        <div className="rounded-xl border border-zinc-100 bg-zinc-50 p-2">
-            <p className="text-[10px] font-bold uppercase text-[#93a2b7]">{label}</p>
-            <p className="font-bold text-[#0a2e5c]">{value}{suffix}</p>
-        </div>
-    );
+  return (
+    <div className="apple-panel-muted rounded-xl p-2">
+      <p className="sf-text-nano uppercase text-apple-near-black/45 dark:text-white/45">{label}</p>
+      <p className="sf-text-body-strong text-apple-near-black dark:text-white">
+        {value}
+        {suffix}
+      </p>
+    </div>
+  );
 }

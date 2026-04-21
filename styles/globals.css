@@ -2,89 +2,319 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Bebas+Neue&family=JetBrains+Mono:wght@500;700&display=swap");
-
 :root {
-  --brand-dark: #080808;
-  --brand-surface: #121212;
-  --brand-surface-light: #1a1a1a;
-  --brand-border: #282828;
-  --brand-primary: #facc15; /* Amarillo Voltio */
-  --brand-primary-glow: rgba(250, 204, 21, 0.3);
-  --brand-accent: #ff4d00; /* Naranja Alerta */
-  --brand-text-main: #ffffff;
-  --brand-text-muted: #888888;
+  --nav-glass-bg: rgba(0, 0, 0, 0.8);
+  --apple-focus: #0071e3;
 }
 
 @layer base {
+  html,
+  body,
+  :root {
+    min-height: 100%;
+  }
+
   body {
-    @apply bg-brand-dark text-brand-text-main selection:bg-brand-primary selection:text-brand-dark;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    @apply bg-apple-gray text-apple-near-black selection:bg-apple-blue selection:text-white;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  .font-bebas {
-    font-family: "Bebas Neue", sans-serif;
-    letter-spacing: 0.02em;
+  .dark body {
+    @apply bg-apple-black text-white;
   }
 
-  .font-mono-data {
-    font-family: "JetBrains Mono", monospace;
-    letter-spacing: -0.05em;
-  }
-}
-
-@layer components {
-  /* Estética Industrial */
-  .glass-card {
-    @apply relative bg-brand-surface border-2 border-brand-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
-    transition: all 0.2s ease;
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
-  .glass-card:hover {
-    @apply border-brand-primary/50 -translate-x-0.5 -translate-y-0.5 shadow-[6px_6px_0px_0px_rgba(250,204,21,0.2)];
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    @apply outline-none;
   }
 
-  .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-none border-2 border-brand-dark bg-brand-primary px-6 py-3 font-black uppercase text-brand-dark transition-all;
-    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.1);
-  }
-
-  .btn-primary:hover {
-    @apply -translate-x-0.5 -translate-y-0.5 shadow-[6px_6px_0px_0px_var(--brand-primary-glow)];
-  }
-
-  .btn-primary:active {
-    @apply translate-x-0 translate-y-0 shadow-none;
-  }
-
-  /* Etiquetas Técnicas */
-  .tag-industrial {
-    @apply inline-flex items-center rounded-none border border-brand-border bg-brand-dark px-2 py-0.5 font-mono-data text-[10px] uppercase text-brand-text-muted;
-  }
-
-  /* Textura de Fondo - Scanlines sutiles */
-  .bg-mesh {
-    background-color: var(--brand-dark);
-    background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  .noise-overlay {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.05;
-    pointer-events: none;
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--apple-focus);
+    outline-offset: 2px;
   }
 }
 
-/* Inputs como terminal */
-input, textarea, select {
-  @apply rounded-none border-2 border-brand-border bg-brand-dark px-4 py-3 font-mono-data text-brand-text-main outline-none transition-all focus:border-brand-primary;
+@layer utilities {
+  .sf-display-hero {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 56px;
+    font-weight: 600;
+    line-height: 1.07;
+    letter-spacing: -0.28px;
+  }
+
+  .sf-display-section {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.16px;
+  }
+
+  .sf-display-tile {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: 0.196px;
+  }
+
+  .sf-display-card-title {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.19;
+    letter-spacing: 0.231px;
+  }
+
+  .sf-display-card-sub {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.19;
+    letter-spacing: 0.231px;
+  }
+
+  .sf-text-nav {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.47;
+    letter-spacing: -0.374px;
+  }
+
+  .sf-text-subnav {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: -0.18px;
+  }
+
+  .sf-text-body {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.47;
+    letter-spacing: -0.374px;
+  }
+
+  .sf-text-body-strong {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.374px;
+  }
+
+  .sf-text-body-emphasis {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.374px;
+  }
+
+  .sf-text-subheading {
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.24px;
+  }
+
+  .sf-text-title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.22px;
+  }
+
+  .sf-text-btn-lg {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.18px;
+  }
+
+  .sf-text-btn {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.24;
+    letter-spacing: -0.32px;
+  }
+
+  .sf-text-link {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: -0.224px;
+  }
+
+  .sf-text-caption {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.29;
+    letter-spacing: -0.224px;
+  }
+
+  .sf-text-caption-strong {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.29;
+    letter-spacing: -0.224px;
+  }
+
+  .sf-text-micro {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: -0.12px;
+  }
+
+  .sf-text-micro-strong {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.33;
+    letter-spacing: -0.12px;
+  }
+
+  .sf-text-nano {
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.47;
+    letter-spacing: -0.08px;
+  }
+
+  .apple-page-shell {
+    @apply mx-auto w-full max-w-5xl px-5 pb-32 pt-6 lg:px-0 lg:pb-12;
+  }
+
+  .apple-panel {
+    @apply rounded-3xl bg-white p-6 shadow-apple-card dark:bg-apple-surface-1;
+  }
+
+  .apple-panel-muted {
+    @apply rounded-3xl bg-apple-gray p-6 dark:bg-apple-surface-2;
+  }
+
+  .apple-kicker {
+    @apply sf-text-nano uppercase tracking-[0.22em] text-apple-near-black/50 dark:text-white/50;
+  }
+
+  .apple-link {
+    @apply sf-text-link text-apple-link-blue transition-opacity hover:opacity-80 dark:text-apple-link-dark;
+  }
+
+  .apple-divider {
+    @apply border-t border-apple-near-black/10 dark:border-white/10;
+  }
+
+  .apple-glass-nav {
+    background-color: var(--nav-glass-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .btn-apple-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-apple-blue px-[15px] pb-[7px] pt-[8px] text-white transition-colors sf-text-btn;
+  }
+
+  .btn-apple-primary:hover {
+    @apply bg-[#0077ED];
+  }
+
+  .btn-apple-primary:active {
+    @apply bg-apple-btn-active text-apple-near-black;
+  }
+
+  .btn-apple-pill {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill border border-apple-link-blue bg-transparent px-[15px] pb-[7px] pt-[8px] text-apple-link-blue transition-colors sf-text-btn;
+  }
+
+  .btn-apple-pill:hover {
+    @apply bg-apple-link-blue text-white;
+  }
+
+  .btn-apple-pill-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill border border-apple-link-dark bg-transparent px-[15px] pb-[7px] pt-[8px] text-apple-link-dark transition-colors sf-text-btn;
+  }
+
+  .btn-apple-pill-dark:hover {
+    @apply bg-apple-link-dark text-white;
+  }
+
+  .btn-apple-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-apple-near-black/10 bg-white px-4 py-2 text-apple-near-black transition-colors hover:bg-apple-gray dark:border-white/10 dark:bg-apple-surface-2 dark:text-white dark:hover:bg-apple-surface-3;
+  }
 }
 
-/* Scrollbar Cruda */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { @apply bg-brand-dark; }
-::-webkit-scrollbar-thumb { @apply bg-brand-border border-2 border-brand-dark hover:bg-brand-primary transition-colors; }
+@media (max-width: 1024px) {
+  .sf-display-hero {
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.2px;
+  }
+
+  .sf-text-subnav {
+    font-size: 21px;
+    line-height: 1.32;
+  }
+}
+
+@media (max-width: 640px) {
+  .sf-display-hero {
+    font-size: 28px;
+    line-height: 1.14;
+    letter-spacing: -0.12px;
+  }
+
+  .sf-display-section {
+    font-size: 28px;
+    line-height: 1.14;
+  }
+
+  .sf-text-subnav {
+    font-size: 17px;
+    line-height: 1.35;
+    letter-spacing: -0.3px;
+  }
+}
+
+input,
+textarea,
+select {
+  @apply rounded-[11px] border border-black/10 bg-apple-gray px-4 py-3 sf-text-body text-apple-near-black transition-all placeholder:text-apple-near-black/35 focus:border-apple-blue/50 focus:bg-white;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  @apply border-white/10 bg-apple-surface-2 text-white placeholder:text-white/35 focus:bg-apple-surface-1;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full border-2 border-transparent bg-white/20 bg-clip-padding;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/40;
+}

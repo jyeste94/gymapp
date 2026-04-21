@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -14,10 +14,10 @@ import toast from "react-hot-toast";
 const DAYS: { id: string; name: string }[] = [
     { id: "mon", name: "Lunes" },
     { id: "tue", name: "Martes" },
-    { id: "wed", name: "Miercoles" },
+    { id: "wed", name: "Miércoles" },
     { id: "thu", name: "Jueves" },
     { id: "fri", name: "Viernes" },
-    { id: "sat", name: "Sabado" },
+    { id: "sat", name: "Sábado" },
     { id: "sun", name: "Domingo" },
 ];
 
@@ -65,7 +65,7 @@ export default function DietEditorPage() {
         if (!activeMealId) return;
 
         const newFood: DietFoodEntry = {
-            id: crypto.randomUUID(), // Unique instance ID
+            id: crypto.randomUUID(),
             name: food.name,
             brand: food.brand ?? undefined,
             servingId: serving.id,
@@ -97,7 +97,6 @@ export default function DietEditorPage() {
                 };
             });
 
-            // Recalculate day totals
             const dayTotals = updatedMeals.reduce((acc, m) => ({
                 calories: acc.calories + m.totalCalories,
                 protein: acc.protein + m.macros.protein,
@@ -131,7 +130,6 @@ export default function DietEditorPage() {
                 };
             });
 
-            // Recalculate day totals
             const dayTotals = updatedMeals.reduce((acc, m) => ({
                 calories: acc.calories + m.totalCalories,
                 protein: acc.protein + m.macros.protein,
@@ -153,166 +151,173 @@ export default function DietEditorPage() {
     const handleSave = async () => {
         if (!user) return;
         if (!dietName.trim()) {
-            toast.error("Ponle un nombre a tu dieta");
+            toast.error("Ponle un nombre a tu dieta", {
+                style: { background: '#ffffff', color: '#1d1d1f', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' }
+            });
             return;
         }
 
-        const toastId = toast.loading("Guardando dieta...");
+        const toastId = toast.loading("Guardando dieta...", {
+            style: { background: '#ffffff', color: '#1d1d1f', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' }
+        });
+        
         try {
             await createDiet(null, user.uid, {
                 userId: user.uid,
                 name: dietName,
-                isActive: true, // Auto-activate for now
+                isActive: true,
                 days: dietDays,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             });
-            toast.success("Dieta guardada!", { id: toastId });
+            toast.success("Dieta guardada!", { 
+                id: toastId,
+                style: { background: '#ffffff', color: '#1d1d1f', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' } 
+            });
             router.push("/diet");
         } catch (e) {
             console.error(e);
-            toast.error("Error al guardar", { id: toastId });
+            toast.error("Error al guardar", { 
+                id: toastId,
+                style: { background: '#ffffff', color: '#ff3b30', border: '1px solid rgba(255,59,48,0.2)', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' } 
+            });
         }
     };
 
     if (isSearchOpen) {
         return (
-            <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark font-sans text-brand-text-main md:mx-auto md:mt-0 md:min-h-screen md:w-full md:max-w-lg md:rounded-3xl md:shadow-2xl">
-                <div className="flex-1 overflow-y-auto">
-                    <div className="flex items-center justify-between border-b border-brand-border p-4 pt-12 md:pt-4">
-                        <h2 className="font-bold text-brand-text-main">Anadir alimento</h2>
-                        <button onClick={() => setIsSearchOpen(false)} className="text-sm font-semibold text-brand-text-muted">Cerrar</button>
-                    </div>
-                    <div className="h-[calc(100vh-60px)]">
-                        <FoodSearch onAddFood={handleAddFood} onClose={() => setIsSearchOpen(false)} />
-                    </div>
+            <div className="pb-32 pt-6 lg:pb-12 max-w-2xl mx-auto w-full px-4 lg:px-0 mt-4 md:mt-0 flex flex-col min-h-screen">
+                <div className="flex items-center justify-between border-b border-apple-near-black/5 dark:border-white/5 pb-4 mb-4 mt-6">
+                    <h2 className="sf-text-body-strong text-apple-near-black dark:text-white">Añadir alimento</h2>
+                    <button onClick={() => setIsSearchOpen(false)} className="sf-text-body text-apple-blue hover:opacity-80 transition-opacity">Cerrar</button>
+                </div>
+                <div className="flex-1 bg-white dark:bg-apple-surface-1 shadow-apple-card rounded-3xl overflow-hidden p-2">
+                    <FoodSearch onAddFood={handleAddFood} onClose={() => setIsSearchOpen(false)} />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="-mx-5 -mt-8 flex min-h-[100dvh] flex-col overflow-hidden bg-brand-dark pb-32 pt-8 font-sans text-brand-text-main md:mx-auto md:mt-0 md:min-h-screen md:w-full md:max-w-lg md:rounded-3xl md:shadow-2xl">
-            <div className="flex-1 overflow-y-auto w-full">
-                {/* Header */}
-                <header className="sticky top-0 z-10 border-b border-brand-border bg-brand-dark/90 px-4 py-4 backdrop-blur-md">
-                    <div className="flex items-center gap-3">
-                        <button onClick={() => router.back()} className="text-brand-text-muted">
-                            <ChevronLeft className="h-6 w-6" />
-                        </button>
-                        <input
-                            type="text"
-                            placeholder="Nombre de la nueva dieta..."
-                            value={dietName}
-                            onChange={(e) => setDietName(e.target.value)}
-                            className="w-full bg-transparent text-lg font-bold text-brand-text-main placeholder-brand-text-muted outline-none"
-                        />
-                        <button onClick={handleSave} className="rounded-full bg-brand-primary p-2 text-brand-dark shadow-lg shadow-brand-primary/20">
-                            <Save className="h-5 w-5" />
-                        </button>
-                    </div>
+        <div className="pb-32 pt-4 lg:pb-12 max-w-2xl mx-auto w-full px-4 lg:px-0 mt-4 md:mt-0">
+            <header className="sticky top-0 z-20 -mx-4 -mt-4 mb-6 border-b border-apple-near-black/5 dark:border-white/5 bg-white/85 dark:bg-apple-surface-1/85 px-4 py-4 backdrop-blur-xl sm:mx-0 sm:mt-0 sm:rounded-t-3xl shadow-sm">
+                <div className="flex items-center gap-3">
+                    <button onClick={() => router.back()} className="text-apple-blue hover:opacity-80 transition-opacity">
+                        <ChevronLeft className="h-7 w-7" />
+                    </button>
+                    <input
+                        type="text"
+                        placeholder="Nombre de la dieta..."
+                        value={dietName}
+                        onChange={(e) => setDietName(e.target.value)}
+                        className="w-full bg-transparent text-xl sf-text-body-strong text-apple-near-black dark:text-white placeholder:text-apple-near-black/30 dark:placeholder:text-white/30 outline-none"
+                    />
+                    <button onClick={handleSave} className="flex h-9 w-9 items-center justify-center rounded-full bg-apple-blue text-white shadow-sm hover:opacity-90 transition-opacity">
+                        <Save className="h-4 w-4" />
+                    </button>
+                </div>
 
-                    {/* Day Selector */}
-                    <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        {dietDays.map((day) => (
-                            <button
-                                key={day.id}
-                                onClick={() => setSelectedDayId(day.id)}
-                                className={clsx(
-                                    "whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition-all",
-                                    selectedDayId === day.id
-                                        ? "bg-brand-primary text-brand-dark shadow-md"
-                                        : "bg-brand-surface text-brand-text-muted border border-brand-border shadow-sm"
-                                )}
-                            >
-                                {day.name}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Daily Macro Summary */}
-                    <div className="mt-4 flex items-center justify-between rounded-2xl bg-brand-surface border border-brand-border px-4 py-3">
-                        <div className="flex items-center gap-2">
-                            <Calculator className="h-4 w-4 text-brand-primary" />
-                            <span className="text-xs font-bold text-brand-text-main">Total Diario</span>
-                        </div>
-                        <div className="flex gap-4 text-xs">
-                            <div className="text-center">
-                                <span className="block font-bold text-brand-text-main">{Math.round(activeDay?.totalCalories || 0)}</span>
-                                <span className="text-[10px] text-brand-text-muted">kcal</span>
-                            </div>
-                            <div className="text-center">
-                                <span className="block font-bold text-emerald-400">{Math.round(activeDayMacros.protein)}g</span>
-                                <span className="text-[10px] text-brand-text-muted">Prot</span>
-                            </div>
-                            <div className="text-center">
-                                <span className="block font-bold text-amber-400">{Math.round(activeDayMacros.carbs)}g</span>
-                                <span className="text-[10px] text-brand-text-muted">Carb</span>
-                            </div>
-                            <div className="text-center">
-                                <span className="block font-bold text-rose-400">{Math.round(activeDayMacros.fat)}g</span>
-                                <span className="text-[10px] text-brand-text-muted">Grasa</span>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Meals List */}
-                <div className="space-y-4 p-4">
-                    {activeDay?.meals.map((meal) => (
-                        <div key={meal.id} className="rounded-2xl border border-brand-border bg-brand-surface p-4 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-bold text-brand-text-main">{meal.type}</h3>
-                                <button
-                                    onClick={() => { setActiveMealId(meal.id); setIsSearchOpen(true); }}
-                                    className="rounded-full bg-brand-dark border border-brand-border p-1.5 text-brand-primary hover:bg-brand-border"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                </button>
-                            </div>
-
-                            {/* Food List */}
-                            <div className="mt-4 space-y-3">
-                                {meal.foods.length === 0 ? (
-                                    <p className="text-xs italic text-brand-text-muted/50">Sin alimentos</p>
-                                ) : (
-                                    meal.foods.map((food) => (
-                                        <div key={food.id} className="flex flex-col gap-1 rounded-xl bg-brand-dark px-3 py-2 border border-brand-border">
-                                            <div className="flex justify-between items-start">
-                                                <p className="text-sm font-semibold text-brand-text-main leading-tight">{food.name}</p>
-                                                <button
-                                                    onClick={() => removeFood(meal.id, food.id)}
-                                                    className="text-brand-text-muted hover:text-red-400 ml-2 mt-0.5"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
-                                            </div>
-                                            <div className="flex items-center justify-between mt-1">
-                                                <p className="text-[10px] text-brand-text-muted">
-                                                    {Math.round(food.metricAmount)}{food.metricUnit} | {Math.round(food.calories)} kcal
-                                                </p>
-                                                <p className="text-[10px] font-medium tracking-wide">
-                                                    <span className="text-emerald-400">P:{Math.round(food.macros.protein)}</span>
-                                                    <span className="ml-1.5 text-amber-400">C:{Math.round(food.macros.carbs)}</span>
-                                                    <span className="ml-1.5 text-rose-400">F:{Math.round(food.macros.fat)}</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-
-                            {/* Meal Totals */}
-                            {meal.foods.length > 0 && (
-                                <div className="mt-3 flex justify-end border-t border-brand-border pt-2 text-[10px] font-medium text-brand-text-muted">
-                                    <span>{Math.round(meal.totalCalories)} kcal total</span>
-                                </div>
+                {/* Day Selector */}
+                <div className="mt-5 flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
+                    {dietDays.map((day) => (
+                        <button
+                            key={day.id}
+                            onClick={() => setSelectedDayId(day.id)}
+                            className={clsx(
+                                "whitespace-nowrap rounded-full px-4 py-1.5 sf-text-nano font-medium tracking-wide transition-colors border",
+                                selectedDayId === day.id
+                                    ? "bg-apple-blue border-apple-blue text-white shadow-sm"
+                                    : "bg-apple-gray dark:bg-apple-surface-2 border-apple-near-black/5 dark:border-white/5 text-apple-near-black/60 dark:text-white/60 hover:bg-apple-near-black/5 dark:hover:bg-white/5"
                             )}
-                        </div>
+                        >
+                            {day.name}
+                        </button>
                     ))}
                 </div>
+
+                {/* Daily Macro Summary */}
+                <div className="mt-4 flex items-center justify-between rounded-2xl bg-white dark:bg-apple-surface-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] border border-apple-near-black/5 dark:border-white/5 px-4 py-3 mx-1">
+                    <div className="flex items-center gap-2">
+                        <Calculator className="h-4 w-4 text-apple-blue" />
+                        <span className="sf-text-nano font-medium uppercase tracking-widest text-apple-near-black dark:text-white">Total</span>
+                    </div>
+                    <div className="flex gap-4">
+                        <div className="text-center">
+                            <span className="block sf-text-body-strong text-apple-near-black dark:text-white">{Math.round(activeDay?.totalCalories || 0)}</span>
+                            <span className="sf-text-nano text-apple-near-black/50 dark:text-white/50">kcal</span>
+                        </div>
+                        <div className="text-center">
+                            <span className="block sf-text-body-strong text-[#34C759]">{Math.round(activeDayMacros.protein)}g</span>
+                            <span className="sf-text-nano text-apple-near-black/50 dark:text-white/50">Prot</span>
+                        </div>
+                        <div className="text-center">
+                            <span className="block sf-text-body-strong text-[#FF9500]">{Math.round(activeDayMacros.carbs)}g</span>
+                            <span className="sf-text-nano text-apple-near-black/50 dark:text-white/50">Carb</span>
+                        </div>
+                        <div className="text-center">
+                            <span className="block sf-text-body-strong text-[#FF3B30]">{Math.round(activeDayMacros.fat)}g</span>
+                            <span className="sf-text-nano text-apple-near-black/50 dark:text-white/50">Grasa</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Meals List */}
+            <div className="space-y-5">
+                {activeDay?.meals.map((meal) => (
+                    <div key={meal.id} className="rounded-3xl bg-white dark:bg-apple-surface-1 shadow-apple-card border-none p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="sf-text-body-strong text-apple-near-black dark:text-white capitalize">{meal.type}</h3>
+                            <button
+                                onClick={() => { setActiveMealId(meal.id); setIsSearchOpen(true); }}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-apple-blue/10 text-apple-blue hover:bg-apple-blue/20 transition-colors"
+                            >
+                                <Plus className="h-4 w-4 stroke-[2.5]" />
+                            </button>
+                        </div>
+
+                        {/* Food List */}
+                        <div className="space-y-2">
+                            {meal.foods.length === 0 ? (
+                                <p className="text-sm italic text-apple-near-black/40 dark:text-white/40">Sin alimentos</p>
+                            ) : (
+                                meal.foods.map((food) => (
+                                    <div key={food.id} className="flex flex-col gap-1 rounded-2xl bg-apple-gray dark:bg-apple-surface-2 p-3 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] border border-apple-near-black/5 dark:border-white/5 group">
+                                        <div className="flex justify-between items-start">
+                                            <p className="sf-text-body font-medium text-apple-near-black dark:text-white leading-snug pr-6">{food.name}</p>
+                                            <button
+                                                onClick={() => removeFood(meal.id, food.id)}
+                                                className="text-apple-near-black/30 dark:text-white/30 hover:text-[#ff3b30] flex-shrink-0 transition-colors"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-between mt-1 pt-1 border-t border-apple-near-black/5 dark:border-white/5">
+                                            <p className="sf-text-nano text-apple-near-black/60 dark:text-white/60">
+                                                {Math.round(food.metricAmount)}{food.metricUnit} · {Math.round(food.calories)} kcal
+                                            </p>
+                                            <p className="sf-text-nano font-medium tracking-wide">
+                                                <span className="text-[#34C759]">P:{Math.round(food.macros.protein)}</span>
+                                                <span className="ml-[6px] text-[#FF9500]">C:{Math.round(food.macros.carbs)}</span>
+                                                <span className="ml-[6px] text-[#FF3B30]">G:{Math.round(food.macros.fat)}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Meal Totals */}
+                        {meal.foods.length > 0 && (
+                            <div className="mt-4 flex justify-end">
+                                <span className="rounded-xl bg-apple-gray dark:bg-apple-surface-2 px-3 py-1.5 sf-text-caption-strong text-apple-near-black/70 dark:text-white/70 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
+                                    {Math.round(meal.totalCalories)} kcal total
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     );
 }
-
