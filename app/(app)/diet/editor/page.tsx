@@ -186,8 +186,8 @@ export default function DietEditorPage() {
 
     if (isSearchOpen) {
         return (
-            <div className="pb-32 pt-6 lg:pb-12 max-w-2xl mx-auto w-full px-4 lg:px-0 mt-4 md:mt-0 flex flex-col min-h-screen">
-                <div className="flex items-center justify-between border-b border-apple-near-black/5 dark:border-white/5 pb-4 mb-4 mt-6">
+            <div className="apple-page-shell max-w-2xl flex min-h-[70vh] flex-col space-y-4">
+                <div className="flex items-center justify-between border-b border-apple-near-black/5 pb-4 dark:border-white/5">
                     <h2 className="sf-text-body-strong text-apple-near-black dark:text-white">Añadir alimento</h2>
                     <button onClick={() => setIsSearchOpen(false)} className="sf-text-body text-apple-blue hover:opacity-80 transition-opacity">Cerrar</button>
                 </div>
@@ -199,8 +199,8 @@ export default function DietEditorPage() {
     }
 
     return (
-        <div className="pb-32 pt-4 lg:pb-12 max-w-2xl mx-auto w-full px-4 lg:px-0 mt-4 md:mt-0">
-            <header className="sticky top-0 z-20 -mx-4 -mt-4 mb-6 border-b border-apple-near-black/5 dark:border-white/5 bg-white/85 dark:bg-apple-surface-1/85 px-4 py-4 backdrop-blur-xl sm:mx-0 sm:mt-0 sm:rounded-t-3xl shadow-sm">
+        <div className="apple-page-shell max-w-2xl space-y-5">
+            <header className="sticky top-0 z-20 rounded-3xl border border-apple-near-black/5 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/5 dark:bg-apple-surface-1/90">
                 <div className="flex items-center gap-3">
                     <button onClick={() => router.back()} className="text-apple-blue hover:opacity-80 transition-opacity">
                         <ChevronLeft className="h-7 w-7" />

@@ -137,7 +137,7 @@ export default function ProfilePage() {
     // --- VIEW MODE (DASHBOARD) ---
     if (!isEditing) {
         return (
-            <div className="pb-32 pt-6 lg:pb-12 max-w-3xl mx-auto w-full space-y-8 px-5 lg:px-0">
+            <div className="apple-page-shell max-w-3xl space-y-8">
                 <header className="flex items-center justify-between">
                     <h1 className="sf-display-section text-apple-near-black dark:text-white">Perfil</h1>
                     <button
@@ -233,7 +233,7 @@ export default function ProfilePage() {
 
     // --- EDIT MODE ---
     return (
-        <div className="pb-32 pt-6 lg:pb-12 max-w-3xl mx-auto w-full space-y-8 px-5 lg:px-0">
+        <div className="apple-page-shell max-w-3xl space-y-8">
             <header className="flex items-center gap-3">
                 <button onClick={() => setIsEditing(false)} className="text-apple-blue hover:opacity-80 transition-opacity">
                     <ArrowLeft className="h-6 w-6" />

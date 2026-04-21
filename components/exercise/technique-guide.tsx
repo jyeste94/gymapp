@@ -6,7 +6,7 @@ type TechniqueGuideProps = {
 
 export default function TechniqueGuide({ exercise }: TechniqueGuideProps) {
   return (
-    <section className="rounded-3xl border-none bg-apple-gray dark:bg-apple-surface-2 p-6 shadow-sm">
+    <section className="apple-panel p-5 sm:p-6">
       <h2 className="sf-text-body-strong text-apple-near-black dark:text-white">Técnica recomendada</h2>
       <ul className="mt-4 space-y-2 sf-text-body text-apple-near-black/70 dark:text-white/70">
         {exercise.technique?.map((tip) => (

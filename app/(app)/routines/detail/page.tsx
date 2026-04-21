@@ -98,29 +98,30 @@ function RoutineOverviewContent() {
       <section className="space-y-4">
         <h2 className="sf-text-body-strong px-2 text-apple-near-black dark:text-white">Dias de entrenamiento</h2>
         <div className="space-y-3">
-          {sortedDays.map((day) => (
-            <Link
-              key={day.id}
-              href={`/routines/day?routineId=${routine.id}&dayId=${day.id}`}
-              className="apple-panel group rounded-2xl p-5 transition-colors hover:bg-apple-gray dark:hover:bg-apple-surface-2"
-            >
-              <div className="mb-4 flex items-center gap-4 border-b border-apple-near-black/5 pb-4 dark:border-white/5">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-apple-gray text-base font-semibold text-apple-blue dark:bg-apple-surface-2">
-                  {day.focus?.charAt(0) || "#"}
-                </span>
-                <div className="flex-1">
-                  <p className="sf-text-body-strong text-apple-near-black dark:text-white">{day.title}</p>
-                  <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
-                    {day.exercises.length} ejercicios{day.focus ? ` - ${day.focus}` : ""}
-                  </p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-apple-near-black/30 transition-colors group-hover:text-apple-blue dark:text-white/30" />
-              </div>
+          {sortedDays.map((day, index) => (
+            <Link key={day.id} href={`/routines/day?routineId=${routine.id}&dayId=${day.id}`} className="group block">
+              <article className="apple-panel rounded-2xl border border-apple-near-black/5 p-4 transition-colors hover:bg-apple-gray sm:p-5 dark:border-white/5 dark:hover:bg-apple-surface-2">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-apple-gray text-sm font-semibold text-apple-blue dark:bg-apple-surface-2">
+                    {index + 1}
+                  </span>
 
-              <div className="flex items-center justify-between">
-                <span className="sf-text-nano uppercase tracking-widest text-apple-blue">{day.focus || "General"}</span>
-                <span className="sf-text-link text-apple-blue">Ver dia en detalle</span>
-              </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="line-clamp-1 sf-text-body-strong text-apple-near-black dark:text-white">{day.title}</p>
+                        <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">{day.exercises.length} ejercicios</p>
+                      </div>
+                      <ChevronRight className="mt-0.5 h-5 w-5 flex-shrink-0 text-apple-near-black/30 transition-colors group-hover:text-apple-blue dark:text-white/30" />
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between gap-2 border-t border-apple-near-black/5 pt-3 dark:border-white/5">
+                      <span className="line-clamp-1 sf-text-nano uppercase tracking-widest text-apple-blue">{day.focus || "General"}</span>
+                      <span className="sf-text-link text-apple-blue">Ver detalle</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
             </Link>
           ))}
         </div>

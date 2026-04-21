@@ -26,25 +26,27 @@ export default function SessionForm({
   handleSetField,
 }: SessionFormProps) {
   return (
-    <section className="apple-panel-muted p-6">
+    <section className="apple-panel p-4 sm:p-6">
       <form className="space-y-6" onSubmit={(event) => event.preventDefault()}>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <label className="sf-text-caption-strong text-apple-near-black/70 dark:text-white/70">Fecha y hora</label>
+            <label className="block sf-text-caption-strong text-apple-near-black/70 dark:text-white/70">Fecha y hora</label>
             <input
               type="datetime-local"
               value={session.sessionDate}
               onChange={(event) => setSession((prev) => ({ ...prev, sessionDate: event.target.value }))}
+              className="w-full"
             />
           </div>
           <div className="space-y-2">
-            <label className="sf-text-caption-strong text-apple-near-black/70 dark:text-white/70">Esfuerzo percibido (RPE)</label>
+            <label className="block sf-text-caption-strong text-apple-near-black/70 dark:text-white/70">Esfuerzo percibido (RPE)</label>
             <input
               type="number"
               min="1"
               max="10"
               value={session.perceivedEffort}
               onChange={(event) => setSession((prev) => ({ ...prev, perceivedEffort: event.target.value }))}
+              className="w-full"
             />
           </div>
         </div>
@@ -75,20 +77,20 @@ export default function SessionForm({
                   {set.completed ? "Completada" : "Pendiente"}
                 </button>
               </div>
-              <div className="grid grid-cols-3 gap-3 text-sm">
+              <div className="grid grid-cols-3 gap-2.5 text-sm sm:gap-3">
                 <input
                   type="text"
                   placeholder="Kg / Lbs"
                   value={set.weight}
                   onChange={(event) => handleSetField(index, "weight")(event.target.value)}
-                  className="text-center"
+                  className="w-full text-center"
                 />
                 <input
                   type="number"
                   placeholder="Reps"
                   value={set.reps}
                   onChange={(event) => handleSetField(index, "reps")(event.target.value)}
-                  className="text-center"
+                  className="w-full text-center"
                   min="0"
                 />
                 <input
@@ -96,7 +98,7 @@ export default function SessionForm({
                   placeholder="RIR"
                   value={set.rir}
                   onChange={(event) => handleSetField(index, "rir")(event.target.value)}
-                  className="text-center"
+                  className="w-full text-center"
                   min="0"
                   max="5"
                 />
@@ -105,14 +107,14 @@ export default function SessionForm({
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <button type="button" onClick={addExtraSet} className="btn-apple-ghost">
+        <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:gap-3">
+          <button type="button" onClick={addExtraSet} className="btn-apple-ghost w-full sm:w-auto">
             Anadir serie
           </button>
           <button
             type="button"
             onClick={removeLastSet}
-            className="rounded-xl border border-apple-near-black/10 bg-white px-4 py-2.5 sf-text-caption font-semibold text-[#FF3B30] transition hover:bg-[#FF3B30]/5 dark:border-white/15 dark:bg-apple-surface-1"
+            className="w-full rounded-xl border border-apple-near-black/10 bg-white px-4 py-2.5 sf-text-caption font-semibold text-[#FF3B30] transition hover:bg-[#FF3B30]/5 sm:w-auto dark:border-white/15 dark:bg-apple-surface-1"
           >
             Quitar ultima
           </button>
@@ -134,12 +136,13 @@ export default function SessionForm({
         </div>
 
         <div className="space-y-2 pb-2">
-          <label className="sf-text-caption-strong text-apple-near-black/70 dark:text-white/70">Notas</label>
+          <label className="block sf-text-caption-strong text-apple-near-black/70 dark:text-white/70">Notas</label>
           <textarea
             rows={3}
             value={session.notes}
             onChange={(event) => setSession((prev) => ({ ...prev, notes: event.target.value }))}
             placeholder="Puntos tecnicos, ajustes o molestias"
+            className="w-full"
           />
         </div>
 

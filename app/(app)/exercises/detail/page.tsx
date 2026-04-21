@@ -214,7 +214,7 @@ function ExerciseDetailContent() {
 
   if (!exercise) {
     return (
-      <div className="pb-32 pt-6 lg:pb-12 max-w-4xl mx-auto w-full space-y-8 px-5 lg:px-0 mt-4 md:mt-0">
+      <div className="apple-page-shell max-w-4xl space-y-6">
         <div className="space-y-4 rounded-3xl bg-white dark:bg-apple-surface-1 shadow-apple-card p-6 text-center border-none">
           <h1 className="sf-text-body-strong text-apple-near-black dark:text-white">Ejercicio no encontrado</h1>
           <p className="sf-text-body text-apple-near-black/60 dark:text-white/60">
@@ -327,7 +327,7 @@ function ExerciseDetailContent() {
   };
 
   return (
-    <div className="pb-32 pt-6 lg:pb-12 max-w-4xl mx-auto w-full space-y-6 px-5 lg:px-0 mt-4 md:mt-0">
+    <div className="apple-page-shell max-w-4xl space-y-6">
       {renderBackButton()}
 
       {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}

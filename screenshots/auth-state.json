@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "uid",
-      "value": "UA8GresCmKS4TaGUDUdMRHdNJaF2",
+      "value": "cqjhGkp3IJV1w3oFyvtHp4SRcyW2",
       "domain": "localhost",
       "path": "/",
       "expires": -1,
@@ -11,8 +11,20 @@
       "sameSite": "Lax"
     },
     {
+      "name": "__Secure-YNID",
+      "value": "17.YT=WTK3HkxHFHhvurm5RW8ntvY59w9NRkXxlsknVRxGBtspDd77St5F3Cid9ha-j247PSbX33KHHeydypnNUeAb7A7HI9Z9i9qsEUdYhUBSjkK2ZkMAMtPwOnhWN9so8tcdeIBk_mtjCJDKatWQgkPaqbu6XWVmZgfkz735aD5FGoz0owgoaRtJvo9kpQLNg6-zrCunRRaUAnKekMGZc-wdfuWxx7U2KaEYcf8dllBTwKSYwXyrVZZ4lFLVWTVea23xmgvprizTfFFa3hAUAxDxxb46rYUcLEfaWSKpOz4TFG6Ay4A_IRFB6HE6m40PSI4ojQo4OTJnDbCUVZ8hvqrLkg",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1792309103.008722,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "http://localhost",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
       "name": "YSC",
-      "value": "yE9bujQXu4k",
+      "value": "SpzTsyr0flY",
       "domain": ".youtube.com",
       "path": "/",
       "expires": -1,
@@ -21,36 +33,36 @@
       "sameSite": "None"
     },
     {
-      "name": "VISITOR_INFO1_LIVE",
-      "value": "G6K9AYjbGoA",
+      "name": "__Secure-ROLLOUT_TOKEN",
+      "value": "CPnSwei6gft4EKD14v-3_pMDGKD14v-3_pMD",
       "domain": ".youtube.com",
       "path": "/",
-      "expires": 1792307302.366488,
+      "expires": 1792309103.008831,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "http://localhost",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "VISITOR_INFO1_LIVE",
+      "value": "NQJMLPSheBc",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1792309103.008885,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "VISITOR_PRIVACY_METADATA",
-      "value": "CgJFUxIiEh4SHAsMDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicgHQ%3D%3D",
+      "value": "CgJFUxIiEh4SHAsMDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicgGw%3D%3D",
       "domain": ".youtube.com",
       "path": "/",
-      "expires": 1792307302.366515,
+      "expires": 1792309103.008908,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
-    },
-    {
-      "name": "__Secure-ROLLOUT_TOKEN",
-      "value": "CP_CsL6s9L-AwwEQ64CYpbH-kwMY64CYpbH-kwM%3D",
-      "domain": ".youtube.com",
-      "path": "/",
-      "expires": 1792307302.366548,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None",
-      "partitionKey": "http://localhost",
-      "_crHasCrossSiteAncestor": true
     }
   ],
   "origins": [
@@ -59,27 +71,23 @@
       "localStorage": [
         {
           "name": "firestore_targets_firestore/[DEFAULT]/gymapp-401c0/_4",
-          "value": "{\"state\":\"current\",\"updateTimeMs\":1776755308626}"
+          "value": "{\"state\":\"current\",\"updateTimeMs\":1776757108750}"
         },
         {
           "name": "firestore_online_state_firestore/[DEFAULT]/gymapp-401c0/",
-          "value": "{\"clientId\":\"bDUB2rG8qiuDuZzw6KeP\",\"onlineState\":\"Online\"}"
-        },
-        {
-          "name": "firestore_sequence_number_firestore/[DEFAULT]/gymapp-401c0/",
-          "value": "55"
-        },
-        {
-          "name": "firestore_zombie_firestore/[DEFAULT]/gymapp-401c0/_bDUB2rG8qiuDuZzw6KeP",
-          "value": "1776755328488"
-        },
-        {
-          "name": "firestore_zombie_firestore/[DEFAULT]/gymapp-401c0/_1mPvjmDaISWmbxFQWqc9",
-          "value": "1776755312862"
+          "value": "{\"clientId\":\"gFA8UaAAtTwLNyGxHBd3\",\"onlineState\":\"Online\"}"
         },
         {
           "name": "firestore_targets_firestore/[DEFAULT]/gymapp-401c0/_2",
-          "value": "{\"state\":\"current\",\"updateTimeMs\":1776755265936}"
+          "value": "{\"state\":\"current\",\"updateTimeMs\":1776757069534}"
+        },
+        {
+          "name": "firestore_zombie_firestore/[DEFAULT]/gymapp-401c0/_gFA8UaAAtTwLNyGxHBd3",
+          "value": "1776757128415"
+        },
+        {
+          "name": "firestore_sequence_number_firestore/[DEFAULT]/gymapp-401c0/",
+          "value": "57"
         }
       ]
     },
@@ -88,11 +96,11 @@
       "localStorage": [
         {
           "name": "ytidb::LAST_RESULT_ENTRY_KEY",
-          "value": "{\"data\":{\"hasSucceededOnce\":true},\"expiration\":1779347302796,\"creation\":1776755302797}"
+          "value": "{\"data\":{\"hasSucceededOnce\":true},\"expiration\":1779349103552,\"creation\":1776757103552}"
         },
         {
           "name": "yt-icons-last-purged",
-          "value": "1770624502727"
+          "value": "1773823103488"
         }
       ]
     }

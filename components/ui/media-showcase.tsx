@@ -47,14 +47,14 @@ export default function MediaShowcase({ image, video }: MediaShowcaseProps) {
   const isYouTube = Boolean(video && isYouTubeUrl(video));
   const videoSrc = video ? (isYouTube ? normalizeYouTubeEmbed(video) : video) : null;
   return (
-    <section className="grid gap-4 md:grid-cols-2">
+    <section className="grid gap-4 sm:gap-5 md:grid-cols-2">
       {hasImage && image && (
-        <figure className="overflow-hidden rounded-3xl border-none shadow-apple-card">
+        <figure className="overflow-hidden rounded-3xl border border-apple-near-black/5 shadow-apple-card dark:border-white/5">
           <Image src={image} alt="Referencia del ejercicio" className="h-full w-full object-cover" loading="lazy" width={500} height={500} />
         </figure>
       )}
       {hasVideo && videoSrc && (
-        <div className="rounded-3xl border-none shadow-apple-card bg-apple-gray dark:bg-apple-surface-2 p-2">
+        <div className="rounded-3xl border border-apple-near-black/5 bg-white p-2 shadow-apple-card dark:border-white/5 dark:bg-apple-surface-1">
           {isYouTube ? (
             <div className="aspect-video w-full overflow-hidden rounded-2xl">
               <iframe

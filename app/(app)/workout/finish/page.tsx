@@ -66,7 +66,7 @@ export default function WorkoutFinishPage() {
 
   if (saved) {
     return (
-      <div className="apple-page-shell max-w-lg pt-12">
+      <div className="apple-page-shell max-w-lg pt-6">
         <div className="apple-panel flex flex-col items-center justify-center p-12 text-center">
           <CheckCircle2 className="mb-6 h-20 w-20 text-[#34C759]" />
           <h1 className="mb-2 sf-display-card-title text-apple-near-black dark:text-white">Entrenamiento guardado</h1>
@@ -78,7 +78,7 @@ export default function WorkoutFinishPage() {
 
   return (
     <div className="apple-page-shell max-w-xl space-y-8">
-      <div className="mx-auto w-full space-y-8 py-10">
+      <div className="mx-auto w-full space-y-8 py-6 sm:py-10">
         <div className="mb-10 text-center">
           <h1 className="mb-3 sf-display-hero text-apple-near-black dark:text-white">Gran trabajo</h1>
           <p className="sf-text-subnav text-apple-near-black/60 dark:text-white/60">

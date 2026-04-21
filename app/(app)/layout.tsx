@@ -32,7 +32,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </div>
             </aside>
 
-            <div className="flex flex-1 flex-col pb-40 pt-6 sm:pt-8 lg:pb-0 lg:pt-0">
+            <div className="flex flex-1 flex-col pb-8 pt-6 sm:pb-10 sm:pt-8 lg:pb-0 lg:pt-0">
               <main className="flex-1">
                 {children}
               </main>

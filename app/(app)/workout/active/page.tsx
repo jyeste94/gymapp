@@ -30,8 +30,8 @@ export default function ActiveWorkoutPage() {
   }
 
   return (
-    <div className="apple-page-shell max-w-3xl pt-4">
-      <header className="sticky top-0 z-20 -mx-4 -mt-4 mb-6 flex items-center justify-between border-b border-apple-near-black/5 bg-white/85 px-4 py-4 backdrop-blur-xl dark:border-white/5 dark:bg-apple-surface-1/85 sm:mx-0 sm:mt-0 sm:rounded-t-3xl">
+    <div className="apple-page-shell max-w-3xl space-y-6">
+      <header className="sticky top-0 z-20 mb-2 flex items-center justify-between rounded-3xl border border-apple-near-black/5 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/5 dark:bg-apple-surface-1/90">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="text-apple-blue transition-opacity hover:opacity-80">
             <ArrowLeft className="h-6 w-6" />
