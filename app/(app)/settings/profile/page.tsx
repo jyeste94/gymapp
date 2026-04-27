@@ -269,7 +269,7 @@ export default function ProfilePage() {
                         <label className="sf-text-caption-strong uppercase tracking-wider text-apple-near-black/50 dark:text-white/50 pl-1">Nombre</label>
                         <input
                             {...register("displayName")}
-                            className="w-full bg-apple-gray dark:bg-apple-surface-1"
+                            className="input-apple"
                             placeholder="Tu nombre completo"
                         />
                         {errors.displayName && <p className="sf-text-caption text-[#ff3b30] pl-1">{errors.displayName.message}</p>}
@@ -284,8 +284,8 @@ export default function ProfilePage() {
                             <input
                                 {...register("username")}
                                 className={clsx(
-                                    "w-full pl-9 pr-10 bg-apple-gray dark:bg-apple-surface-1",
-                                    usernameAvailable === false && "focus:outline-[#ff3b30] text-[#ff3b30]"
+                                    "input-apple pl-9 pr-10",
+                                    usernameAvailable === false && "focus:ring-[#ff3b30] text-[#ff3b30]"
                                 )}
                                 placeholder="usuario123"
                                 autoCapitalize="none"
@@ -310,7 +310,7 @@ export default function ProfilePage() {
                         <textarea
                             {...register("bio")}
                             rows={4}
-                            className="w-full resize-none bg-apple-gray dark:bg-apple-surface-1"
+                            className="input-apple resize-vertical"
                             placeholder="Cuéntanos un poco sobre ti..."
                         />
                         {errors.bio && <p className="sf-text-caption text-[#ff3b30] pl-1">{errors.bio.message}</p>}

@@ -42,6 +42,14 @@ export default function MuscleHeatmap({ logs }: Props) {
     return result;
   }, [muscleCounts]);
 
+  if (data.length === 0) {
+    return (
+      <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-apple-near-black/12 text-sm text-apple-near-black/50 dark:border-white/12 dark:text-white/50">
+        Registra entrenamientos para ver tu mapa muscular.
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-6 py-4">
       <div className="flex flex-row items-start justify-center gap-8 sm:gap-12">

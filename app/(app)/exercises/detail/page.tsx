@@ -322,7 +322,7 @@ function ExerciseDetailContent() {
       );
     }
     return (
-      <button onClick={() => router.back()} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+      <button onClick={() => router.push("/exercises")} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
          <ArrowLeft className="h-5 w-5" />
          <span>Volver</span>
       </button>

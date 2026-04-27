@@ -407,6 +407,7 @@ function Overview({
             value={form.title}
             onChange={(event) => onChange((prev) => ({ ...prev, title: event.target.value }))}
             placeholder="Empuje - Tiron - Pierna"
+            className="input-apple"
           />
         </label>
 
@@ -416,12 +417,13 @@ function Overview({
             value={form.focus}
             onChange={(event) => onChange((prev) => ({ ...prev, focus: event.target.value }))}
             placeholder="Hipertrofia"
+            className="input-apple"
           />
         </label>
 
         <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
           Nivel
-          <select value={form.level} onChange={(event) => onChange((prev) => ({ ...prev, level: event.target.value }))}>
+          <select value={form.level} onChange={(event) => onChange((prev) => ({ ...prev, level: event.target.value }))} className="input-apple">
             <option value="Principiante">Principiante</option>
             <option value="Intermedio">Intermedio</option>
             <option value="Avanzado">Avanzado</option>
@@ -434,6 +436,7 @@ function Overview({
             value={form.frequency}
             onChange={(event) => onChange((prev) => ({ ...prev, frequency: event.target.value }))}
             placeholder="4 dias por semana"
+            className="input-apple"
           />
         </label>
       </div>
@@ -445,6 +448,7 @@ function Overview({
           value={form.description}
           onChange={(event) => onChange((prev) => ({ ...prev, description: event.target.value }))}
           placeholder="Describe estructura y notas generales de la rutina."
+          className="input-apple resize-vertical"
         />
       </label>
 
@@ -454,6 +458,7 @@ function Overview({
           value={form.equipment}
           onChange={(event) => onChange((prev) => ({ ...prev, equipment: event.target.value }))}
           placeholder="Barra, mancuernas, polea"
+          className="input-apple"
         />
       </label>
 
@@ -512,18 +517,18 @@ function DayDetail({
       <div className="apple-panel-muted grid gap-4 p-5 md:grid-cols-2">
         <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
           Nombre del dia
-          <input value={day.title} onChange={(event) => onUpdate((prev) => ({ ...prev, title: event.target.value }))} />
+          <input value={day.title} onChange={(event) => onUpdate((prev) => ({ ...prev, title: event.target.value }))} className="input-apple" />
         </label>
 
         <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
           Foco del dia
-          <input value={day.focus} onChange={(event) => onUpdate((prev) => ({ ...prev, focus: event.target.value }))} />
+          <input value={day.focus} onChange={(event) => onUpdate((prev) => ({ ...prev, focus: event.target.value }))} className="input-apple" />
         </label>
       </div>
 
       <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
         Notas
-        <textarea rows={2} value={day.notes} onChange={(event) => onUpdate((prev) => ({ ...prev, notes: event.target.value }))} />
+        <textarea rows={2} value={day.notes} onChange={(event) => onUpdate((prev) => ({ ...prev, notes: event.target.value }))} className="input-apple resize-vertical" />
       </label>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -628,14 +633,14 @@ function ExercisePicker({
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-apple-near-black/35 dark:text-white/35" />
           <input
-            className="pl-9"
+            className="input-apple pl-9"
             placeholder="Press banca, espalda, superseries..."
             value={searchTerm}
             onChange={(event) => onSearch(event.target.value)}
           />
         </div>
 
-        <select value={muscleFilter} onChange={(event) => onMuscleFilter(event.target.value)}>
+        <select value={muscleFilter} onChange={(event) => onMuscleFilter(event.target.value)} className="input-apple">
           <option value="">Musculo</option>
           {availableMuscles.map((tag) => (
             <option key={tag} value={tag}>
@@ -644,7 +649,7 @@ function ExercisePicker({
           ))}
         </select>
 
-        <select value={equipmentFilter} onChange={(event) => onEquipmentFilter(event.target.value)}>
+        <select value={equipmentFilter} onChange={(event) => onEquipmentFilter(event.target.value)} className="input-apple">
           <option value="">Material</option>
           {availableEquipment.map((tag) => (
             <option key={tag} value={tag}>

@@ -230,6 +230,10 @@
     @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-apple-blue px-[15px] pb-[7px] pt-[8px] text-white transition-colors sf-text-btn;
   }
 
+  .btn-apple-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
   .btn-apple-primary:hover {
     @apply bg-[#0077ED];
   }
@@ -301,6 +305,10 @@ select {
 .dark textarea,
 .dark select {
   @apply border-white/10 bg-apple-surface-2 text-white placeholder:text-white/35 focus:bg-apple-surface-1;
+}
+
+.input-apple {
+  @apply w-full rounded-2xl border border-apple-near-black/5 bg-apple-gray px-4 py-3 sf-text-body text-apple-near-black placeholder:text-apple-near-black/40 outline-none focus:ring-2 focus:ring-apple-blue dark:border-white/5 dark:bg-apple-surface-2 dark:text-white dark:placeholder:text-white/40;
 }
 
 ::-webkit-scrollbar {

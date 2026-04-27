@@ -5,6 +5,15 @@ import { useChartTheme } from "@/lib/chart-theme";
 
 export default function MeasurementChart({ data }: { data: Measurement[] }) {
   const theme = useChartTheme();
+
+  if (data.length === 0) {
+    return (
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-apple-near-black/12 text-sm text-apple-near-black/50 dark:border-white/12 dark:text-white/50">
+        No hay mediciones registradas.
+      </div>
+    );
+  }
+
   const chart = [...data].reverse().map((item) => ({
     date: new Date(item.date).toLocaleDateString(),
     weight: item.weightKg,

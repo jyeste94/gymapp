@@ -100,15 +100,15 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
 
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Fecha</label>
-        <input type="date" {...register("date")} className="w-full" />
+        <input type="date" {...register("date")} className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Peso (kg)</label>
-        <input type="text" inputMode="decimal" {...register("weightKg")} placeholder="0.0" className="w-full" />
+        <input type="text" inputMode="decimal" {...register("weightKg")} placeholder="0.0" className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Grasa (%)</label>
-        <input type="text" inputMode="decimal" {...register("bodyFatPct")} placeholder="0.0" className="w-full" />
+        <input type="text" inputMode="decimal" {...register("bodyFatPct")} placeholder="0.0" className="input-apple" />
       </div>
 
       <div className="col-span-full apple-divider my-2" />
@@ -116,27 +116,27 @@ export default function MeasurementForm({ userId, editingMeasurement, onSuccess 
 
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Pecho</label>
-        <input type="text" inputMode="decimal" {...register("chest")} className="w-full" />
+        <input type="text" inputMode="decimal" {...register("chest")} className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Cintura</label>
-        <input type="text" inputMode="decimal" {...register("waist")} className="w-full" />
+        <input type="text" inputMode="decimal" {...register("waist")} className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Cadera</label>
-        <input type="text" inputMode="decimal" {...register("hips")} className="w-full" />
+        <input type="text" inputMode="decimal" {...register("hips")} className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Brazo</label>
-        <input type="text" inputMode="decimal" {...register("arm")} className="w-full" />
+        <input type="text" inputMode="decimal" {...register("arm")} className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-1">
         <label className="apple-kicker">Muslo</label>
-        <input type="text" inputMode="decimal" {...register("thigh")} className="w-full" />
+        <input type="text" inputMode="decimal" {...register("thigh")} className="input-apple" />
       </div>
       <div className="space-y-2 md:col-span-5">
         <label className="apple-kicker">Notas</label>
-        <input {...register("notes")} className="w-full" placeholder="Sueno, alimentacion, biorritmo..." />
+        <input {...register("notes")} className="input-apple" placeholder="Sueno, alimentacion, biorritmo..." />
       </div>
 
       <div className="md:col-span-5 flex flex-wrap items-center gap-3 pt-2">

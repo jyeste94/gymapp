@@ -158,15 +158,11 @@ export default function DashboardPage() {
 
           <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
             <div className="relative mb-6 flex h-40 w-40 items-center justify-center">
-              <svg className="h-full w-full rotate-[-90deg]">
-                <circle cx="80" cy="80" r="70" className="fill-none stroke-white/10" strokeWidth="12" />
-                <circle cx="80" cy="80" r="70" className="fill-none stroke-apple-link-dark" strokeWidth="12" strokeDasharray="439.8" strokeDashoffset="110" strokeLinecap="round" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="sf-display-tile text-white">75%</span>
+              <div className="flex h-full w-full items-center justify-center rounded-full border-4 border-white/10">
+                <span className="sf-text-micro uppercase tracking-widest text-white/50">Próximamente</span>
               </div>
             </div>
-            <p className="sf-text-body max-w-[220px] text-white/80">Has completado el 75% de tu objetivo semanal.</p>
+            <p className="sf-text-body max-w-[220px] text-white/60">Las estadísticas semanales estarán disponibles pronto.</p>
           </div>
         </section>
       </div>

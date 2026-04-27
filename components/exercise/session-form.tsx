@@ -1,4 +1,5 @@
-﻿import clsx from "clsx";
+﻿"use client";
+import clsx from "clsx";
 import MediaField from "@/components/ui/media-field";
 import type { SessionState } from "./types";
 

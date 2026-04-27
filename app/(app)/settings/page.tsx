@@ -50,7 +50,6 @@ export default function SettingsPage() {
           </div>
           <div className="flex flex-col px-5">
             <SettingItem label="Perfil y social" href="/settings/profile" />
-            <SettingItem label="Perfil y social" href="/settings/profile" />
             <SettingItem
               label={dark ? "Modo oscuro" : "Modo claro"}
               onClick={toggleTheme}

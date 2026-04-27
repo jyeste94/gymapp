@@ -62,7 +62,7 @@ export default function RoutinesPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar rutina por nombre, nivel o frecuencia..."
-            className="w-full py-3.5 pl-12 pr-4"
+            className="w-full rounded-2xl border border-apple-near-black/5 bg-apple-gray py-3.5 pl-12 pr-4 sf-text-body text-apple-near-black placeholder:text-apple-near-black/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] outline-none focus:ring-2 focus:ring-apple-blue dark:border-white/5 dark:bg-apple-surface-2 dark:text-white dark:placeholder:text-white/40"
           />
         </div>
 

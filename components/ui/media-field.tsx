@@ -1,3 +1,4 @@
+"use client";
 type MediaFieldProps = {
   label: string;
   value: string;
