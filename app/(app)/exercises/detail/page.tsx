@@ -17,7 +17,6 @@ import {
   type ExerciseLogSet,
 } from "@/lib/firestore/exercise-logs";
 import MediaShowcase from "@/components/ui/media-showcase";
-import ExerciseHeader from "@/components/exercise/exercise-header";
 import TechniqueGuide from "@/components/exercise/technique-guide";
 import SessionForm from "@/components/exercise/session-form";
 import type { SessionState, SessionSet } from "@/components/exercise/types";
@@ -101,7 +100,6 @@ function ExerciseDetailContent() {
   }, [exerciseId, fromCreator, exerciseEntry, apiExercise]);
 
   const exercise = exerciseEntry?.exercise ?? apiExercise;
-  const routine = exerciseEntry?.routine;
 
   const history = useMemo(() => {
     if (!exercise) return [] as ExerciseLog[];
@@ -260,7 +258,7 @@ function ExerciseDetailContent() {
   };
 
   const handleSave = async () => {
-    if (!user || !exerciseEntry) return;
+    if (!user || !exercise) return;
     setIsSaving(true);
 
     const hasSetData = session.sets.some(set => Boolean(set.weight || set.reps || set.rir));
@@ -279,10 +277,10 @@ function ExerciseDetailContent() {
     const logData = {
       exerciseId: exercise.id,
       exerciseName: exercise.name,
-      routineId: exerciseEntry.routine.id,
-      routineName: exerciseEntry.routine.title,
-      dayId: exerciseEntry.day.id,
-      dayName: exerciseEntry.day.title,
+      routineId: exerciseEntry?.routine.id,
+      routineName: exerciseEntry?.routine.title,
+      dayId: exerciseEntry?.day.id,
+      dayName: exerciseEntry?.day.title,
       date: new Date(session.sessionDate || new Date().toISOString()).toISOString(),
       perceivedEffort: session.perceivedEffort || null,
       notes: session.notes.trim() || null,
@@ -337,9 +335,26 @@ function ExerciseDetailContent() {
     <div className="apple-page-shell max-w-4xl space-y-8">
       {renderBackButton()}
 
-      {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}
+      {exercise && (
+        <header className="rounded-3xl border-none bg-white dark:bg-apple-surface-1 p-6 lg:p-8 shadow-apple-card">
+          <div className="flex flex-wrap gap-2 mb-3">
+            {exercise.muscleGroup.map((mg) => (
+              <span key={mg} className="rounded-full bg-apple-blue/10 px-3 py-1 sf-text-nano font-medium text-apple-blue">
+                {mg}
+              </span>
+            ))}
+            {exercise.equipment.map((eq) => (
+              <span key={eq} className="rounded-full bg-apple-gray dark:bg-apple-surface-2 px-3 py-1 sf-text-nano text-apple-near-black/60 dark:text-white/60">
+                {eq}
+              </span>
+            ))}
+          </div>
+          <h1 className="sf-display-card-title text-apple-near-black dark:text-white">{exercise.name}</h1>
+          {exercise.description && <p className="mt-2 sf-text-body text-apple-near-black/60 dark:text-white/60">{exercise.description}</p>}
+        </header>
+      )}
 
-      <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
+      <MediaShowcase image={session.mediaImage || exercise?.image} video={session.mediaVideo || exercise?.video} />
 
       {!fromCreator && (
         <ExerciseProgressChart data={history} />
