@@ -258,49 +258,65 @@ message, stack_trace, context (JSON), created_at
 4. Cada ejercicio en la rutina lleva embebidos: `name`, `description`, `muscleGroup`, `equipment`, `technique`, `image`, `video`
 5. `buildRoutine(template)` hidrata usando estos datos embebidos (ya NO necesita `defaultExercises`)
 
-## 8. Cambios Realizados en Esta Sesión
+## 8. Cambios Realizados
 
-### API (NutriFlow)
-- Añadidos endpoints GET/PATCH/DELETE para `/v1/workouts`
-- Añadido `?include_sets=1` a GET /v1/workouts
-- Añadido GET /v1/exercises/{id} y filtros muscleGroup/equipment
-- Añadido GET /v1/routines/{id}
-- Creada entidad Measurement + migración + CRUD endpoints
+### Sesión 1 (core)
+- **API**: GET/PATCH/DELETE `/v1/workouts`, `?include_sets=1`, GET /v1/exercises/{id} + filtros, GET /v1/routines/{id}, entidad Measurement + CRUD
+- **App**: NutriFlowClient con métodos nuevos, useWorkoutLogs/useExerciseLogs desde API, measurements migrado, routine-builder sin defaultExercises, exercise-catalog opcional, ejercicios desde API, stats-helpers simplificado
+- **Eliminados**: exercises.ts (584 líneas), routine-library.ts, routine-plan.ts, data-integrity.test.ts, mergeRoutines()
 
-### App (gym)
-- `NutriFlowClient` → métodos nuevos: listWorkoutSessions, getWorkoutSession, updateWorkoutSession, deleteWorkoutSession, listExercises (con filtros), getExercise, listMeasurements, createMeasurement, updateMeasurement, deleteMeasurement, getRoutine
-- `useWorkoutLogs` → ahora fetch desde API (antes stub)
-- `useExerciseLogs` → ahora fetch desde API (antes stub)
-- `measurements.ts` → migrado de Firestore a NutriFlowClient
-- `routine-builder.ts` → ya no requiere `Exercise[]` (usa datos embebidos de API)
-- `exercise-catalog.ts` → acepta `allExercises` opcional desde API
-- `exercises/page.tsx` → fetch desde API
-- `exercises/detail/page.tsx` → fetch desde API para contextlessExercise
-- `stats-helpers.ts` → simplificado (sin dependencia de defaultExercises)
-- **Eliminados**: `lib/data/exercises.ts` (584 líneas hardcoded), `lib/data/routine-library.ts`, `lib/data/routine-plan.ts`, `lib/data/data-integrity.test.ts`
-- Eliminada función `mergeRoutines` de `routine-helpers.ts`
+### Sesión 2 (bugs + UX)
+- Workout timer usa startTime del store
+- crypto.randomUUID() con fallback
+- Auth guard con spinner en vez de blank
+- cancelWorkout independiente de finishWorkout
+- Gráficas dark mode via useChartTheme() (6 charts)
+- Toast en delete rutina
+- Settings theme toggle funcional
+- Empty state en ejercicio detail
+- aria-labels en timer
+- **Workout finish**: envía duration_minutes a la API
+- **API**: search ejercicios por nombre, PUT rutinas
+- **Caché**: lib/workout-cache.ts, useWorkoutLogs + useExerciseLogs comparten cache
+
+### Sesión 3 (UI polish)
+- **Settings**: eliminado duplicado "Perfil y social"
+- **"use client"**: añadido a session-form.tsx y media-field.tsx
+- **Input búsqueda rutinas**: añadidos estilos (border, bg, focus ring, dark)
+- **btn-apple-primary**: añadido :disabled state
+- **Dashboard**: sección actividad con "Próximamente" en vez de SVG hardcodeado
+- **Empty states**: muscle-heatmap + measurement-chart
+- **router.back()**: cambiado a router.push() con fallback en workout active y exercise detail
+- **Clase .input-apple**: creada en globals.css, aplicada a todos los formularios (crear rutina drawer, mediciones, perfil)
+- **Formularios**: drawer crear rutina (12 inputs/selects/textareas), mediciones (9 inputs), perfil (3 inputs) ahora consistentes
+- **CORS fix**: `expose_headers` añadidos `X-Total-Count`, `X-Page`, `X-Per-Page`. Regex de origen ampliado a `*.vercel.app`
+- **Seed SQL**: `context/seed-routines.sql` — rutina 4d "Estética y Fuerza" + 3d "Push/Pull/Legs"
+  - Usa subqueries `SELECT ... FROM exercises WHERE name LIKE ...` para encontrar ejercicios por nombre aproximado
+  - NOTA: si algún nombre de ejercicio no coincide con los scrapeados, el INSERT falla para ese ejercicio. Revisar nombres en tabla `exercises` antes de ejecutar
 
 ## 9. Issues Conocidos / Pendientes
 
-### Arreglados (sesión actual)
-- ✅ Workout timer ahora usa `startTime` del store (persiste entre recargas)
-- ✅ `crypto.randomUUID()` con fallback `Date.now()` + Math.random
-- ✅ Auth guard muestra spinner en vez de pantalla en blanco
-- ✅ `cancelWorkout` ya no guarda (limpia estado sin persistir)
-- ✅ Gráficas adaptadas a dark mode via `useChartTheme()` hook
-- ✅ Toast de éxito/error en delete de rutina
-- ✅ Settings: theme toggle funcional (oscuro/claro)
-- ✅ Empty state en ejercicio sin historial
-- ✅ aria-labels en botones del timer
+### Arreglados
+- ✅ Workout timer usa startTime del store
+- ✅ crypto.randomUUID() con fallback
+- ✅ Auth guard sin pantalla en blanco
+- ✅ cancelWorkout no guarda
+- ✅ Gráficas dark mode (6 charts)
+- ✅ Toast en delete rutina
+- ✅ Settings theme toggle funcional
+- ✅ Empty state ejercicio detail
+- ✅ aria-labels timer
+- ✅ router.back() con fallback
+- ✅ Formularios consistentes (input-apple)
+- ✅ API search ejercicios + PUT rutinas
+- ✅ Caché workouts compartida
 
 ### Arquitectura (pendientes)
-1. **`saveExerciseLog` / `updateExerciseLog`** crean sesiones NutriFlow individuales (cada log es una sesión separada). No hay forma de actualizar (API no tiene PUT en sets)
-2. **No hay paginación real** en useWorkoutLogs (se traen hasta 200 sesiones)
-3. **`useExerciseLogs` duplica llamada API** de `useWorkoutLogs` (misma data, mismo fetch)
-4. **Routine `daysOfWeek` en API** usa enteros 1-7 o strings encoded JSON, la app espera ids tipo 'lunes', 'tue' (se mapea en `mapApiRoutineToTemplate`)
-5. **No hay endpoint PUT** para rutinas (no se pueden editar, solo crear/borrar)
-6. **No hay search/filter** en `/v1/exercises` por nombre
-7. **`fill: "#8E8E93"` en XAxis ticks** no usa theme (exercise-progress-chart, no se puede pasar objeto a tick.fill directo en Recharts)
+1. **`saveExerciseLog` / `updateExerciseLog`** crean sesiones NutriFlow individuales (API no tiene PUT en sets)
+2. **`btn-apple-pill` sin `:disabled` state** en globals.css (como btn-apple-primary)
+3. **`h-4.5` / `w-4.5`** en sidebar-footer.tsx: Tailwind no tiene esas clases por defecto (no se renderizan)
+4. **`window.confirm()`** nativo en 3 lugares (delete rutina, delete medición, discard cambios drawer)
+5. **`router.back()` sin fallback** en diet/editor/page.tsx
 
 ## 10. Tipos TypeScript Clave
 

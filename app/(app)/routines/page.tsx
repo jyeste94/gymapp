@@ -1,16 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlusCircle, Search, Trash2, Zap, Calendar, Dumbbell } from "lucide-react";
-import toast from "react-hot-toast";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import { buildRoutine } from "@/lib/routine-builder";
+import { NutriFlowClient } from "@/lib/api/nutriflow";
 import type { Routine, RoutineTemplate } from "@/lib/types";
+import type { Exercise } from "@/lib/types";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 import CreateRoutineDrawer from "@/app/(app)/routines/create-routine-drawer";
 import { deleteRoutineTemplate } from "@/lib/firestore/routines";
+import toast from "react-hot-toast";
 
 const formatDaysLabel = (count: number) => `${count} dia${count === 1 ? "" : "s"}`;
 
@@ -23,8 +25,27 @@ export default function RoutinesPage() {
     dir: "asc",
   });
 
+  const [apiExercises, setApiExercises] = useState<Exercise[]>([]);
+
+  useEffect(() => {
+    NutriFlowClient.listExercises({ limit: 500 }).then((exercises) => {
+      setApiExercises(
+        exercises.map((ex) => ({
+          id: ex.id,
+          name: ex.name,
+          description: ex.description ?? "",
+          muscleGroup: (ex.muscleGroup?.split(/[;,|/]/g).map((s) => s.trim()).filter(Boolean) ?? []) as Exercise["muscleGroup"],
+          equipment: (ex.equipment?.split(/[;,|/]/g).map((s) => s.trim()).filter(Boolean) ?? []) as Exercise["equipment"],
+          technique: [],
+          image: ex.gifUrl ?? undefined,
+          video: ex.videoUrl ?? undefined,
+        })),
+      );
+    }).catch(console.error);
+  }, []);
+
   const allRoutines = useMemo(() => (routineTemplates ?? []).map((template) => buildRoutine(template)), [routineTemplates]);
-  const exerciseCatalog = useMemo(() => buildExerciseCatalog(allRoutines), [allRoutines]);
+  const exerciseCatalog = useMemo(() => buildExerciseCatalog(allRoutines, apiExercises), [allRoutines, apiExercises]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -141,7 +162,7 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
   };
 
   return (
-    <Link href={`/routines/detail?id=${routine.id}`} className="group flex flex-col justify-between rounded-2xl bg-apple-gray p-5 transition-colors hover:bg-apple-blue/5 dark:bg-apple-surface-2">
+    <Link href={`/routines/detail?id=${routine.id}`} className="group flex flex-col justify-between rounded-3xl bg-apple-gray p-6 transition-colors hover:bg-apple-blue/5 dark:bg-apple-surface-2">
       <div>
         <div className="flex items-start justify-between gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-apple-blue shadow-sm transition-shadow group-hover:shadow-md dark:bg-apple-surface-1">
@@ -164,7 +185,7 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-2">
           <h2 className="sf-text-body-strong line-clamp-1 text-apple-near-black dark:text-white">{routine.title}</h2>
           {routine.description && <p className="mt-1 line-clamp-2 sf-text-caption text-apple-near-black/60 dark:text-white/60">{routine.description}</p>}
         </div>

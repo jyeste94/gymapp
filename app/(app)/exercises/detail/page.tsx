@@ -307,7 +307,7 @@ function ExerciseDetailContent() {
   const renderBackButton = () => {
     if (backHref) {
       return (
-        <Link href={backHref} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+        <Link href={backHref} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity">
           <ArrowLeft className="h-5 w-5" />
           <span>Volver</span>
         </Link>
@@ -315,14 +315,14 @@ function ExerciseDetailContent() {
     }
     if (fromCreator) {
       return (
-        <button onClick={() => router.back()} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+        <button onClick={() => router.back()} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity">
            <ArrowLeft className="h-5 w-5" />
            <span>Volver al creador</span>
         </button>
       );
     }
     return (
-      <button onClick={() => router.push("/exercises")} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity mb-2">
+      <button onClick={() => router.push("/exercises")} className="inline-flex items-center gap-2 sf-text-body-strong text-apple-blue hover:opacity-80 transition-opacity">
          <ArrowLeft className="h-5 w-5" />
          <span>Volver</span>
       </button>
@@ -330,7 +330,7 @@ function ExerciseDetailContent() {
   };
 
   return (
-    <div className="apple-page-shell max-w-4xl space-y-6">
+    <div className="apple-page-shell max-w-4xl space-y-8">
       {renderBackButton()}
 
       {routine && <ExerciseHeader exercise={exercise as RoutineExercise} routine={routine} />}

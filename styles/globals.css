@@ -197,7 +197,7 @@
   }
 
   .apple-page-shell {
-    @apply mx-auto w-full max-w-5xl px-4 pt-5 pb-28 sm:px-5 sm:pt-6 sm:pb-32 lg:px-0 lg:pb-12;
+    @apply mx-auto w-full max-w-5xl px-4 pt-5 pb-28 sm:px-6 sm:pt-7 sm:pb-32 lg:px-8 lg:pb-12;
   }
 
   .apple-panel {

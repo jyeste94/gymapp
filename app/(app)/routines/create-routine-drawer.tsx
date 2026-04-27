@@ -372,23 +372,23 @@ function Overview({
 
   return (
     <section className="space-y-6">
-      <div className="apple-panel-muted rounded-2xl p-4">
-        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">Resumen actual</p>
+      <div className="apple-panel-muted rounded-2xl p-5">
+        <p className="sf-text-body-strong text-apple-near-black dark:text-white">Resumen actual</p>
         <p className="mt-1 sf-text-caption text-apple-near-black/65 dark:text-white/65">
           {form.days.length} dias, {completedDays} con ejercicios, {totalExercises} ejercicios totales.
         </p>
       </div>
 
       <div className="space-y-3">
-        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">Paso 1. Cuantos dias tendra la rutina</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="sf-text-body-strong text-apple-near-black dark:text-white">Paso 1. Cuantos dias tendra la rutina</p>
+        <div className="flex flex-wrap gap-3">
           {dayCountOptions.map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => onDayCountChange(option)}
               className={clsx(
-                "rounded-full border px-3 py-1.5 sf-text-caption transition",
+                "rounded-full border px-4 py-2 sf-text-caption transition",
                 form.days.length === option
                   ? "border-apple-blue bg-apple-blue text-white"
                   : "border-apple-near-black/10 bg-white text-apple-near-black/80 hover:border-apple-blue hover:text-apple-blue dark:border-white/15 dark:bg-apple-surface-2 dark:text-white/75",
@@ -441,29 +441,31 @@ function Overview({
         </label>
       </div>
 
-      <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
-        Descripcion
-        <textarea
-          rows={3}
-          value={form.description}
-          onChange={(event) => onChange((prev) => ({ ...prev, description: event.target.value }))}
-          placeholder="Describe estructura y notas generales de la rutina."
-          className="input-apple resize-vertical"
-        />
-      </label>
+      <div className="apple-panel-muted space-y-4 p-5">
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Descripcion
+          <textarea
+            rows={3}
+            value={form.description}
+            onChange={(event) => onChange((prev) => ({ ...prev, description: event.target.value }))}
+            placeholder="Describe estructura y notas generales de la rutina."
+            className="input-apple resize-vertical"
+          />
+        </label>
 
-      <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
-        Material necesario
-        <input
-          value={form.equipment}
-          onChange={(event) => onChange((prev) => ({ ...prev, equipment: event.target.value }))}
-          placeholder="Barra, mancuernas, polea"
-          className="input-apple"
-        />
-      </label>
+        <label className="space-y-2 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Material necesario
+          <input
+            value={form.equipment}
+            onChange={(event) => onChange((prev) => ({ ...prev, equipment: event.target.value }))}
+            placeholder="Barra, mancuernas, polea"
+            className="input-apple"
+          />
+        </label>
+      </div>
 
       <div className="space-y-3">
-        <p className="sf-text-caption-strong text-apple-near-black dark:text-white">Paso 2. Configura cada dia</p>
+        <p className="sf-text-body-strong text-apple-near-black dark:text-white">Paso 2. Configura cada dia</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {form.days.map((day) => (
             <button
@@ -471,11 +473,11 @@ function Overview({
               type="button"
               onClick={() => onSelectDay(day.id)}
               className={clsx(
-                "apple-panel-muted flex flex-col items-start gap-1.5 p-4 text-left transition",
+                "apple-panel-muted flex flex-col items-start gap-1.5 p-5 text-left transition",
                 selectedDayId === day.id ? "border-apple-blue/60" : "hover:-translate-y-0.5",
               )}
             >
-              <span className="sf-text-caption-strong text-apple-near-black dark:text-white">{day.title}</span>
+              <span className="sf-text-body-strong text-apple-near-black dark:text-white">{day.title}</span>
               <span className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
                 {day.exercises.length > 0 ? `${day.exercises.length} ejercicios` : "Sin ejercicios"}
               </span>
@@ -629,7 +631,7 @@ function ExercisePicker({
         </p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
+      <div className="grid gap-4 sm:grid-cols-[1fr_auto_auto]">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-apple-near-black/35 dark:text-white/35" />
           <input
@@ -659,14 +661,14 @@ function ExercisePicker({
         </select>
       </div>
 
-      <div className="max-h-[24rem] space-y-3 overflow-y-auto pr-1">
+      <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-2">
         {exercises.length === 0 ? (
           <p className="apple-panel-muted sf-text-caption p-4 text-apple-near-black/60 dark:text-white/60">
             No se encontraron ejercicios para esos filtros.
           </p>
         ) : (
           exercises.map((exercise) => (
-            <article key={exercise.id} className="apple-panel-muted space-y-2 p-4">
+            <article key={exercise.id} className="apple-panel-muted space-y-2 p-5">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <p className="sf-text-body-emphasis text-apple-near-black dark:text-white">{exercise.name}</p>
                 <div className="flex items-center gap-2">
