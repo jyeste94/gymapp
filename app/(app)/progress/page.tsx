@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useMemo, type ReactNode } from "react";
-import { Activity, Dumbbell, Flame, TrendingUp, Zap } from "lucide-react";
+import { Activity, Download, Dumbbell, FileSpreadsheet, Flame, TrendingUp, Zap } from "lucide-react";
 import MuscleHeatmap from "@/components/progress/muscle-heatmap";
 import MuscleVolumeChart from "@/components/progress/muscle-volume-chart";
 import StrengthChart from "@/components/progress/strength-chart";
@@ -10,6 +10,7 @@ import { FadeIn, PageTransition, StaggerContainer, StaggerItem } from "@/compone
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import { calculateStats } from "@/lib/stats-helpers";
+import { downloadCSV } from "@/lib/export-utils";
 
 export default function ProgressPage() {
   const { user } = useAuth();
@@ -26,15 +27,48 @@ export default function ProgressPage() {
     return routineLogs.filter((log) => new Date(log.date) >= startOfWeek);
   }, [routineLogs]);
 
+  const handleExportCSV = () => {
+    const maxSets = routineLogs.reduce((max, l) => Math.max(max, ...l.entries.map((e) => e.sets.length)), 0);
+    const headers = ["Fecha", "Rutina", "Ejercicio"];
+    for (let i = 1; i <= maxSets; i++) headers.push(`Serie ${i} (kg)`, `Serie ${i} (reps)`);
+    headers.push("Volumen Total (kg)");
+    const rows = routineLogs.flatMap((log) =>
+      log.entries.map((entry) => {
+        const row = [
+          new Date(log.date).toLocaleDateString("es-ES"),
+          log.routineName || "-",
+          entry.exerciseName,
+        ];
+        entry.sets.forEach((s) => row.push(String(s.weight || ""), String(s.reps || "")));
+        for (let i = entry.sets.length; i < maxSets; i++) row.push("", "");
+        row.push(String(entry.sets.reduce((sum, s) => sum + (Number(s.weight) * Number(s.reps) || 0), 0)));
+        return row;
+      })
+    );
+    downloadCSV(`progreso-athlos-${new Date().toISOString().slice(0, 10)}`, headers, rows);
+  };
+
+  const handlePrint = () => window.print();
+
   return (
     <PageTransition>
       <div className="apple-page-shell space-y-8">
-        <header className="mb-8 flex flex-col gap-2">
-          <p className="apple-kicker">Progreso</p>
-          <h1 className="sf-display-hero text-apple-near-black dark:text-white">Analisis de rendimiento</h1>
-          <p className="max-w-xl sf-text-subnav text-apple-near-black/60 dark:text-white/60">
-            Tu evolucion en numeros. Analiza fuerza, volumen y equilibrio muscular.
-          </p>
+        <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="apple-kicker">Progreso</p>
+            <h1 className="sf-display-hero text-apple-near-black dark:text-white">Analisis de rendimiento</h1>
+            <p className="max-w-xl sf-text-subnav text-apple-near-black/60 dark:text-white/60">
+              Tu evolucion en numeros. Analiza fuerza, volumen y equilibrio muscular.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={handleExportCSV} className="btn-apple-pill" title="Exportar CSV">
+              <FileSpreadsheet className="h-4 w-4" /> CSV
+            </button>
+            <button onClick={handlePrint} className="btn-apple-pill" title="Exportar PDF">
+              <Download className="h-4 w-4" /> PDF
+            </button>
+          </div>
         </header>
 
         <StaggerContainer className="grid gap-4 sm:grid-cols-3">

@@ -1,4 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+vi.mock('@/lib/api/nutriflow', () => ({
+  NutriFlowClient: { startWorkoutSession: vi.fn().mockResolvedValue({ id: 'mock-session' }), logWorkoutSet: vi.fn() },
+}));
+
 import { useWorkoutStore } from './workout-session';
 import type { RoutineExercise } from '../types';
 
@@ -32,11 +37,11 @@ describe('Workout Store', () => {
         });
     });
 
-    it('should start a workout correctly', () => {
+    it('should start a workout correctly', async () => {
         const store = useWorkoutStore.getState();
         const exercises = [createMockRoutineExercise()];
 
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1',
             routineTitle: 'Leg Day',
             dayId: 'd1',
@@ -52,9 +57,9 @@ describe('Workout Store', () => {
         expect(state.activeExerciseId).toBe('ex1');
     });
 
-    it('should update a set', () => {
+    it('should update a set', async () => {
         const store = useWorkoutStore.getState();
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1',
             routineTitle: 'Test',
             dayId: 'd1',
@@ -71,9 +76,9 @@ describe('Workout Store', () => {
         expect(updatedSet.reps).toBe('5');
     });
 
-    it('should toggle set completion', () => {
+    it('should toggle set completion', async () => {
         const store = useWorkoutStore.getState();
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1', routineTitle: 'T', dayId: 'd1', dayTitle: 'T',
             exercises: [createMockRoutineExercise()]
         });
@@ -89,9 +94,9 @@ describe('Workout Store', () => {
         expect(useWorkoutStore.getState().exercises[0].sets[0].completed).toBe(false);
     });
 
-    it('should add a new set', () => {
+    it('should add a new set', async () => {
         const store = useWorkoutStore.getState();
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1', routineTitle: 'T', dayId: 'd1', dayTitle: 'T',
             exercises: [createMockRoutineExercise()]
         });
@@ -104,9 +109,9 @@ describe('Workout Store', () => {
         expect(newLength).toBe(initialLength + 1);
     });
 
-    it('should remove a set', () => {
+    it('should remove a set', async () => {
         const store = useWorkoutStore.getState();
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1', routineTitle: 'T', dayId: 'd1', dayTitle: 'T',
             exercises: [createMockRoutineExercise()]
         });
@@ -118,9 +123,9 @@ describe('Workout Store', () => {
         expect(exercises.sets.find(s => s.id === setId)).toBeUndefined();
     });
 
-    it('should finish/cancel workout (reset state)', () => {
+    it('should finish/cancel workout (reset state)', async () => {
         const store = useWorkoutStore.getState();
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1', routineTitle: 'T', dayId: 'd1', dayTitle: 'T',
             exercises: [createMockRoutineExercise()]
         });
@@ -132,7 +137,7 @@ describe('Workout Store', () => {
         expect(state.exercises).toHaveLength(0);
         expect(state.routineId).toBeNull();
     });
-    it('should pre-fill weights from history', () => {
+    it('should pre-fill weights from history', async () => {
         const store = useWorkoutStore.getState();
         const exercises = [createMockRoutineExercise()];
         const history = {
@@ -143,7 +148,7 @@ describe('Workout Store', () => {
             ]
         };
 
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1',
             routineTitle: 'Leg Day',
             dayId: 'd1',
@@ -163,7 +168,7 @@ describe('Workout Store', () => {
         expect(sets[0].reps).toBe('');
     });
 
-    it('should pre-fill with last valid weight if history is shorter than current sets', () => {
+    it('should pre-fill with last valid weight if history is shorter than current sets', async () => {
         const store = useWorkoutStore.getState();
         const exercises = [{ ...createMockRoutineExercise(), sets: 4 }]; // 4 Sets
         const history = {
@@ -174,7 +179,7 @@ describe('Workout Store', () => {
             ]
         };
 
-        store.startWorkout({
+        await store.startWorkout({
             routineId: 'r1',
             routineTitle: 'Leg Day',
             dayId: 'd1',

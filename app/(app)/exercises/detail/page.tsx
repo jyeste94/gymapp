@@ -77,14 +77,18 @@ function ExerciseDetailContent() {
   );
 
   useEffect(() => {
-    if (!fromCreator || !exerciseId || apiExercise) return;
+    if (!exerciseId || apiExercise) return;
+    const needsFetch = fromCreator || !exerciseEntry;
+    if (!needsFetch) return;
+
     NutriFlowClient.getExercise(exerciseId).then((ex) => {
+      const parseList = (val?: string | null) => (val?.split(/[;,|/]/g).map((s) => s.trim()).filter(Boolean) ?? []);
       setApiExercise({
         id: ex.id,
         name: ex.name,
         description: ex.description ?? "",
-        muscleGroup: [],
-        equipment: [],
+        muscleGroup: parseList(ex.muscleGroup) as RoutineExercise["muscleGroup"],
+        equipment: parseList(ex.equipment) as RoutineExercise["equipment"],
         technique: [],
         image: ex.gifUrl ?? undefined,
         video: ex.videoUrl ?? undefined,
@@ -94,7 +98,7 @@ function ExerciseDetailContent() {
         tip: "",
       });
     }).catch(console.error);
-  }, [exerciseId, fromCreator, apiExercise]);
+  }, [exerciseId, fromCreator, exerciseEntry, apiExercise]);
 
   const exercise = exerciseEntry?.exercise ?? apiExercise;
   const routine = exerciseEntry?.routine;

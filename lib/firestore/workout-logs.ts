@@ -70,14 +70,14 @@ function groupSetsByExercise(sets: NutriFlowWorkoutSet[]): RoutineLogEntry[] {
   }));
 }
 
-export const addWorkoutLog = async (_db: unknown, userId: string, log: Omit<RoutineLog, "id">) => {
-  const session = await NutriFlowClient.startWorkoutSession(log.routineId);
+export const addWorkoutLog = async (_db: unknown, userId: string, log: Omit<RoutineLog, "id">, existingSessionId?: string) => {
+  const sessionId = existingSessionId || (await NutriFlowClient.startWorkoutSession(log.routineId)).id;
 
   for (const entry of log.entries ?? []) {
     const validSets = entry.sets.filter((set) => Number(set.reps) > 0 || Number(set.weight) > 0);
 
     for (const set of validSets) {
-      await NutriFlowClient.logWorkoutSet(session.id, {
+      await NutriFlowClient.logWorkoutSet(sessionId, {
         exercise_id: entry.exerciseId,
         reps: Number(set.reps) || 0,
         weight: Number(set.weight) || 0,
@@ -85,5 +85,5 @@ export const addWorkoutLog = async (_db: unknown, userId: string, log: Omit<Rout
     }
   }
 
-  return session.id;
+  return sessionId;
 };

@@ -49,7 +49,7 @@ export default function WorkoutFinishPage() {
         dayId: state.dayId || undefined,
         dayName: state.dayTitle || undefined,
         entries: getExercisesToSave(state.exercises),
-      });
+      }, state.sessionId ?? undefined);
 
       if (state.startTime) {
         const durationMinutes = Math.round((Date.now() - state.startTime) / 60000);

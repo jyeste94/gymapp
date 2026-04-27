@@ -38,10 +38,16 @@ export default function DietDashboardPage() {
           <h1 className="sf-display-hero text-apple-near-black dark:text-white">Panel de nutricion</h1>
           <p className="mt-1 sf-text-subnav text-apple-near-black/60 dark:text-white/60">El combustible que define tus resultados.</p>
         </div>
-        <Link href="/diet/editor" className="btn-apple-primary w-full md:w-auto md:px-6">
-          <Plus className="mr-1 h-5 w-5" />
-          <span>Editar dieta</span>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/diet/plan" className="btn-apple-primary w-full md:w-auto md:px-6">
+            <Utensils className="mr-1 h-5 w-5" />
+            <span>Ver plan</span>
+          </Link>
+          <Link href="/diet/editor" className="btn-apple-ghost w-full md:w-auto md:px-6">
+            <Plus className="mr-1 h-5 w-5" />
+            <span>Editar</span>
+          </Link>
+        </div>
       </header>
 
       {!activeDiet ? (

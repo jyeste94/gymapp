@@ -16,7 +16,7 @@ export function getExercisesToSave(exercises: ActiveExercise[]): SavedWorkoutEnt
     return exercises.map(ex => ({
         exerciseId: ex.id,
         exerciseName: ex.name,
-        sets: ex.sets.filter(s => s.completed || Number(s.reps) > 0 || (s.weight && s.weight.trim() !== "")).map(s => ({
+        sets: ex.sets.filter(s => (s.completed || Number(s.reps) > 0 || (s.weight && s.weight.trim() !== "")) && !s.loggedToApi).map(s => ({
             weight: s.weight?.toString() || "",
             reps: Number(s.reps) || 0,
             rir: Number(s.rir) || 0,

@@ -1,9 +1,9 @@
 ﻿"use client";
 
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, Plus } from "lucide-react";
+import { ArrowLeft, Check, Plus, Timer } from "lucide-react";
 import { WorkoutTimer } from "@/components/workout/workout-timer";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 
@@ -13,6 +13,32 @@ export default function ActiveWorkoutPage() {
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  const [restEnd, setRestEnd] = useState<number | null>(null);
+  const restInterval = useRef<NodeJS.Timeout | null>(null);
+  const [restRemaining, setRestRemaining] = useState(0);
+
+  useEffect(() => {
+    if (restEnd === null) {
+      if (restInterval.current) clearInterval(restInterval.current);
+      setRestRemaining(0);
+      return;
+    }
+    restInterval.current = setInterval(() => {
+      const remaining = Math.max(0, Math.round((restEnd - Date.now()) / 1000));
+      setRestRemaining(remaining);
+      if (remaining <= 0 && restInterval.current) {
+        clearInterval(restInterval.current);
+        setRestEnd(null);
+      }
+    }, 200);
+    return () => { if (restInterval.current) clearInterval(restInterval.current); };
+  }, [restEnd]);
+
+  const handleSetComplete = (exerciseId: string, setId: string, restSeconds: number) => {
+    state.toggleSetComplete(exerciseId, setId);
+    setRestEnd(Date.now() + restSeconds * 1000);
+  };
 
   if (!mounted) return null;
 
@@ -42,6 +68,11 @@ export default function ActiveWorkoutPage() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {restRemaining > 0 && (
+            <div className="flex items-center gap-1.5 rounded-full bg-[#ff9500]/10 px-3 py-1.5 sf-text-caption font-semibold text-[#ff9500] animate-pulse">
+              <Timer className="h-3.5 w-3.5" /> {restRemaining}s
+            </div>
+          )}
           <WorkoutTimer />
           <button onClick={() => router.push("/workout/finish")} className="rounded-full bg-apple-blue px-4 py-[6px] sf-text-caption font-semibold text-white shadow-sm transition hover:bg-opacity-90">
             Terminar
@@ -69,7 +100,8 @@ export default function ActiveWorkoutPage() {
 
               <div className="space-y-2">
                 {exercise.sets.map((set, index) => (
-                  <SetRow key={set.id} setId={set.id} setIndex={index} exerciseId={exercise.id} set={set} />
+                  <SetRow key={set.id} setId={set.id} setIndex={index} exerciseId={exercise.id} set={set}
+                    onComplete={(eid, sid) => handleSetComplete(eid, sid, parseInt(exercise.rest.match(/\d+/)?.[0] ?? "90") || 90)} />
                 ))}
               </div>
 
@@ -88,14 +120,11 @@ export default function ActiveWorkoutPage() {
 }
 
 function SetRow({
-  set,
-  exerciseId,
-  setId,
+  set, exerciseId, setId, onComplete,
 }: {
   set: import("@/lib/stores/workout-session").WorkoutSet;
-  exerciseId: string;
-  setId: string;
-  setIndex: number;
+  exerciseId: string; setId: string; setIndex: number;
+  onComplete: (exerciseId: string, setId: string) => void;
 }) {
   const store = useWorkoutStore();
 
@@ -131,13 +160,14 @@ function SetRow({
       />
 
       <button
-        onClick={() => store.toggleSetComplete(exerciseId, setId)}
+        onClick={() => onComplete(exerciseId, setId)}
         className={clsx(
           "mx-auto flex h-[42px] w-[42px] items-center justify-center rounded-xl shadow-sm transition-all active:scale-95",
           set.completed
             ? "bg-[#34C759] text-white"
             : "border border-apple-near-black/5 bg-white text-apple-near-black/40 hover:text-apple-blue dark:border-white/5 dark:bg-apple-surface-1 dark:text-white/40",
         )}
+        aria-label={set.completed ? "Desmarcar serie" : "Completar serie"}
       >
         <Check className="h-5 w-5 stroke-[2.5]" />
       </button>

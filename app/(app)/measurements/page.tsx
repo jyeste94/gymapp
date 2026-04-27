@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Activity, TrendingUp } from "lucide-react";
+import { Activity, FileSpreadsheet, TrendingUp } from "lucide-react";
 import MeasurementForm from "@/components/measurement-form";
 import MeasurementChart from "@/components/measurement-chart";
 import MeasurementsHistoryTable from "@/components/measurements-history-table";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useFirebase } from "@/lib/firebase/client-context";
 import { deleteMeasurement, useMeasurements } from "@/lib/firestore/measurements";
+import { downloadCSV } from "@/lib/export-utils";
 import type { Measurement } from "@/lib/types";
 
 export default function MeasurementsPage() {
@@ -17,6 +18,23 @@ export default function MeasurementsPage() {
 
   const { data: measurements, loading } = useMeasurements(db, user?.uid ?? null);
   const [editingMeasurement, setEditingMeasurement] = useState<Measurement | null>(null);
+
+  const handleExportCSV = () => {
+    if (!measurements.length) return;
+    const headers = ["Fecha", "Peso (kg)", "Grasa (%)", "Pecho (cm)", "Cintura (cm)", "Cadera (cm)", "Brazo (cm)", "Muslo (cm)", "Gemelo (cm)"];
+    const rows = measurements.map((m) => [
+      new Date(m.date).toLocaleDateString("es-ES"),
+      String(m.weightKg),
+      m.bodyFatPct != null ? String(m.bodyFatPct) : "",
+      m.chest != null ? String(m.chest) : "",
+      m.waist != null ? String(m.waist) : "",
+      m.hips != null ? String(m.hips) : "",
+      m.arm != null ? String(m.arm) : "",
+      m.thigh != null ? String(m.thigh) : "",
+      m.calf != null ? String(m.calf) : "",
+    ]);
+    downloadCSV(`mediciones-athlos-${new Date().toISOString().slice(0, 10)}`, headers, rows);
+  };
 
   const handleEdit = (measurement: Measurement) => {
     setEditingMeasurement(measurement);
@@ -60,6 +78,9 @@ export default function MeasurementsPage() {
         <p className="max-w-xl sf-text-subnav text-apple-near-black/60 dark:text-white/60">
           Lo que no se mide, no se puede mejorar. Registra peso, grasa y perimetros.
         </p>
+        <button onClick={handleExportCSV} className="btn-apple-pill mt-2 self-start" title="Exportar CSV">
+          <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
+        </button>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-3 lg:items-start">

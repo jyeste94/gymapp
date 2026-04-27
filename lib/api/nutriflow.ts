@@ -528,6 +528,33 @@ export class NutriFlowClient {
     return request<NutriFlowApiRoutine>(`/routines/${id}`, { method: "GET" });
   }
 
+  static async listDietPlans(): Promise<Array<{ id: string; name: string; description?: string; is_default: boolean; day_count: number; created_at: string }>> {
+    return request("/diet-plans", { method: "GET" });
+  }
+
+  static async getDietPlan(id: string): Promise<Record<string, unknown>> {
+    return request<Record<string, unknown>>(`/diet-plans/${id}`, { method: "GET" });
+  }
+
+  static async createDietPlan(data: Record<string, unknown>): Promise<{ id: string }> {
+    return request<{ id: string }>("/diet-plans", { method: "POST", body: JSON.stringify(data) });
+  }
+
+  static async updateDietPlan(id: string, data: Record<string, unknown>): Promise<void> {
+    await request(`/diet-plans/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  }
+
+  static async deleteDietPlan(id: string): Promise<void> {
+    await request(`/diet-plans/${id}`, { method: "DELETE" });
+  }
+
+  static async applyDietPlan(id: string, startDate: string): Promise<{ entry_ids: string[] }> {
+    return request<{ entry_ids: string[] }>(`/diet-plans/${id}/apply`, {
+      method: "POST",
+      body: JSON.stringify({ start_date: startDate }),
+    });
+  }
+
   static async getDiary(date: string): Promise<Record<string, unknown>> {
     return request<Record<string, unknown>>(`/diaries/${date}`, { method: "GET" });
   }
