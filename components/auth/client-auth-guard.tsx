@@ -33,7 +33,16 @@ export default function ClientAuthGuard({ children }: { children: React.ReactNod
 
   const publicRoutes = ["/login"];
   const isPublic = publicRoutes.some((route) => pathname.startsWith(route));
-  if (!user && !isPublic) return null;
+  if (!user && !isPublic) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-apple-gray px-5 dark:bg-black">
+        <div className="apple-panel w-full max-w-sm text-center">
+          <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-apple-near-black/20 border-t-apple-blue dark:border-white/20" />
+          <p className="mt-3 sf-text-caption text-apple-near-black/60 dark:text-white/60">Redirigiendo...</p>
+        </div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }

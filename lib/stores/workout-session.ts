@@ -2,6 +2,13 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { RoutineExercise } from "@/lib/types";
 
+function generateId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
 export type WorkoutSet = {
     id: string;
     weight: string;
@@ -44,7 +51,7 @@ type WorkoutState = {
 
 export const useWorkoutStore = create<WorkoutState>()(
     persist(
-        (set, get) => ({
+        (set) => ({
             startTime: null,
             routineId: null,
             routineTitle: null,
@@ -71,7 +78,7 @@ export const useWorkoutStore = create<WorkoutState>()(
                             ...ex,
                             originalSets: ex.sets,
                             sets: Array.from({ length: ex.sets || 3 }).map((_, idx) => ({
-                                id: crypto.randomUUID(),
+                                id: generateId(),
                                 // Pre-fill weight from history if available, otherwise use last valid weight, otherwise empty
                                 weight: previousSets[idx]?.weight ?? lastValidWeight,
                                 reps: "", // We don't pre-fill reps to encourage logging actual performance
@@ -119,7 +126,7 @@ export const useWorkoutStore = create<WorkoutState>()(
                                 sets: [
                                     ...ex.sets,
                                     {
-                                        id: crypto.randomUUID(),
+                                        id: generateId(),
                                         weight: ex.sets[ex.sets.length - 1]?.weight ?? "",
                                         reps: ex.sets[ex.sets.length - 1]?.reps ?? "",
                                         rir: "",
@@ -159,7 +166,16 @@ export const useWorkoutStore = create<WorkoutState>()(
             },
 
             cancelWorkout: () => {
-                get().finishWorkout();
+                set({
+                    startTime: null,
+                    routineId: null,
+                    routineTitle: null,
+                    dayId: null,
+                    dayTitle: null,
+                    exercises: [],
+                    activeExerciseId: null,
+                });
+                localStorage.removeItem("workout-storage");
             },
         }),
         {

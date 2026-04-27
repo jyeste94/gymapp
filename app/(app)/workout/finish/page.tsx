@@ -5,15 +5,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { useFirebase } from "@/lib/firebase/client-context";
 import { addWorkoutLog } from "@/lib/firestore/workout-logs";
+import { NutriFlowClient } from "@/lib/api/nutriflow";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import { getExercisesToSave } from "@/lib/workout-helpers";
 
 export default function WorkoutFinishPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { db } = useFirebase();
   const state = useWorkoutStore();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -39,11 +38,11 @@ export default function WorkoutFinishPage() {
   };
 
   const handleSave = async () => {
-    if (!user || !db || saving) return;
+    if (!user || saving) return;
 
     setSaving(true);
     try {
-      await addWorkoutLog(db, user.uid, {
+      const sessionId = await addWorkoutLog(null, user.uid, {
         date: new Date().toISOString(),
         routineId: state.routineId || undefined,
         routineName: state.routineTitle || undefined,
@@ -51,6 +50,13 @@ export default function WorkoutFinishPage() {
         dayName: state.dayTitle || undefined,
         entries: getExercisesToSave(state.exercises),
       });
+
+      if (state.startTime) {
+        const durationMinutes = Math.round((Date.now() - state.startTime) / 60000);
+        if (durationMinutes > 0) {
+          await NutriFlowClient.updateWorkoutSession(sessionId, { duration_minutes: durationMinutes });
+        }
+      }
 
       setSaved(true);
       state.finishWorkout();
@@ -95,7 +101,7 @@ export default function WorkoutFinishPage() {
         <div className="flex flex-col gap-4 pt-10">
           <button
             onClick={handleSave}
-            disabled={saving || !db}
+            disabled={saving}
             className="btn-apple-primary w-full justify-center rounded-2xl px-6 py-4 sf-text-body-strong shadow-md transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
           >
             {saving ? "Guardando..." : "Guardar entrenamiento"}

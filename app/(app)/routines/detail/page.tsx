@@ -6,12 +6,9 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import RoutineHistoryCard from "@/components/routines/routine-history-card";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { defaultExercises } from "@/lib/data/exercises";
-import { defaultRoutines } from "@/lib/data/routine-library";
 import { useCol } from "@/lib/firestore/hooks";
 import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import { buildRoutine } from "@/lib/routine-builder";
-import { mergeRoutines } from "@/lib/routine-helpers";
 import type { RoutineTemplate } from "@/lib/types";
 
 const renderBadge = (label: string) => (
@@ -30,11 +27,11 @@ function RoutineOverviewContent() {
   const { data: routineLogs } = useWorkoutLogs(user?.uid);
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map((template) => buildRoutine(template, defaultExercises)),
+    () => (routineTemplates ?? []).map((template) => buildRoutine(template)),
     [routineTemplates],
   );
 
-  const routines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
+  const routines = customRoutines;
 
   const routine = useMemo(
     () => routines.find((entry) => entry.id === routineId) ?? null,

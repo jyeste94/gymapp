@@ -8,11 +8,6 @@ import type {
     RoutineTemplate,
 } from '@/lib/types';
 
-/**
- * Un objeto de ejercicio por defecto para usar cuando no se encuentra un ID.
- * Previene que la aplicacion se rompa si una plantilla de rutina hace referencia
- * a un ejercicio que ya no existe.
- */
 const unknownExercise: Exercise = {
     id: 'unknown',
     name: 'Ejercicio Desconocido',
@@ -22,38 +17,35 @@ const unknownExercise: Exercise = {
     technique: [],
 };
 
-/**
- * Crea un indice (Map) de ejercicios a partir de un array para busquedas rapidas.
- * @param exercises Array de todos los ejercicios disponibles.
- * @returns Un Map donde la clave es el ID del ejercicio y el valor es el objeto Exercise.
- */
 function createExerciseIndex(exercises: Exercise[]): Map<string, Exercise> {
     return new Map(exercises.map((ex) => [ex.id, ex]));
 }
 
-/**
- * Combina la informacion base de un ejercicio con su configuracion en una rutina.
- * @param config La configuracion del ejercicio desde la plantilla (ID, series, etc.).
- * @param exerciseIndex El Map de todos los ejercicios disponibles.
- * @returns Un objeto RoutineExercise completo.
- */
-function hydrateExercise(
-    config: RoutineExerciseConfig,
-    exerciseIndex: Map<string, Exercise>
-): RoutineExercise {
-    const baseExercise = exerciseIndex.get(config.id) ?? unknownExercise;
-    return {
-        ...baseExercise,
-        ...config,
-    };
+function resolveExercise(config: RoutineExerciseConfig, exerciseIndex: Map<string, Exercise>): Exercise {
+    const extended = config as Record<string, unknown>;
+    if (extended.name) {
+        return {
+            id: config.id,
+            name: String(extended.name),
+            description: String(extended.description ?? ''),
+            muscleGroup: (extended.muscleGroup ?? []) as RoutineExercise['muscleGroup'],
+            equipment: (extended.equipment ?? []) as RoutineExercise['equipment'],
+            technique: (extended.technique ?? []) as string[],
+            image: extended.image as string | undefined,
+            video: extended.video as string | undefined,
+        };
+    }
+    return exerciseIndex.get(config.id) ?? unknownExercise;
 }
 
-/**
- * Transforma una plantilla de dia (RoutineDayTemplate) en un dia de rutina completo (RoutineDay).
- * @param dayTemplate La plantilla del dia.
- * @param exerciseIndex El Map de todos los ejercicios disponibles.
- * @returns Un objeto RoutineDay completo con ejercicios hidratados.
- */
+function hydrateExercise(
+    config: RoutineExerciseConfig,
+    exerciseIndex: Map<string, Exercise>,
+): RoutineExercise {
+    const baseExercise = resolveExercise(config, exerciseIndex);
+    return { ...baseExercise, ...config };
+}
+
 function hydrateDay(dayTemplate: RoutineDayTemplate, exerciseIndex: Map<string, Exercise>): RoutineDay {
     return {
         id: dayTemplate.id,
@@ -66,17 +58,8 @@ function hydrateDay(dayTemplate: RoutineDayTemplate, exerciseIndex: Map<string, 
     };
 }
 
-/**
- * Construye una rutina completa y detallada a partir de una plantilla y una biblioteca de ejercicios.
- * Este es el punto de entrada principal para transformar una definicion de rutina en un objeto
- * utilizable por la aplicacion.
- * 
- * @param routineTemplate La plantilla de la rutina a construir.
- * @param allExercises La lista completa de ejercicios disponibles en la aplicacion.
- * @returns La rutina completa, lista para ser usada en la UI.
- */
-export function buildRoutine(routineTemplate: RoutineTemplate, allExercises: Exercise[]): Routine {
-    const exerciseIndex = createExerciseIndex(allExercises);
+export function buildRoutine(routineTemplate: RoutineTemplate, allExercises?: Exercise[]): Routine {
+    const exerciseIndex = allExercises ? createExerciseIndex(allExercises) : new Map();
 
     const hydratedDays = routineTemplate.days.map((dayTemplate) =>
         hydrateDay(dayTemplate, exerciseIndex)

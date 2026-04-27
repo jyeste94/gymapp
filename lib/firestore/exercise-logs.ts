@@ -1,4 +1,6 @@
-import { useMemo } from "react";
+"use client";
+import { useState, useEffect } from "react";
+import { getCachedWorkoutSessions } from "@/lib/workout-cache";
 import { NutriFlowClient } from "@/lib/api/nutriflow";
 
 export type ExerciseLogSet = {
@@ -28,11 +30,66 @@ export type ExerciseLogInput = Omit<ExerciseLog, "id">;
 
 export const useExerciseLogs = (_userId?: string | null) => {
   void _userId;
-  const data = useMemo<ExerciseLog[]>(() => [], []);
-  return { data, loading: false };
+  const [data, setData] = useState<ExerciseLog[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchLogs = async () => {
+      setLoading(true);
+      try {
+        const sessions = await getCachedWorkoutSessions();
+
+        if (cancelled) return;
+
+        const logs: ExerciseLog[] = [];
+
+        for (const session of sessions) {
+          const exerciseMap = new Map<string, ExerciseLogSet[]>();
+
+          for (const set of session.sets ?? []) {
+            if (!exerciseMap.has(set.exercise_id)) {
+              exerciseMap.set(set.exercise_id, []);
+            }
+            exerciseMap.get(set.exercise_id)!.push({
+              weight: String(set.weight),
+              reps: String(set.reps),
+            });
+          }
+
+          for (const [exerciseId, sets] of exerciseMap) {
+            const exerciseName = session.sets?.find((s) => s.exercise_id === exerciseId)?.exercise_name ?? "Ejercicio";
+            logs.push({
+              id: `${session.id}-${exerciseId}`,
+              exerciseId,
+              exerciseName,
+              routineId: session.routine_id ?? undefined,
+              routineName: session.routine_name ?? undefined,
+              date: session.date,
+              sets,
+            });
+          }
+        }
+
+        setData(logs);
+      } catch (error) {
+        console.error("Error loading exercise logs from API", error);
+        if (!cancelled) setData([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchLogs();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  return { data, loading };
 };
 
-export async function saveExerciseLog(_db: unknown, _userId: string, data: ExerciseLogInput) {
+export async function saveExerciseLog(_db: unknown, userId: string, data: ExerciseLogInput) {
   const session = await NutriFlowClient.startWorkoutSession(data.routineId);
 
   for (const set of data.sets) {

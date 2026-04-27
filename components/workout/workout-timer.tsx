@@ -2,10 +2,13 @@
 import { useEffect, useState } from "react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWorkoutStore } from "@/lib/stores/workout-session";
 
 export function WorkoutTimer() {
-  const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const startTime = useWorkoutStore((s) => s.startTime);
+  const getElapsed = () => (startTime ? Math.floor((Date.now() - startTime) / 1000) : 0);
+  const [seconds, setSeconds] = useState(getElapsed);
+  const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -29,6 +32,7 @@ export function WorkoutTimer() {
       <div className="flex gap-1">
         <button
           onClick={() => setIsRunning(!isRunning)}
+          aria-label={isRunning ? "Pausar temporizador" : "Iniciar temporizador"}
           className={cn(
             "rounded-full p-1 transition",
             isRunning
@@ -43,6 +47,7 @@ export function WorkoutTimer() {
             setIsRunning(false);
             setSeconds(0);
           }}
+          aria-label="Reiniciar temporizador"
           className="rounded-full p-1 text-apple-near-black/45 transition hover:bg-apple-near-black/8 hover:text-apple-near-black dark:text-white/45 dark:hover:bg-white/10 dark:hover:text-white"
         >
           <RotateCcw className="h-3.5 w-3.5" />

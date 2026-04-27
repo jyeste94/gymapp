@@ -6,10 +6,7 @@ import { Activity, ChevronRight, Flame, Scale, Zap } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
 import { useDiets } from "@/lib/firestore/diets";
-import { defaultExercises } from "@/lib/data/exercises";
-import { defaultRoutines } from "@/lib/data/routine-library";
 import { buildRoutine } from "@/lib/routine-builder";
-import { mergeRoutines } from "@/lib/routine-helpers";
 import type { Measurement, Routine, RoutineTemplate } from "@/lib/types";
 
 const toDayId = (date = new Date()) => {
@@ -38,8 +35,7 @@ export default function DashboardPage() {
   const { data: diets } = useDiets(user?.uid);
 
   const routines = useMemo<Routine[]>(() => {
-    const custom = (templates ?? []).map((template) => buildRoutine(template, defaultExercises));
-    return mergeRoutines(custom, defaultRoutines);
+    return (templates ?? []).map((template) => buildRoutine(template));
   }, [templates]);
 
   const recentRoutines = routines.slice(0, 4);

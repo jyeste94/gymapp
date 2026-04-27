@@ -4,10 +4,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import { defaultRoutines } from "@/lib/data/routine-library";
-import { defaultExercises } from "@/lib/data/exercises";
 import { buildRoutine } from "@/lib/routine-builder";
-import { mergeRoutines, buildExerciseIndex } from "@/lib/routine-helpers";
+import { buildExerciseIndex } from "@/lib/routine-helpers";
+import { NutriFlowClient } from "@/lib/api/nutriflow";
 import type { RoutineExercise, RoutineTemplate } from "@/lib/types";
 import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import {
@@ -57,20 +56,18 @@ function ExerciseDetailContent() {
 
   const [isSaving, setIsSaving] = useState(false);
   const [activeLogId, setActiveLogId] = useState<string | null>(null);
+  const [apiExercise, setApiExercise] = useState<RoutineExercise | null>(null);
 
   const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
   const { data: exerciseLogs } = useExerciseLogs(user?.uid);
   const { data: workoutLogs } = useWorkoutLogs(user?.uid);
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map(template => buildRoutine(template, defaultExercises)),
+    () => (routineTemplates ?? []).map(template => buildRoutine(template)),
     [routineTemplates],
   );
 
-  const allRoutines = useMemo(
-    () => mergeRoutines(customRoutines, defaultRoutines),
-    [customRoutines],
-  );
+  const allRoutines = customRoutines;
 
   const exerciseIndex = useMemo(() => buildExerciseIndex(allRoutines), [allRoutines]);
 
@@ -79,21 +76,27 @@ function ExerciseDetailContent() {
     [exerciseIndex, exerciseId, fromCreator],
   );
 
-  const contextlessExercise = useMemo(() => {
-    if (!fromCreator || !exerciseId) return null;
-    const baseExercise = defaultExercises.find((ex) => ex.id === exerciseId);
-    if (!baseExercise) return null;
+  useEffect(() => {
+    if (!fromCreator || !exerciseId || apiExercise) return;
+    NutriFlowClient.getExercise(exerciseId).then((ex) => {
+      setApiExercise({
+        id: ex.id,
+        name: ex.name,
+        description: ex.description ?? "",
+        muscleGroup: [],
+        equipment: [],
+        technique: [],
+        image: ex.gifUrl ?? undefined,
+        video: ex.videoUrl ?? undefined,
+        sets: 3,
+        repRange: "8-12",
+        rest: "60s",
+        tip: "",
+      });
+    }).catch(console.error);
+  }, [exerciseId, fromCreator, apiExercise]);
 
-    return {
-      ...baseExercise,
-      sets: 3,
-      repRange: "8-12",
-      rest: "60s",
-      tip: "",
-    } as RoutineExercise;
-  }, [exerciseId, fromCreator]);
-
-  const exercise = exerciseEntry?.exercise ?? contextlessExercise;
+  const exercise = exerciseEntry?.exercise ?? apiExercise;
   const routine = exerciseEntry?.routine;
 
   const history = useMemo(() => {
@@ -334,7 +337,7 @@ function ExerciseDetailContent() {
 
       <MediaShowcase image={session.mediaImage || exercise.image} video={session.mediaVideo || exercise.video} />
 
-      {!fromCreator && history.length > 0 && (
+      {!fromCreator && (
         <ExerciseProgressChart data={history} />
       )}
 

@@ -1,30 +1,46 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Dumbbell, Search } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { defaultExercises } from "@/lib/data/exercises";
-import { defaultRoutines } from "@/lib/data/routine-library";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 import { useCol } from "@/lib/firestore/hooks";
 import { buildRoutine } from "@/lib/routine-builder";
-import { mergeRoutines } from "@/lib/routine-helpers";
+import { NutriFlowClient } from "@/lib/api/nutriflow";
 import type { RoutineTemplate } from "@/lib/types";
+import type { Exercise } from "@/lib/types";
 
 export default function ExercisesPage() {
   const { user } = useAuth();
   const [query, setQuery] = useState("");
+  const [apiExercises, setApiExercises] = useState<Exercise[]>([]);
   const templatesPath = user?.uid ? `users/${user.uid}/routineTemplates` : null;
   const { data: routineTemplates } = useCol<RoutineTemplate>(templatesPath, { by: "title", dir: "asc" });
 
-  const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map((template) => buildRoutine(template, defaultExercises)),
+  useEffect(() => {
+    NutriFlowClient.listExercises({ limit: 500 }).then((exercises) => {
+      setApiExercises(
+        exercises.map((ex) => ({
+          id: ex.id,
+          name: ex.name,
+          description: ex.description ?? "",
+          muscleGroup: (ex.muscleGroup?.split(/[;,|/]/g).map((s) => s.trim()).filter(Boolean) ?? []) as Exercise["muscleGroup"],
+          equipment: (ex.equipment?.split(/[;,|/]/g).map((s) => s.trim()).filter(Boolean) ?? []) as Exercise["equipment"],
+          technique: [],
+          image: ex.gifUrl ?? undefined,
+          video: ex.videoUrl ?? undefined,
+        })),
+      );
+    }).catch(console.error);
+  }, []);
+
+  const allRoutines = useMemo(
+    () => (routineTemplates ?? []).map((template) => buildRoutine(template)),
     [routineTemplates],
   );
 
-  const allRoutines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
-  const exercises = useMemo(() => buildExerciseCatalog(allRoutines), [allRoutines]);
+  const exercises = useMemo(() => buildExerciseCatalog(allRoutines, apiExercises), [allRoutines, apiExercises]);
 
   const filteredExercises = useMemo(() => {
     const term = query.trim().toLowerCase();

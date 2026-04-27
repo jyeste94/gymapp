@@ -3,12 +3,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { PlusCircle, Search, Trash2, Zap, Calendar, Dumbbell } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAuth } from "@/lib/firebase/auth-hooks";
 import { useCol } from "@/lib/firestore/hooks";
-import { defaultRoutines } from "@/lib/data/routine-library";
-import { defaultExercises } from "@/lib/data/exercises";
 import { buildRoutine } from "@/lib/routine-builder";
-import { mergeRoutines } from "@/lib/routine-helpers";
 import type { Routine, RoutineTemplate } from "@/lib/types";
 import { buildExerciseCatalog } from "@/lib/data/exercise-catalog";
 import CreateRoutineDrawer from "@/app/(app)/routines/create-routine-drawer";
@@ -25,8 +23,7 @@ export default function RoutinesPage() {
     dir: "asc",
   });
 
-  const customRoutines = useMemo(() => (routineTemplates ?? []).map((template) => buildRoutine(template, defaultExercises)), [routineTemplates]);
-  const allRoutines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
+  const allRoutines = useMemo(() => (routineTemplates ?? []).map((template) => buildRoutine(template)), [routineTemplates]);
   const exerciseCatalog = useMemo(() => buildExerciseCatalog(allRoutines), [allRoutines]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -127,14 +124,19 @@ type RoutineCardProps = {
 function RoutineCard({ routine, userId }: RoutineCardProps) {
   const dayCount = routine.days.length;
   const exerciseCount = routine.days.reduce((sum, day) => sum + day.exercises.length, 0);
-  const isCustom = !defaultRoutines.some((r) => r.id === routine.id);
+  const isCustom = true;
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!userId || !isCustom) return;
     if (confirm("Seguro que quieres eliminar esta rutina?")) {
-      await deleteRoutineTemplate(null, userId, routine.id);
+      try {
+        await deleteRoutineTemplate(null, userId, routine.id);
+        toast.success("Rutina eliminada con éxito");
+      } catch {
+        toast.error("Error al eliminar la rutina");
+      }
     }
   };
 
@@ -153,6 +155,7 @@ function RoutineCard({ routine, userId }: RoutineCardProps) {
               <button
                 onClick={handleDelete}
                 className="rounded-full p-1.5 text-apple-near-black/50 transition-colors hover:bg-[#ff3b30]/10 hover:text-[#ff3b30] dark:text-white/50"
+                aria-label="Eliminar rutina"
                 title="Eliminar rutina"
               >
                 <Trash2 className="h-4 w-4" />

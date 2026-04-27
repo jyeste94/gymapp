@@ -66,44 +66,22 @@ export function calculateWeeklyVolume(logs: RoutineLog[]) {
     }));
 }
 
-import { defaultExercises } from "@/lib/data/exercises";
-
 import { ExerciseLog } from "@/lib/firestore/exercise-logs";
 
 export function calculateMuscleDistribution(logs: (RoutineLog | ExerciseLog)[]) {
     const muscleCounts: Record<string, number> = {};
 
-    // Cache exercise definitions for faster lookup
-    const exerciseMap = new Map(defaultExercises.map(e => [e.name, e]));
-    const exerciseIdMap = new Map(defaultExercises.map(e => [e.id, e]));
-
     logs.forEach(log => {
-        // Handle RoutineLog (has entries)
         if ("entries" in log) {
             log.entries.forEach(entry => {
-                processEntry(entry.exerciseId, entry.exerciseName, entry.sets.length);
+                const muscle = entry.exerciseName || "Otros";
+                muscleCounts[muscle] = (muscleCounts[muscle] || 0) + entry.sets.length;
             });
-        }
-        // Handle ExerciseLog (single exercise)
-        else {
-            processEntry(log.exerciseId, log.exerciseName, log.sets.length);
+        } else {
+            const muscle = log.exerciseName || "Otros";
+            muscleCounts[muscle] = (muscleCounts[muscle] || 0) + log.sets.length;
         }
     });
-
-    function processEntry(id: string, name: string, setCount: number) {
-        // Try to find exercise definition
-        let exercise = exerciseIdMap.get(id);
-        if (!exercise) {
-            exercise = exerciseMap.get(name);
-        }
-
-        if (exercise && exercise.muscleGroup) {
-            // Distribute volume across all primary muscles
-            exercise.muscleGroup.forEach(muscle => {
-                muscleCounts[muscle] = (muscleCounts[muscle] || 0) + setCount;
-            });
-        }
-    }
 
     return muscleCounts;
 }

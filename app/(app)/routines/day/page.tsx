@@ -5,13 +5,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Calendar, Info, Play } from "lucide-react";
 import { useAuth } from "@/lib/firebase/auth-hooks";
-import { defaultExercises } from "@/lib/data/exercises";
-import { defaultRoutines } from "@/lib/data/routine-library";
 import { useCol } from "@/lib/firestore/hooks";
 import { useExerciseLogs } from "@/lib/firestore/exercise-logs";
 import { useWorkoutLogs } from "@/lib/firestore/workout-logs";
 import { buildRoutine } from "@/lib/routine-builder";
-import { mergeRoutines } from "@/lib/routine-helpers";
 import { useWorkoutStore } from "@/lib/stores/workout-session";
 import type { RoutineDay, RoutineExercise, RoutineLogSet, RoutineTemplate } from "@/lib/types";
 
@@ -46,11 +43,11 @@ function RoutineDayContent() {
   const { data: exerciseLogs } = useExerciseLogs(user?.uid);
 
   const customRoutines = useMemo(
-    () => (routineTemplates ?? []).map((template) => buildRoutine(template, defaultExercises)),
+    () => (routineTemplates ?? []).map((template) => buildRoutine(template)),
     [routineTemplates],
   );
 
-  const allRoutines = useMemo(() => mergeRoutines(customRoutines, defaultRoutines), [customRoutines]);
+  const allRoutines = customRoutines;
 
   const routine = useMemo(
     () => allRoutines.find((entry) => entry.id === routineId) ?? null,

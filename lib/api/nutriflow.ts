@@ -71,6 +71,42 @@ export type NutriFlowCreateRoutineInput = {
   }>;
 };
 
+export type NutriFlowWorkoutSet = {
+  id: string;
+  exercise_id: string;
+  exercise_name: string;
+  muscle_group: string | null;
+  weight: number;
+  reps: number;
+  completed: boolean;
+};
+
+export type NutriFlowWorkoutSession = {
+  id: string;
+  routine_id?: string | null;
+  routine_name?: string | null;
+  date: string;
+  duration_minutes?: number | null;
+  total_volume: number;
+  exercise_count: number;
+  set_count: number;
+  sets?: NutriFlowWorkoutSet[];
+};
+
+export type NutriFlowMeasurement = {
+  id: string;
+  date: string;
+  weight_kg: number;
+  body_fat_pct?: number | null;
+  chest_cm?: number | null;
+  waist_cm?: number | null;
+  hips_cm?: number | null;
+  arm_cm?: number | null;
+  thigh_cm?: number | null;
+  calf_cm?: number | null;
+  notes?: string | null;
+};
+
 const RAW_BASE_URL = process.env.NEXT_PUBLIC_NUTRIFLOW_API_URL || "https://nutriflow.joseyeste.com";
 const BASE_URL = RAW_BASE_URL.replace(/\/$/, "").endsWith("/v1")
   ? RAW_BASE_URL.replace(/\/$/, "")
@@ -364,8 +400,29 @@ export class NutriFlowClient {
     };
   }
 
-  static async listExercises(): Promise<NutriFlowApiExercise[]> {
-    return request<NutriFlowApiExercise[]>("/exercises", { method: "GET" });
+  static async listExercises(params?: { muscleGroup?: string; equipment?: string; page?: number; limit?: number }): Promise<NutriFlowApiExercise[]> {
+    const query = new URLSearchParams();
+    if (params?.muscleGroup) query.set("muscleGroup", params.muscleGroup);
+    if (params?.equipment) query.set("equipment", params.equipment);
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<NutriFlowApiExercise[]>(`/exercises${qs ? `?${qs}` : ""}`, { method: "GET" });
+  }
+
+  static async getExercise(id: string): Promise<NutriFlowApiExercise> {
+    return request<NutriFlowApiExercise>(`/exercises/${id}`, { method: "GET" });
+  }
+
+  static async searchExercises(query: string, limit = 20): Promise<NutriFlowApiExercise[]> {
+    return request<NutriFlowApiExercise[]>(`/exercises/search?q=${encodeURIComponent(query)}&limit=${limit}`, { method: "GET" });
+  }
+
+  static async updateRoutine(id: string, data: NutriFlowCreateRoutineInput): Promise<void> {
+    await request(`/routines/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
   }
 
   static async listRoutines(): Promise<NutriFlowApiRoutine[]> {
@@ -405,6 +462,70 @@ export class NutriFlowClient {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  }
+
+  static async listWorkoutSessions(params?: { include_sets?: boolean; page?: number; limit?: number }): Promise<NutriFlowWorkoutSession[]> {
+    const query = new URLSearchParams();
+    if (params?.include_sets) query.set("include_sets", "1");
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<NutriFlowWorkoutSession[]>(`/workouts${qs ? `?${qs}` : ""}`, { method: "GET" });
+  }
+
+  static async getWorkoutSession(id: string): Promise<NutriFlowWorkoutSession> {
+    return request<NutriFlowWorkoutSession>(`/workouts/${id}`, { method: "GET" });
+  }
+
+  static async updateWorkoutSession(id: string, data: { duration_minutes?: number }): Promise<void> {
+    await request(`/workouts/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  }
+
+  static async deleteWorkoutSession(id: string): Promise<void> {
+    await request(`/workouts/${id}`, { method: "DELETE" });
+  }
+
+  static async listMeasurements(params?: { page?: number; limit?: number }): Promise<NutriFlowMeasurement[]> {
+    const query = new URLSearchParams();
+    if (params?.page) query.set("page", String(params.page));
+    if (params?.limit) query.set("limit", String(params.limit));
+    const qs = query.toString();
+    return request<NutriFlowMeasurement[]>(`/measurements${qs ? `?${qs}` : ""}`, { method: "GET" });
+  }
+
+  static async createMeasurement(data: {
+    date?: string; weight_kg: number; body_fat_pct?: number;
+    chest_cm?: number; waist_cm?: number; hips_cm?: number;
+    arm_cm?: number; thigh_cm?: number; calf_cm?: number;
+    notes?: string;
+  }): Promise<{ id: string }> {
+    return request<{ id: string }>("/measurements", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  static async updateMeasurement(id: string, data: Partial<{
+    date: string; weight_kg: number; body_fat_pct: number | null;
+    chest_cm: number | null; waist_cm: number | null; hips_cm: number | null;
+    arm_cm: number | null; thigh_cm: number | null; calf_cm: number | null;
+    notes: string;
+  }>): Promise<void> {
+    await request(`/measurements/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  static async deleteMeasurement(id: string): Promise<void> {
+    await request(`/measurements/${id}`, { method: "DELETE" });
+  }
+
+  static async getRoutine(id: string): Promise<NutriFlowApiRoutine> {
+    return request<NutriFlowApiRoutine>(`/routines/${id}`, { method: "GET" });
   }
 
   static async getDiary(date: string): Promise<Record<string, unknown>> {

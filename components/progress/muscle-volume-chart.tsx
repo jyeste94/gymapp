@@ -4,14 +4,13 @@ import { useMemo } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import type { RoutineLog } from "@/lib/types";
 import { calculateMuscleDistribution } from "@/lib/stats-helpers";
+import { useChartTheme } from "@/lib/chart-theme";
 
-type Props = {
-  logs: RoutineLog[];
-};
-
-const MUSCLE_COLORS = ["#0071e3", "#0a84ff", "#2997ff", "#6aa9ff", "#8fc2ff", "#b7d9ff", "#d2e8ff", "#e5f1ff"];
+type Props = { logs: RoutineLog[] };
 
 export default function MuscleVolumeChart({ logs }: Props) {
+  const theme = useChartTheme();
+
   const data = useMemo(() => {
     const muscleCounts = calculateMuscleDistribution(logs);
     return Object.entries(muscleCounts)
@@ -34,14 +33,14 @@ export default function MuscleVolumeChart({ logs }: Props) {
         <PieChart>
           <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={4} dataKey="value">
             {data.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={MUSCLE_COLORS[index % MUSCLE_COLORS.length]} stroke="none" />
+              <Cell key={`cell-${index}`} fill={theme.pieColors[index % theme.pieColors.length]} stroke="none" />
             ))}
           </Pie>
           <Tooltip
-            contentStyle={{ borderRadius: 14, border: "1px solid rgba(0, 0, 0, 0.1)", boxShadow: "0 10px 24px -18px rgba(0,0,0,0.45)" }}
+            contentStyle={theme.tooltip.contentStyle}
             formatter={(value: number) => [`${value} series`, "Volumen"]}
           />
-          <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: "11px" }} iconType="circle" />
+          <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: "11px", color: theme.axis }} iconType="circle" />
         </PieChart>
       </ResponsiveContainer>
     </div>

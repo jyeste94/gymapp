@@ -109,10 +109,17 @@ export function useCol<T>(path?: string | null, order?: { by: string; dir?: "asc
     const base = collection(db, path);
     const q = constraints.length > 0 ? query(base, ...constraints) : base;
 
-    const unsub = onSnapshot(q, (snap) => {
-      setData(snap.docs.map((d) => ({ ...d.data(), id: d.id })) as T[]);
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setData(snap.docs.map((d) => ({ ...d.data(), id: d.id })) as T[]);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error en snapshot de Firestore", error);
+        setLoading(false);
+      },
+    );
 
     return () => unsub();
   }, [path, constraints, db, auth, sortOrder]);
@@ -135,14 +142,21 @@ export function useDoc<T>(path?: string | null) {
     setLoading(true);
     const ref = doc(db, path);
 
-    const unsub = onSnapshot(ref, (snap) => {
-      if (snap.exists()) {
-        setData({ ...snap.data(), id: snap.id } as T);
-      } else {
-        setData(null);
-      }
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      ref,
+      (snap) => {
+        if (snap.exists()) {
+          setData({ ...snap.data(), id: snap.id } as T);
+        } else {
+          setData(null);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error en snapshot de Firestore", error);
+        setLoading(false);
+      },
+    );
 
     return () => unsub();
   }, [path, db]);

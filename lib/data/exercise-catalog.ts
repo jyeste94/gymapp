@@ -1,5 +1,4 @@
 import type { Routine, Exercise } from "@/lib/types";
-import { defaultExercises } from "@/lib/data/exercises";
 
 export type ExerciseCatalogEntry = Exercise & {
   routineId?: string;
@@ -14,13 +13,15 @@ export type ExerciseCatalogEntry = Exercise & {
 const normalize = (value: string) =>
   value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
-export function buildExerciseCatalog(routines: Routine[]): ExerciseCatalogEntry[] {
+export function buildExerciseCatalog(routines: Routine[], allExercises?: Exercise[]): ExerciseCatalogEntry[] {
   const usageMap = new Map<string, { routine: Routine; dayTitle: string; dayId: string }>();
   const exerciseMap = new Map<string, Exercise>();
 
-  defaultExercises.forEach((exercise) => {
-    exerciseMap.set(exercise.id, exercise);
-  });
+  if (allExercises) {
+    allExercises.forEach((exercise) => {
+      exerciseMap.set(exercise.id, exercise);
+    });
+  }
 
   for (const routine of routines) {
     for (const day of routine.days) {

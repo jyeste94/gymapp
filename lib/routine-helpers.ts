@@ -2,10 +2,6 @@ import type { Equipment, RoutineLevel, Routine, RoutineDay } from "@/lib/types";
 import type { RoutineTemplateInput } from "@/lib/firestore/routines";
 import type { RoutineExercise } from "@/lib/types";
 
-export function mergeRoutines(custom: Routine[], defaults: Routine[]): Routine[] {
-  return [...custom, ...defaults];
-}
-
 export type ExerciseIndexEntry = {
   exercise: RoutineExercise;
   routine: Routine;

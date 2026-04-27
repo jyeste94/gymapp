@@ -2,14 +2,27 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Moon, Sun } from "lucide-react";
 import { logout } from "@/lib/firebase/auth-actions";
 import { useFirebase } from "@/lib/firebase/client-context";
 
 export default function SettingsPage() {
   const { app } = useFirebase();
   const router = useRouter();
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
 
   const handleLogout = async () => {
     if (!app) return;
@@ -37,8 +50,12 @@ export default function SettingsPage() {
           </div>
           <div className="flex flex-col px-5">
             <SettingItem label="Perfil y social" href="/settings/profile" />
-            <SettingItem label="Tema claro/oscuro" />
-            <SettingItem label="Objetivos caloricos" />
+            <SettingItem label="Perfil y social" href="/settings/profile" />
+            <SettingItem
+              label={dark ? "Modo oscuro" : "Modo claro"}
+              onClick={toggleTheme}
+              icon={dark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            />
           </div>
         </section>
 
@@ -60,7 +77,7 @@ export default function SettingsPage() {
   );
 }
 
-function SettingItem({ label, href }: { label: string; href?: string }) {
+function SettingItem({ label, href, onClick, icon }: { label: string; href?: string; onClick?: () => void; icon?: React.ReactNode }) {
   if (href) {
     return (
       <Link
@@ -73,10 +90,17 @@ function SettingItem({ label, href }: { label: string; href?: string }) {
     );
   }
 
-  return (
-    <div className="flex items-center justify-between border-b border-apple-near-black/5 py-3.5 sf-text-body text-apple-near-black/50 last:border-0 dark:border-white/5 dark:text-white/50">
-      <span>{label}</span>
-      <span className="sf-text-micro text-apple-near-black/40 dark:text-white/40">Pronto</span>
-    </div>
-  );
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className="group flex w-full items-center justify-between border-b border-apple-near-black/5 py-3.5 sf-text-body text-apple-near-black outline-none last:border-0 focus-visible:bg-apple-blue/5 dark:border-white/5 dark:text-white"
+      >
+        <span>{label}</span>
+        {icon}
+      </button>
+    );
+  }
+
+  return null;
 }
