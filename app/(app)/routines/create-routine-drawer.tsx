@@ -1,6 +1,7 @@
 ﻿"use client";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Check, Circle, Eye, Plus, Search, Trash2, X } from "lucide-react";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
@@ -770,6 +771,11 @@ function ExercisePicker({
         ) : (
           exercises.map((exercise) => (
             <article key={exercise.id} className="apple-panel-muted space-y-2 p-5">
+              {exercise.image && (
+                <div className="relative mb-2 h-24 w-full overflow-hidden rounded-xl bg-apple-near-black/5 dark:bg-white/5">
+                  <Image src={exercise.image} alt={exercise.name} fill className="object-cover" sizes="200px" />
+                </div>
+              )}
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <p className="sf-text-body-emphasis text-apple-near-black dark:text-white">{exercise.name}</p>
                 <div className="flex items-center gap-2">
