@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Dumbbell, Search } from "lucide-react";
@@ -91,6 +92,11 @@ export default function ExercisesPage() {
                 className="group flex flex-col justify-between rounded-3xl border border-apple-near-black/5 bg-apple-gray p-6 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:bg-apple-blue/5 dark:border-white/5 dark:bg-apple-surface-2"
               >
                 <div>
+                  {exercise.image && (
+                    <div className="relative mb-3 h-32 w-full overflow-hidden rounded-2xl bg-apple-near-black/5 dark:bg-white/5">
+                      <Image src={exercise.image} alt={exercise.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+                    </div>
+                  )}
                   <div className="mb-4 flex items-start justify-between gap-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-md border border-apple-near-black/5 bg-white px-2.5 py-1 sf-text-nano uppercase tracking-widest text-apple-near-black/60 shadow-sm dark:border-white/5 dark:bg-apple-surface-1 dark:text-white/60">
