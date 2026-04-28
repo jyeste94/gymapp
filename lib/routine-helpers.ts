@@ -27,7 +27,7 @@ export type BuilderDay = {
   title: string;
   focus: string;
   notes: string;
-  exercises: RoutineExercise[];
+  exercises: (RoutineExercise & { supersetGroup?: string })[];
 };
 
 export type RoutineFormState = {

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ArrowLeft, Check, Circle, Eye, Plus, Search, Trash2, X } from "lucide-react";
 import type { ExerciseCatalogEntry } from "@/lib/data/exercise-catalog";
+import type { RoutineExercise } from "@/lib/types";
 import { createRoutineTemplate } from "@/lib/firestore/routines";
 import {
   buildRoutinePayload,
@@ -50,7 +51,9 @@ type Props = {
 type ViewState =
   | { type: "overview" }
   | { type: "day"; dayId: string }
-  | { type: "picker"; dayId: string };
+  | { type: "picker"; dayId: string }
+  | { type: "config"; dayId: string; exercise: ExerciseCatalogEntry };
+
 
 type CreatorStep = {
   id: number;
@@ -129,22 +132,20 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
     }));
   };
 
-  const addExerciseToDay = (dayId: string, exercise: ExerciseCatalogEntry) => {
+  const addExerciseToDay = (dayId: string, exercise: ExerciseCatalogEntry & { sets: number; repRange: string; rest: string; supersetWith?: string }) => {
     updateDay(dayId, (day) => {
       if (day.exercises.some((item) => item.id === exercise.id)) {
         return day;
       }
+      const lastExercise = day.exercises[day.exercises.length - 1];
+      const supersetGroup = exercise.supersetWith === "last" && lastExercise
+        ? (lastExercise as RoutineExercise & { supersetGroup?: string }).supersetGroup || lastExercise.id
+        : undefined;
       return {
         ...day,
         exercises: [
           ...day.exercises,
-          {
-            ...exercise,
-            sets: 3,
-            repRange: "10-12",
-            rest: "90 s",
-            tip: "",
-          },
+          { ...exercise, supersetGroup, tip: "" } as RoutineExercise & { supersetGroup?: string },
         ],
       };
     });
@@ -269,9 +270,31 @@ export default function CreateRoutineDrawer({ open, userId, exercises, onClose, 
           onMuscleFilter={setMuscleFilter}
           onEquipmentFilter={setEquipmentFilter}
           onClose={() => setView({ type: "day", dayId: day.id })}
-          onSelect={(exercise) => {
-            addExerciseToDay(day.id, exercise);
-            setView({ type: "day", dayId: day.id });
+          onSelect={(exercise) => setView({ type: "config", dayId: day.id, exercise })}
+        />
+      );
+    }
+
+    if (view.type === "config") {
+      const day = dayById(view.dayId);
+      if (!day) {
+        return (
+          <Overview
+            form={form}
+            selectedDayId={selectedDay?.id ?? null}
+            onSelectDay={openDay}
+            onChange={(updater) => setForm((prev) => updater(prev))}
+            onDayCountChange={handleDayCountChange}
+          />
+        );
+      }
+      return (
+        <ExerciseConfig
+          exercise={view.exercise}
+          onBack={() => setView({ type: "picker", dayId: view.dayId })}
+          onConfirm={(configured) => {
+            addExerciseToDay(view.dayId, configured);
+            setView({ type: "day", dayId: view.dayId });
           }}
         />
       );
@@ -546,30 +569,108 @@ function DayDetail({
         </p>
       ) : (
         <ul className="space-y-2.5">
-          {day.exercises.map((exercise) => (
-            <li key={exercise.id} className="apple-panel-muted flex items-center justify-between gap-3 px-4 py-3">
-              <div>
-                <p className="sf-text-caption-strong text-apple-near-black dark:text-white">{exercise.name}</p>
-                <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
-                  {exercise.sets} x {exercise.repRange} - descanso {exercise.rest}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Link href={`/exercises/detail?id=${exercise.id}&from=creator`} className="btn-apple-ghost inline-flex items-center gap-1.5">
-                  <Eye className="h-3.5 w-3.5" /> Ver
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => onRemoveExercise(exercise.id)}
-                  className="btn-apple-ghost inline-flex items-center gap-1.5 text-[#ff3b30] hover:text-[#ff3b30]"
-                >
-                  <Trash2 className="h-3.5 w-3.5" /> Quitar
-                </button>
-              </div>
-            </li>
-          ))}
+          {day.exercises.map((exercise, idx) => {
+            const isSuperset = (exercise as RoutineExercise & { supersetGroup?: string }).supersetGroup;
+            const prev: RoutineExercise & { supersetGroup?: string } | undefined = idx > 0 ? day.exercises[idx - 1] : undefined;
+            const prevSuperset = prev?.supersetGroup === (exercise as RoutineExercise & { supersetGroup?: string }).supersetGroup
+              || prev?.id === (exercise as RoutineExercise & { supersetGroup?: string }).supersetGroup;
+            return (
+              <li key={exercise.id} className={clsx(
+                "flex items-center justify-between gap-3 px-4 py-3",
+                isSuperset ? "bg-apple-blue/5 border-l-4 border-apple-blue rounded-r-2xl" : "apple-panel-muted rounded-2xl",
+              )}>
+                <div>
+                  <div className="flex items-center gap-2">
+                    {prevSuperset && <span className="sf-text-nano uppercase tracking-widest text-apple-blue font-semibold">SUPERSET</span>}
+                    <p className="sf-text-caption-strong text-apple-near-black dark:text-white">{exercise.name}</p>
+                  </div>
+                  <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">
+                    {exercise.sets} x {exercise.repRange} - descanso {exercise.rest}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link href={`/exercises/detail?id=${exercise.id}&from=creator`} className="btn-apple-ghost inline-flex items-center gap-1.5">
+                    <Eye className="h-3.5 w-3.5" /> Ver
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => onRemoveExercise(exercise.id)}
+                    className="btn-apple-ghost inline-flex items-center gap-1.5 text-[#ff3b30] hover:text-[#ff3b30]"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Quitar
+                  </button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
+    </section>
+  );
+}
+
+function ExerciseConfig({
+  exercise, onBack, onConfirm,
+}: {
+  exercise: ExerciseCatalogEntry;
+  onBack: () => void;
+  onConfirm: (configured: ExerciseCatalogEntry & { sets: number; repRange: string; rest: string; supersetWith?: string }) => void;
+}) {
+  const [sets, setSets] = useState(3);
+  const [repRange, setRepRange] = useState("10-12");
+  const [rest, setRest] = useState("90 s");
+  const [superset, setSuperset] = useState(false);
+
+  return (
+    <section className="space-y-5">
+      <button type="button" onClick={onBack} className="apple-link inline-flex items-center gap-2 sf-text-caption-strong">
+        <ArrowLeft className="h-4 w-4" /> Volver a ejercicios
+      </button>
+
+      <div className="apple-panel-muted rounded-2xl p-5">
+        <p className="sf-text-body-strong text-apple-near-black dark:text-white">{exercise.name}</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {exercise.tags.map((tag) => (
+            <span key={tag} className="rounded-full border px-2 py-0.5 sf-text-nano text-apple-near-black/60 dark:text-white/60">{tag}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="apple-panel-muted grid gap-4 p-5 sm:grid-cols-3">
+        <label className="space-y-1.5 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Series
+          <select value={sets} onChange={(e) => setSets(Number(e.target.value))} className="input-apple">
+            {[1, 2, 3, 4, 5, 6].map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </label>
+        <label className="space-y-1.5 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Repeticiones
+          <input value={repRange} onChange={(e) => setRepRange(e.target.value)} placeholder="8-12" className="input-apple" />
+        </label>
+        <label className="space-y-1.5 sf-text-caption text-apple-near-black/65 dark:text-white/65">
+          Descanso
+          <input value={rest} onChange={(e) => setRest(e.target.value)} placeholder="90 s" className="input-apple" />
+        </label>
+      </div>
+
+      <div className="apple-panel-muted p-5">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" checked={superset} onChange={(e) => setSuperset(e.target.checked)}
+            className="h-5 w-5 rounded border-apple-near-black/30 text-apple-blue focus:ring-apple-blue dark:border-white/30" />
+          <div>
+            <p className="sf-text-body-strong text-apple-near-black dark:text-white">Superset</p>
+            <p className="sf-text-caption text-apple-near-black/60 dark:text-white/60">Agrupar con el ejercicio anterior (sin descanso entre ellos)</p>
+          </div>
+        </label>
+      </div>
+
+      <div className="flex gap-3 pt-2">
+        <button type="button" onClick={onBack} className="btn-apple-ghost flex-1">Cancelar</button>
+        <button type="button" onClick={() => onConfirm({ ...exercise, sets, repRange, rest, supersetWith: superset ? "last" : undefined })}
+          className="btn-apple-primary flex-1 justify-center">
+          <Plus className="h-4 w-4" /> Agregar a la rutina
+        </button>
+      </div>
     </section>
   );
 }
