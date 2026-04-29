@@ -1,54 +1,50 @@
 import type { Config } from "tailwindcss";
-const { default: flattenColorPalette } = require("tailwindcss/lib/util/flattenColorPalette");
 
-/** @type {import('tailwindcss').Config} */
 export default {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./styles/**/*.{ts,tsx}"],
   darkMode: ["class"],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Inter"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'sans-serif'],
       },
-      borderRadius: { "3xl": "1.5rem", "4xl": "2rem", "5xl": "2.5rem" },
       colors: {
-        apple: {
-          "near-black": "#111827",
-          gray: "#F3F4F6",
-          blue: "#FBBF24",
-          "link-blue": "#FBBF24",
-          "link-dark": "#FBBF24",
-          black: "#111827",
-          surface: { "1": "#FFFFFF", "2": "#F3F4F6", "3": "#E5E7EB" },
-          btn: { active: "#E5E7EB" },
-        },
         fitia: {
-          yellow: "#FBBF24",
-          "yellow-dark": "#F59E0B",
-          "yellow-light": "#FEF3C7",
-          "yellow-bg": "#FFFBEB",
-          "red": "#7F1D1D",
-          "red-light": "#991B1B",
-          bg: "#F3F4F6",
+          bg: "#F7F7F7",
           card: "#FFFFFF",
-          text: "#111827",
-          "text-muted": "#6B7280",
-          border: "#E5E7EB",
-          "border-light": "#F3F4F6",
+          text: "#050505",
+          "text-muted": "#6F6F6F",
+          "text-disabled": "#BDBDBD",
+          yellow: "#FFC400",
+          "yellow-cta": "#FFC928",
+          "yellow-light": "#FFF4CF",
+          divider: "#ECECEC",
+          premium: "#661616",
+          "recipe-green": "#263B0C",
+        },
+        apple: {
+          "near-black": "#050505",
+          gray: "#F7F7F7",
+          blue: "#FFC400",
+          "link-blue": "#FFC400",
+          "link-dark": "#FFC400",
+          black: "#050505",
+          surface: { "1": "#FFFFFF", "2": "#F3F3F3", "3": "#E5E5E5" },
+          btn: { active: "#E5E5E5" },
         },
       },
       boxShadow: {
-        "card": "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
+        "card": "0 8px 24px rgba(0,0,0,0.06)",
+        "nav": "0 -4px 20px rgba(0,0,0,0.06)",
+      },
+      borderRadius: {
+        "xl": "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.25rem",
+        "4xl": "1.5rem",
+        "5xl": "2rem",
       },
     }
   },
-  plugins: [addVariablesForColors]
+  plugins: [],
 } satisfies Config;
-
-function addVariablesForColors({ addBase, theme }: any) {
-  let allColors = flattenColorPalette(theme("colors"));
-  let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
-  );
-  addBase({ ":root": newVars });
-}
