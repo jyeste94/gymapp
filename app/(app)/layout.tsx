@@ -4,7 +4,7 @@ import SidebarNav from "@/app/(app)/_components/sidebar-nav";
 import SidebarFooter from "@/app/(app)/_components/sidebar-footer";
 import MobileNav from "@/app/(app)/_components/mobile-nav";
 import type { ReactNode } from "react";
-import { Dumbbell } from "lucide-react";
+import { Utensils } from "lucide-react";
 import { Toaster } from 'react-hot-toast';
 import ClientAuthGuard from "@/components/auth/client-auth-guard";
 
@@ -12,28 +12,29 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <Providers>
       <ClientAuthGuard>
-        <Toaster />
-        <div className="relative min-h-dvh overflow-x-hidden bg-apple-gray dark:bg-apple-black font-sans selection:bg-apple-blue selection:text-white">
-          <div className="relative mx-auto flex min-h-dvh max-w-[1500px] flex-col gap-6 px-4 py-8 lg:flex-row lg:px-8 lg:py-10">
-            <aside className="apple-glass-nav sticky top-8 hidden h-[calc(100dvh-4rem)] w-full max-w-[286px] flex-shrink-0 flex-col rounded-[20px] border border-white/10 p-6 text-white shadow-apple-card lg:flex">
-              <div className="mb-6 flex items-center gap-3 px-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-apple-black">
-                  <Dumbbell className="h-5 w-5" />
+        <Toaster
+          toastOptions={{
+            style: { background: '#ffffff', color: '#1a1a2e', border: '1px solid #e5e7eb', boxShadow: '0 4px 14px rgba(0,0,0,0.08)', borderRadius: '16px' },
+          }}
+        />
+        <div className="relative min-h-dvh bg-fitia-bg dark:bg-[#0f0f1a] font-sans">
+          <div className="relative mx-auto flex min-h-dvh max-w-[1400px] flex-col gap-0 lg:flex-row">
+            {/* Sidebar - Fitia style */}
+            <aside className="sticky top-0 hidden h-dvh w-[260px] flex-shrink-0 flex-col border-r border-fitia-border bg-white px-4 py-6 lg:flex dark:border-white/10 dark:bg-[#16162a]">
+              <div className="mb-8 flex items-center gap-2.5 px-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-fitia-green text-white">
+                  <Utensils className="h-5 w-5" />
                 </div>
-                <div>
-                  <h2 className="text-[21px] font-semibold leading-tight tracking-tight text-white">Athlos Fit</h2>
-                </div>
+                <span className="text-lg font-bold tracking-tight text-fitia-text dark:text-white">Athlos</span>
               </div>
-
               <SidebarNav />
-
-              <div className="mt-auto pt-6 apple-divider">
+              <div className="mt-auto pt-4 border-t border-fitia-border dark:border-white/10">
                 <SidebarFooter />
               </div>
             </aside>
 
-            <div className="flex flex-1 flex-col pb-8 pt-6 sm:pb-10 sm:pt-8 lg:pb-0 lg:pt-0">
-              <main className="flex-1">
+            <div className="flex flex-1 flex-col min-h-dvh pb-24 lg:pb-0">
+              <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
                 {children}
               </main>
             </div>

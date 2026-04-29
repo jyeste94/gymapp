@@ -65,8 +65,8 @@ function NavBar({ items, isActive: checkActive }: {
       className="pointer-events-none fixed inset-x-0 z-50 px-3 lg:hidden"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.7rem)" }}
     >
-      <div className="pointer-events-auto mx-auto w-full max-w-[560px] rounded-[20px] border border-white/20 bg-[rgba(20,20,22,0.86)] px-2 py-2 shadow-[0_16px_36px_rgba(0,0,0,0.42)] backdrop-blur-[20px]">
-        <ul className="grid gap-1" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
+      <div className="pointer-events-auto mx-auto w-full max-w-[560px] rounded-2xl border border-gray-200/60 bg-white/95 px-2 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-[20px] dark:border-white/15 dark:bg-[#1a1a2e]/95">
+        <ul className="grid gap-0.5" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
           {items.map((item) => {
             const Icon = item.icon;
             const active = checkActive(item.href);
@@ -75,15 +75,15 @@ function NavBar({ items, isActive: checkActive }: {
                 <Link
                   href={item.href}
                   className={clsx(
-                    "relative flex min-h-[56px] w-full flex-col items-center justify-center gap-[3px] rounded-[14px] px-1 py-2 transition-all duration-200",
+                    "relative flex min-h-[52px] w-full flex-col items-center justify-center gap-[2px] rounded-xl px-1 py-1.5 transition-all duration-200",
                     active
-                      ? "bg-white text-apple-near-black shadow-[0_2px_10px_rgba(255,255,255,0.3)]"
-                      : "text-white/90 hover:bg-white/10 hover:text-white"
+                      ? "bg-fitia-green text-white shadow-[0_2px_8px_rgba(76,175,80,0.3)]"
+                      : "text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  <Icon className={clsx("h-[19px] w-[19px]", active ? "text-apple-near-black" : "text-white/90")} strokeWidth={active ? 2.5 : 2.2} />
-                  <span className={clsx("sf-text-nano tracking-[0.02em]", active ? "font-semibold text-apple-near-black" : "font-medium text-white/90")}>
+                  <Icon className={clsx("h-[18px] w-[18px]")} strokeWidth={active ? 2.5 : 2} />
+                  <span className={clsx("sf-text-nano font-medium", active ? "text-white" : "text-gray-500 dark:text-white/60")}>
                     {item.label}
                   </span>
                 </Link>

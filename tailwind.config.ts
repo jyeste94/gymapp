@@ -32,6 +32,17 @@ export default {
         "4xl": "2rem",
       },
       colors: {
+        fitia: {
+          green: "#4CAF50",
+          "green-dark": "#388E3C",
+          "green-light": "#C8E6C9",
+          "green-bg": "#E8F5E9",
+          bg: "#F8F9FA",
+          card: "#FFFFFF",
+          text: "#1A1A2E",
+          "text-muted": "#6B7280",
+          border: "#E5E7EB",
+        },
         apple: {
           blue: "#0071e3",
           "link-blue": "#0066cc",

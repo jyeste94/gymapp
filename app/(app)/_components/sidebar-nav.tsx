@@ -15,7 +15,7 @@ export default function SidebarNav() {
   const currentSection = sections.find((s) => isActive(s.href) || s.subItems.some((si) => isActive(si.href)));
 
   return (
-    <nav className="mt-2 flex flex-1 flex-col gap-6 px-1">
+    <nav className="flex flex-1 flex-col gap-1">
       {sections.map((section) => {
         const Icon = section.icon;
         const active = currentSection?.id === section.id;
@@ -25,18 +25,18 @@ export default function SidebarNav() {
             <Link
               href={section.href}
               className={clsx(
-                "group relative flex items-center gap-4 rounded-xl px-4 py-3 sf-text-body transition-colors duration-200 outline-none",
+                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body transition-all duration-200 outline-none",
                 active
-                  ? "bg-white/12 font-medium text-apple-link-dark"
-                  : "font-normal text-white/72 hover:bg-white/8 hover:text-white"
+                  ? "bg-fitia-green-bg font-semibold text-fitia-green dark:bg-fitia-green/10"
+                  : "text-fitia-text-muted hover:bg-gray-100 hover:text-fitia-text dark:text-white/60 dark:hover:bg-white/8 dark:hover:text-white"
               )}
             >
-              <Icon className={clsx("h-5 w-5", active ? "stroke-[2.5px]" : "stroke-[2.05px]")} />
-              <span className="tracking-wide">{section.label}</span>
+              <Icon className={clsx("h-5 w-5", active ? "text-fitia-green" : "")} />
+              <span>{section.label}</span>
             </Link>
 
             {active && section.subItems.length > 0 && (
-              <div className="ml-2 mt-1 space-y-0.5 border-l border-white/10 pl-3">
+              <div className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-fitia-green/20 pl-2">
                 {section.subItems.map((item) => {
                   const SubIcon = item.icon;
                   const itemActive = isActive(item.href);
@@ -45,10 +45,10 @@ export default function SidebarNav() {
                       key={item.href}
                       href={item.href}
                       className={clsx(
-                        "group relative flex items-center gap-3 rounded-lg px-3 py-2 sf-text-caption transition-colors outline-none",
+                        "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 sf-text-caption transition-colors outline-none",
                         itemActive
-                          ? "bg-white/10 font-medium text-white"
-                          : "text-white/60 hover:bg-white/6 hover:text-white/80"
+                          ? "bg-fitia-green-bg font-medium text-fitia-green dark:bg-fitia-green/10"
+                          : "text-fitia-text-muted hover:bg-gray-50 hover:text-fitia-text dark:text-white/50 dark:hover:bg-white/8 dark:hover:text-white/80"
                       )}
                     >
                       <SubIcon className="h-4 w-4" />
@@ -62,8 +62,8 @@ export default function SidebarNav() {
         );
       })}
 
-      <div className="mt-auto space-y-1 pt-4 border-t border-white/8">
-        <p className="apple-kicker px-4 pb-1 text-white/40">Otros</p>
+      <div className="mt-auto space-y-0.5 pt-4 border-t border-gray-100 dark:border-white/10">
+        <p className="px-3 pb-1 sf-text-nano font-medium uppercase tracking-wider text-gray-400 dark:text-white/40">General</p>
         {secondaryItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
@@ -72,14 +72,14 @@ export default function SidebarNav() {
               key={item.href}
               href={item.href}
               className={clsx(
-                "group relative flex items-center gap-4 rounded-xl px-4 py-3 sf-text-body transition-colors duration-200 outline-none",
+                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body transition-all duration-200 outline-none",
                 active
-                  ? "bg-white/12 font-medium text-apple-link-dark"
-                  : "font-normal text-white/60 hover:bg-white/8 hover:text-white/80"
+                  ? "bg-fitia-green-bg font-semibold text-fitia-green dark:bg-fitia-green/10"
+                  : "text-fitia-text-muted hover:bg-gray-100 hover:text-fitia-text dark:text-white/60 dark:hover:bg-white/8 dark:hover:text-white"
               )}
             >
-              <Icon className={clsx("h-5 w-5", active ? "stroke-[2.5px]" : "stroke-[2.05px]")} />
-              <span className="tracking-wide">{item.label}</span>
+              <Icon className="h-5 w-5" />
+              <span>{item.label}</span>
             </Link>
           );
         })}

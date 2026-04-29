@@ -26,10 +26,10 @@ export default function SidebarFooter() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1">
       <Link
         href="/settings/profile"
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/14 bg-white/8 px-4 py-2 sf-text-body text-white transition-colors hover:bg-white/14"
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body text-fitia-text-muted transition-colors hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/8"
       >
         <Settings className="h-[18px] w-[18px]" />
         Ajustes
@@ -39,10 +39,10 @@ export default function SidebarFooter() {
         type="button"
         onClick={handleLogout}
         disabled={pending}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent px-4 py-2 sf-text-body font-medium text-[#ff453a] transition-colors hover:bg-[#ff453a]/16 disabled:opacity-60"
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body text-red-500 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 disabled:opacity-60"
       >
         <LogOut className="h-[18px] w-[18px]" />
-        {pending ? "Saliendo..." : "Cerrar sesion"}
+        {pending ? "Saliendo..." : "Cerrar sesión"}
       </button>
     </div>
   );
