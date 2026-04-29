@@ -22,7 +22,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             {/* Sidebar - Fitia style */}
             <aside className="sticky top-0 hidden h-dvh w-[260px] flex-shrink-0 flex-col border-r border-fitia-border bg-white px-4 py-6 lg:flex dark:border-white/10 dark:bg-[#16162a]">
               <div className="mb-8 flex items-center gap-2.5 px-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-fitia-green text-white">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-fitia-yellow text-white">
                   <Utensils className="h-5 w-5" />
                 </div>
                 <span className="text-lg font-bold tracking-tight text-fitia-text dark:text-white">Athlos</span>

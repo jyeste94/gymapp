@@ -33,15 +33,17 @@ export default {
       },
       colors: {
         fitia: {
-          green: "#4CAF50",
-          "green-dark": "#388E3C",
-          "green-light": "#C8E6C9",
-          "green-bg": "#E8F5E9",
+          yellow: "#FFD700",
+          "yellow-dark": "#E6BE00",
+          "yellow-light": "#FFF8E1",
+          "yellow-bg": "#FFFBEB",
+          accent: "#8B0000",
           bg: "#F8F9FA",
           card: "#FFFFFF",
           text: "#1A1A2E",
-          "text-muted": "#6B7280",
-          border: "#E5E7EB",
+          "text-muted": "#9CA3AF",
+          border: "#F3F4F6",
+          "border-strong": "#E5E7EB",
         },
         apple: {
           blue: "#0071e3",
