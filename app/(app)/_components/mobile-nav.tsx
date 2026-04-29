@@ -77,7 +77,7 @@ function NavBar({ items, isActive: checkActive }: {
                   className={clsx(
                     "relative flex min-h-[52px] w-full flex-col items-center justify-center gap-[2px] rounded-xl px-1 py-1.5 transition-all duration-200",
                     active
-                      ? "bg-fitia-yellow text-white shadow-[0_2px_8px_rgba(76,175,80,0.3)]"
+                      ? "bg-#FFC400 text-white shadow-[0_2px_8px_rgba(76,175,80,0.3)]"
                       : "text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
                   )}
                   aria-current={active ? "page" : undefined}

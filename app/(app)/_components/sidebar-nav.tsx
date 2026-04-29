@@ -27,16 +27,16 @@ export default function SidebarNav() {
               className={clsx(
                 "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body transition-all duration-200 outline-none",
                 active
-                  ? "bg-fitia-yellow-bg font-semibold text-fitia-yellow dark:bg-fitia-yellow/10"
-                  : "text-fitia-text-muted hover:bg-gray-100 hover:text-fitia-text dark:text-white/60 dark:hover:bg-white/8 dark:hover:text-white"
+                  ? "bg-#FFC400-bg font-semibold text-#FFC400 dark:bg-#FFC400/10"
+                  : "text-#050505-muted hover:bg-gray-100 hover:text-#050505 dark:text-white/60 dark:hover:bg-white/8 dark:hover:text-white"
               )}
             >
-              <Icon className={clsx("h-5 w-5", active ? "text-fitia-yellow" : "")} />
+              <Icon className={clsx("h-5 w-5", active ? "text-#FFC400" : "")} />
               <span>{section.label}</span>
             </Link>
 
             {active && section.subItems.length > 0 && (
-              <div className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-fitia-yellow/20 pl-2">
+              <div className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-#FFC400/20 pl-2">
                 {section.subItems.map((item) => {
                   const SubIcon = item.icon;
                   const itemActive = isActive(item.href);
@@ -47,8 +47,8 @@ export default function SidebarNav() {
                       className={clsx(
                         "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 sf-text-caption transition-colors outline-none",
                         itemActive
-                          ? "bg-fitia-yellow-bg font-medium text-fitia-yellow dark:bg-fitia-yellow/10"
-                          : "text-fitia-text-muted hover:bg-gray-50 hover:text-fitia-text dark:text-white/50 dark:hover:bg-white/8 dark:hover:text-white/80"
+                          ? "bg-#FFC400-bg font-medium text-#FFC400 dark:bg-#FFC400/10"
+                          : "text-#050505-muted hover:bg-gray-50 hover:text-#050505 dark:text-white/50 dark:hover:bg-white/8 dark:hover:text-white/80"
                       )}
                     >
                       <SubIcon className="h-4 w-4" />
@@ -74,8 +74,8 @@ export default function SidebarNav() {
               className={clsx(
                 "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body transition-all duration-200 outline-none",
                 active
-                  ? "bg-fitia-yellow-bg font-semibold text-fitia-yellow dark:bg-fitia-yellow/10"
-                  : "text-fitia-text-muted hover:bg-gray-100 hover:text-fitia-text dark:text-white/60 dark:hover:bg-white/8 dark:hover:text-white"
+                  ? "bg-#FFC400-bg font-semibold text-#FFC400 dark:bg-#FFC400/10"
+                  : "text-#050505-muted hover:bg-gray-100 hover:text-#050505 dark:text-white/60 dark:hover:bg-white/8 dark:hover:text-white"
               )}
             >
               <Icon className="h-5 w-5" />

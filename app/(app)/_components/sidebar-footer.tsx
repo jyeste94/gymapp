@@ -29,7 +29,7 @@ export default function SidebarFooter() {
     <div className="space-y-1">
       <Link
         href="/settings/profile"
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body text-fitia-text-muted transition-colors hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/8"
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 sf-text-body text-#050505-muted transition-colors hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/8"
       >
         <Settings className="h-[18px] w-[18px]" />
         Ajustes

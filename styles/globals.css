@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --fitia-yellow: #FBBF24;
-  --fitia-focus: #FBBF24;
+  --#FFC400: #FBBF24;
+  --#FFC400: #FBBF24;
 }
 
 @layer base {
@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply bg-fitia-bg text-fitia-text;
+    @apply bg-[#F7F7F7] text-[#050505];
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -28,7 +28,7 @@
   }
 
   a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-    outline: 2px solid var(--fitia-focus);
+    outline: 2px solid var(--#FFC400);
     outline-offset: 2px;
   }
 }
@@ -192,15 +192,15 @@
   }
 
   .apple-kicker {
-    @apply sf-text-nano uppercase tracking-[0.22em] text-fitia-text/50 dark:text-white/50;
+    @apply sf-text-nano uppercase tracking-[0.22em] text-[#050505]/50 dark:text-white/50;
   }
 
   .apple-link {
-    @apply sf-text-link text-fitia-yellow transition-opacity hover:opacity-80 dark:text-fitia-yellow;
+    @apply sf-text-link text-[#FFC400] transition-opacity hover:opacity-80 dark:text-[#FFC400];
   }
 
   .apple-divider {
-    @apply border-t border-fitia-text/10 dark:border-white/10;
+    @apply border-t border-[#050505]/10 dark:border-white/10;
   }
 
   .apple-glass-nav {
@@ -210,7 +210,7 @@
   }
 
   .btn-apple-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-fitia-yellow px-[15px] pb-[7px] pt-[8px] text-white transition-colors sf-text-btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-[#FFC400] px-[15px] pb-[7px] pt-[8px] text-white transition-colors sf-text-btn;
   }
 
   .btn-apple-primary:disabled {
@@ -222,31 +222,31 @@
   }
 
   .btn-apple-primary:active {
-    @apply bg-gray-200 text-fitia-text;
+    @apply bg-gray-200 text-[#050505];
   }
 
   .btn-apple-pill {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-fitia-yellow bg-transparent px-[15px] pb-[7px] pt-[8px] text-fitia-yellow transition-colors sf-text-btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[#FFC400] bg-transparent px-[15px] pb-[7px] pt-[8px] text-[#FFC400] transition-colors sf-text-btn;
   }
 
   .btn-apple-pill:hover {
-    @apply bg-fitia-yellow text-white;
+    @apply bg-[#FFC400] text-white;
   }
 
   .btn-apple-pill:disabled {
-    @apply opacity-50 cursor-not-allowed border-fitia-text/30 text-fitia-text/30;
+    @apply opacity-50 cursor-not-allowed border-[#050505]/30 text-[#050505]/30;
   }
 
   .btn-apple-pill-dark {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-fitia-yellow bg-transparent px-[15px] pb-[7px] pt-[8px] text-fitia-yellow transition-colors sf-text-btn;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[#FFC400] bg-transparent px-[15px] pb-[7px] pt-[8px] text-[#FFC400] transition-colors sf-text-btn;
   }
 
   .btn-apple-pill-dark:hover {
-    @apply bg-fitia-yellow text-white;
+    @apply bg-[#FFC400] text-white;
   }
 
   .btn-apple-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-fitia-text/10 bg-white px-4 py-2 text-fitia-text transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-gray-100 dark:text-white dark:hover:bg-gray-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-[#050505]/10 bg-white px-4 py-2 text-[#050505] transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-gray-100 dark:text-white dark:hover:bg-gray-200;
   }
 }
 
@@ -285,7 +285,7 @@
 input,
 textarea,
 select {
-  @apply rounded-[11px] border border-black/10 bg-gray-100 px-4 py-3 sf-text-body text-fitia-text transition-all placeholder:text-fitia-text/35 focus:border-fitia-yellow/50 focus:bg-white;
+  @apply rounded-[11px] border border-black/10 bg-gray-100 px-4 py-3 sf-text-body text-[#050505] transition-all placeholder:text-[#050505]/35 focus:border-[#FFC400]/50 focus:bg-white;
 }
 
 .dark input,
@@ -295,7 +295,7 @@ select {
 }
 
 .input-apple {
-  @apply w-full rounded-2xl border border-fitia-text/5 bg-gray-100 px-4 py-3 sf-text-body text-fitia-text placeholder:text-fitia-text/40 outline-none focus:ring-2 focus:ring-fitia-yellow dark:border-white/5 dark:bg-gray-100 dark:text-white dark:placeholder:text-white/40;
+  @apply w-full rounded-2xl border border-[#050505]/5 bg-gray-100 px-4 py-3 sf-text-body text-[#050505] placeholder:text-[#050505]/40 outline-none focus:ring-2 focus:ring-[#FFC400] dark:border-white/5 dark:bg-gray-100 dark:text-white dark:placeholder:text-white/40;
 }
 
 @media print {
