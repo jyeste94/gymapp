@@ -3,6 +3,7 @@ import Providers from "@/app/providers";
 import SidebarNav from "@/app/(app)/_components/sidebar-nav";
 import SidebarFooter from "@/app/(app)/_components/sidebar-footer";
 import MobileNav from "@/app/(app)/_components/mobile-nav";
+import DrawerMenu from "@/app/(app)/_components/drawer-menu";
 import type { ReactNode } from "react";
 import { Utensils } from "lucide-react";
 import { Toaster } from 'react-hot-toast';
@@ -41,6 +42,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
         <MobileNav />
+        <DrawerMenu />
       </ClientAuthGuard>
     </Providers>
   );
